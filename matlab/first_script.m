@@ -22,7 +22,7 @@ for period =1:(f2+1)    % wygeneruj o okres wiecej, ulatwia obliczenia
   s2 = [ s2, (-1)*A2*ones(1,probes) ];  % generuj -1
 end
 
-s2 = s2(1:1000);    % skopiuj  1000
+s2 = s2(1:f2);    % skopiuj  fs probek
 
 
 
