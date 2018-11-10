@@ -1,12 +1,12 @@
-% skrypt tworzy dwa sygna≥y okresowe (sin i cos)
+% skrypt tworzy dwa sygna≈Çy okresowe (sin i cos)
 % i oblicza ich sumy
 
 % Dane wejsciowe
-Tk = 1;           % czas trwania sygna≥u w sekundach
-fs = 1000;         % czesttliwosc. prÛbkowania w [Hz]
-f1 = 2;           % czestotliwosc pierwszego sygna≥u
-f2 = 10;          % czestotliwosc drugiego sygna≥u
-A1 = 1;A2 = 1;  % aplitudy sygna≥Ûw
+Tk = 1;           % czas trwania sygna≈Çu w sekundach
+fs = 1000;         % czesttliwosc. pr√≥bkowania w [Hz]
+f1 = 2;           % czestotliwosc pierwszego sygna≈Çu
+f2 = 10;          % czestotliwosc drugiego sygna≈Çu
+A1 = 1;A2 = 1;  % aplitudy sygna≈Ç√≥w
 
 dt = 1/fs;        %okres probkowania
 t  = 0:dt:Tk-dt;     % wektor czasu dyskretnego
@@ -22,7 +22,7 @@ for period =1:(f2+1)    % wygeneruj o okres wiecej, ulatwia obliczenia
   s2 = [ s2, (-1)*A2*ones(1,probes) ];  % generuj -1
 end
 
-s2 = s2(1:f2);    % skopiuj  fs probek
+s2 = s2(1:fs);    % skopiuj  fs probek
 
 
 
