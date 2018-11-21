@@ -50,6 +50,6 @@ ylabel('[V]')
 
 figure
 plot(t, x_amplitude)
-title('Suma sygnalow s1 i s2.')
-xlabel('Czas [s]')
+title('Widmo sygnalow s1 + s2.')
+xlabel('Czestotliowsc [Hz]')
 ylabel('[V]')
