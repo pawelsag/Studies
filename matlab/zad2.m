@@ -23,9 +23,15 @@ for period =1:(f2+1)    % wygeneruj o okres wiecej, ulatwia obliczenia
 end
 s2 = s2(1:fs);
 
+S1 = fft(s1);
+S1_amplitude = abs(S1);
+S2 = fft(s2);
+S2_amplitude = abs(S2);
+ 
 sygnal = s1 + s2;       % suma sygnalow
 X =  fft(sygnal);        % fft dla s1+ s2
 x_amplitude = abs(X);    % wartosci prazkow
+
 
 subplot(3,1,1)          % wykres sygnal 1
 plot(t, s1)
@@ -48,8 +54,22 @@ title('Suma sygnalow s1 i s2.')
 xlabel('Czas [s]')
 ylabel('[V]')
 
+x_label_descriptor = 0:1:fs-1;
 figure
-plot(t, x_amplitude)
+subplot(3,1,1) 
+plot(x_label_descriptor,S1_amplitude)
+title('Widmo sygnalu s1')
+xlabel('Czestotliowsc [Hz]')
+ylabel('[V]')
+
+subplot(3,1,2) 
+plot(x_label_descriptor, S2_amplitude)
+title('Widmo sygnalu s1')
+xlabel('Czestotliowsc [Hz]')
+ylabel('[V]')
+
+subplot(3,1,3)
+plot(x_label_descriptor, x_amplitude)
 title('Widmo sygnalow s1 + s2.')
 xlabel('Czestotliowsc [Hz]')
 ylabel('[V]')
