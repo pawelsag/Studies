@@ -12,6 +12,12 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Enumeration;
 
 import javax.swing.JList;
@@ -268,7 +274,44 @@ public class QuestionManager extends JPanel {
 		int num = 1;
 		for(int i =num ; i <= 10; i++)
 			this.listModel.addElement(new Question( "Question " + i, "all "+ i, "None " + i, "Zupa " + i, "Kanpka " + i , 1 ));
-	
 	}
+	
+	void exportToDatabase(String fileName) throws IOException {
+		
+		BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+		String fmt  = "";
+		
+		fmt += Question.getuniqueId() + "/n" ;
+		for(int i =0 ; i < this.listModel.getSize(); i++) {
+			fmt += this.listModel.get(i).toDatabaseFormat() + "\n";
+		}
+		writer.write(fmt);
+		writer.close();
+		
+	}
+	Question getQuestionById(int id) {
+		for(int i = 0; i < this.listModel.size() ; i++) {
+			if(this.listModel.get(i).getId() == id )
+				return this.listModel.get(i) ;
+		}
+		
+		return null;
+	}
+	void importFromDatabase(String fileName) throws NumberFormatException, IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(fileName));
+        this.listModel.clear();
+        // read uniqueId
+        int UID = Integer.valueOf( reader.readLine() );
+        // Read and add all questions
+        String line;
+        while( (line = reader.readLine() ) != null ) {
+        	String[] args = line.split(",");
+        	this.listModel.addElement( new Question(Integer.valueOf(args[0]),args[1],args[2], args[3],args[4],args[5], Integer.valueOf(args[6]) ) );
+        }
+        // restore unique id
+        Question.setUniqueId( UID );
+        //close connection
+        reader.close();
+	} 
 
 }

@@ -14,6 +14,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JList;
@@ -270,11 +276,8 @@ public class TestGroupManager extends JPanel {
 				removedItems++;
 			}
 			
-			
-			
 		}	
 	}
-	
 	
 	private void doTestGroup() {
 		String g_name = "G";
@@ -285,4 +288,45 @@ public class TestGroupManager extends JPanel {
 		}
 	}
 
+	void exportToDatabase(String fileName) throws IOException {
+		BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+		String fmt =  TestGroup.getuniqueId() + "\n" ;
+		for(int i = 0; i <this.groupModel.size(); i++) {
+			fmt += groupModel.getElementAt(i).toDatabaseFormat() + "\n" ;
+		}
+		writer.write(fmt);
+		writer.close();
+	}
+	
+	void importFromDatabase(String fileName) throws IOException {
+		BufferedReader reader = new BufferedReader(new FileReader(fileName));
+		// clear old values
+		groupModel.clear();
+		// restore available tests
+		testModel = controller.getTestModel();
+		this.testList.setModel(testModel);
+		// get uniqueId of our tests
+		int uid  = Integer.valueOf(reader.readLine());
+		String line;
+		String []args;
+		ArrayList<Test> availableTests;
+		while( (line = reader.readLine()) != null ) {
+			args = line.split(",");
+			// read id of test
+			int id = Integer.valueOf(args[0]);
+			// read all questions
+			availableTests = new ArrayList<Test>();
+			for(int i = 1; i < args.length - 1; i++) {
+				Test q = this.controller.getTestFromDataBase( Integer.valueOf(args[i]) );
+				if(  q != null );
+				availableTests.add(q);
+			}
+			// after reading questions and validation add new te
+			this.groupModel.addElement(new TestGroup(id, args[args.length - 1], availableTests ) );
+		}
+		
+		// restore uniqueID
+		TestGroup.setuniqueId(uid);
+		reader.close();
+	}
 }

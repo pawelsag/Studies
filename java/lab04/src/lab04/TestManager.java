@@ -11,6 +11,12 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -156,5 +162,58 @@ public class TestManager extends JPanel {
 			}
 			tModel.addElement( new Test(name + i,qList) );
 		}
+	}
+	
+	void exportToDatabase(String fileName) throws IOException {
+		BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+		String fmt ="";
+		// save unique id of our tests
+		fmt += Test.getUniqueId() + "\n";
+		// save all test
+		for(int i = 0; i <this.tModel.size(); i++) {
+			fmt += tModel.getElementAt(i).toDatabaseFormat() + "\n" ;
+		}
+		writer.write(fmt);
+		writer.close();
+
+	}
+	
+	void importFromDatabase(String fileName) throws IOException {
+		BufferedReader reader = new BufferedReader(new FileReader(fileName));
+		// clear old test model
+		tModel.clear();
+		// make reference of already read questions to our question model
+		qestionModel = (DefaultListModel<Question>) questionList.getModel();
+		// get uniqueId of our tests
+		int uid  = Integer.valueOf(reader.readLine());
+		String line;
+		String []args;
+		ArrayList<Question> availableQuestons;
+		while( (line = reader.readLine()) != null ) {
+			args = line.split(",");
+			// read id of test
+			int id = Integer.valueOf(args[0]);
+			// read all questions
+			availableQuestons = new ArrayList<Question>();
+			
+			for(int i = 1; i < args.length - 1; i++) {
+				Question q = this.controller.getQuestionFromDatabse( Integer.valueOf(args[i]) );
+				if(  q != null );
+					availableQuestons.add(q);
+			}
+			// after reading questions and validation add new te
+			this.tModel.addElement(new Test(id, args[args.length - 1], availableQuestons ) );
+		}
+		
+		// restore uniqueID
+		Test.setUniqueId(uid);
+		reader.close();
+	}
+	Test getTestByIndex(int id) {
+		for(int i = 0; i < this.tModel.size() ; i++) {
+			if(this.tModel.get(i).getId() == id )
+				return this.tModel.get(i) ;
+		}
+		return null;
 	}
 }

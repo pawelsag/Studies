@@ -21,6 +21,7 @@ public class MainWindow extends JFrame {
 	TestManager testmanager;
 	TestGroupManager groupmanager;
 	Statistic statistics;
+	Settings settings;
 	Controller controller;
 	/**
 	 * Launch the application.
@@ -45,7 +46,7 @@ public class MainWindow extends JFrame {
 	
 	public MainWindow() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 709, 451);
+		setBounds(100, 100, 807, 569);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -63,16 +64,24 @@ public class MainWindow extends JFrame {
 		// specific test result in regard to specific average of tests,
 		// average  users result inside test groups )
 		statistics = new Statistic();
-		controller = new Controller(questionmanager,testmanager,groupmanager);
+		// settings tab
+		settings = new Settings();
+		
+		controller = new Controller(questionmanager,testmanager,groupmanager,settings);
 		testmanager.setController(controller);
 		groupmanager.setController(controller);
+		settings.setController(controller);
+		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		testhandler.setPreferredSize( this.getSize() );
+		
 		tabbedPane.add("Play test", testhandler);
 		tabbedPane.add("Manage questions",questionmanager);
 		tabbedPane.add("Manage tests",testmanager);
 		tabbedPane.add("Manage test groups",groupmanager);
 		tabbedPane.add("Statistics",statistics);
+		tabbedPane.add("Settings",settings);
+		
 		contentPane.add(tabbedPane, BorderLayout.NORTH);
 	}
 	
