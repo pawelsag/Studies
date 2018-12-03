@@ -132,6 +132,7 @@ public class TestManager extends JPanel {
 			
 			questionList.clearSelection();
 			tModel.addElement( new Test(name,qList) );
+			controller.refreshAvailabaleTests( tModel.elements() );
 		}
 		
 	}
@@ -147,6 +148,7 @@ public class TestManager extends JPanel {
 				return;
 			}
 			tModel.removeElementAt(idx);
+			controller.refreshAvailabaleTests( tModel.elements() );
 		}
 	}
 	
@@ -162,6 +164,7 @@ public class TestManager extends JPanel {
 			}
 			tModel.addElement( new Test(name + i,qList) );
 		}
+		controller.refreshAvailabaleTests( tModel.elements() );
 	}
 	
 	void exportToDatabase(String fileName) throws IOException {
@@ -207,8 +210,10 @@ public class TestManager extends JPanel {
 		
 		// restore uniqueID
 		Test.setUniqueId(uid);
+		controller.refreshAvailabaleTests( tModel.elements() );
 		reader.close();
 	}
+	
 	Test getTestByIndex(int id) {
 		for(int i = 0; i < this.tModel.size() ; i++) {
 			if(this.tModel.get(i).getId() == id )

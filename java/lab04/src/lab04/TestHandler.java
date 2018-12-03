@@ -10,6 +10,9 @@ import java.awt.Insets;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
 import java.awt.event.ActionEvent;
 
 public class TestHandler extends JPanel {
@@ -17,11 +20,13 @@ public class TestHandler extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JTextField textField;
-
+	MainWindow parentInstance;
+	JComboBox<Test> comboBox;
 	/**
 	 * Create the panel.
 	 */
-	public TestHandler() {
+	public TestHandler(MainWindow parent) {
+		this.parentInstance = parent;
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0};
@@ -62,7 +67,7 @@ public class TestHandler extends JPanel {
 		gbc_lblTestName.gridy = 2;
 		add(lblTestName, gbc_lblTestName);
 		
-		JComboBox comboBox = new JComboBox();
+		comboBox = new JComboBox<Test>();
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
 		gbc_comboBox.insets = new Insets(0, 0, 5, 0);
 		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
@@ -71,15 +76,36 @@ public class TestHandler extends JPanel {
 		add(comboBox, gbc_comboBox);
 		
 		JButton btnPla = new JButton("Play");
-		btnPla.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
+		btnPla.addActionListener(parentInstance.new playTest());
+		
 		GridBagConstraints gbc_btnPla = new GridBagConstraints();
 		gbc_btnPla.gridx = 2;
 		gbc_btnPla.gridy = 3;
 		add(btnPla, gbc_btnPla);
-
+		
 	}
-
+	
+	void fillActiveTests(Enumeration<Test> tests) {
+		comboBox.removeAll();
+		Test t;
+		while(true){
+			try { 
+				t = tests.nextElement();
+				comboBox.addItem(t);
+			}catch(NoSuchElementException e) {
+				break;
+			}
+		}
+	}
+	
+	Test getActiveTest() {
+		return (Test) comboBox.getSelectedItem();
+	}
+	String getnickName() {
+		return this.textField.getText();
+	}
+	boolean canTestBeStarted() {
+		return (textField.getText().length() != 0);
+	}
+	
 }

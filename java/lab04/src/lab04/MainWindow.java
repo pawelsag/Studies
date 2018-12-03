@@ -4,8 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
@@ -16,6 +19,7 @@ public class MainWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	JTabbedPane tabbedPane;
 	private TestHandler testhandler;
 	QuestionManager questionmanager;
 	TestManager testmanager;
@@ -23,6 +27,8 @@ public class MainWindow extends JFrame {
 	Statistic statistics;
 	Settings settings;
 	Controller controller;
+	//create test tab where user will do test
+	TestArea testarea;
 	/**
 	 * Launch the application.
 	 */
@@ -53,7 +59,7 @@ public class MainWindow extends JFrame {
 		contentPane.setSize(this.getWidth(),this.getHeight() );
 		setContentPane(contentPane);
 		// do new test 
-		testhandler = new TestHandler();
+		testhandler = new TestHandler( this );
 		// handle questions (add/remove questions)
 		questionmanager = new QuestionManager();
 		// handle tests (create/remove test)
@@ -66,13 +72,14 @@ public class MainWindow extends JFrame {
 		statistics = new Statistic();
 		// settings tab
 		settings = new Settings();
-		
-		controller = new Controller(questionmanager,testmanager,groupmanager,settings);
+		// create test tab
+		testarea = new TestArea(this);
+		controller = new Controller(questionmanager,testmanager,groupmanager,testhandler,settings);
 		testmanager.setController(controller);
 		groupmanager.setController(controller);
 		settings.setController(controller);
 		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		testhandler.setPreferredSize( this.getSize() );
 		
 		tabbedPane.add("Play test", testhandler);
@@ -83,8 +90,43 @@ public class MainWindow extends JFrame {
 		tabbedPane.add("Settings",settings);
 		
 		contentPane.add(tabbedPane, BorderLayout.NORTH);
+		
+	}
+	
+	class playTest implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			if( !testhandler.canTestBeStarted() ) {
+				JOptionPane.showMessageDialog(null, "Type nickname, than press button again", "InfoBox: ", JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
+			
+			testarea.initTest( testhandler.getActiveTest() );;
+			
+			tabbedPane.setComponentAt( 0,testarea );
+			
+		}	
 	}
 	
 	
+	class finishTest implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			tabbedPane.setComponentAt( 0,testhandler );
+			String nickName = testhandler.getnickName();
+			int result = testarea.getcorrectAnsNum();
+			int testId = testhandler.getActiveTest().getId();
+			Result r = statistics.isUserExists(nickName);
+			if(r != null) {
+				r.AddPoints(result);
+			}else {
+				statistics.addResult(new Result(nickName, result,testId));
+			}
+				
+			
+		}
+	}
 	
 }

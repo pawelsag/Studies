@@ -34,6 +34,13 @@ public class Test {
 	int getId() {
 		return this.id;
 	}
+	String getName() {
+		return this.name;
+	}
+	ArrayList<Question> getquestions(){
+		return questions;
+	}
+	
 	public String toDatabaseFormat() {
 		String fmt = 
 				  this.id + ",";

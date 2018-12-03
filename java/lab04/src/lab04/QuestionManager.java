@@ -244,7 +244,6 @@ public class QuestionManager extends JPanel {
 			AnsB.setText("");
 			AnsC.setText("");
 			AnsD.setText("");
-			
 		}
 		
 	}
@@ -281,7 +280,7 @@ public class QuestionManager extends JPanel {
 		BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
 		String fmt  = "";
 		
-		fmt += Question.getuniqueId() + "/n" ;
+		fmt += Question.getuniqueId() + "\n" ;
 		for(int i =0 ; i < this.listModel.getSize(); i++) {
 			fmt += this.listModel.get(i).toDatabaseFormat() + "\n";
 		}
@@ -289,6 +288,7 @@ public class QuestionManager extends JPanel {
 		writer.close();
 		
 	}
+	
 	Question getQuestionById(int id) {
 		for(int i = 0; i < this.listModel.size() ; i++) {
 			if(this.listModel.get(i).getId() == id )
@@ -297,6 +297,7 @@ public class QuestionManager extends JPanel {
 		
 		return null;
 	}
+	
 	void importFromDatabase(String fileName) throws NumberFormatException, IOException {
         BufferedReader reader = new BufferedReader(new FileReader(fileName));
         this.listModel.clear();

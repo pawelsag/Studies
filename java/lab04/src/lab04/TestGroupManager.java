@@ -37,7 +37,8 @@ public class TestGroupManager extends JPanel {
 	private Controller controller;
 	DefaultListModel<Test> testModel = new DefaultListModel<Test>();
 	DefaultListModel<TestGroup> groupModel = new DefaultListModel<TestGroup>();
-	DefaultListModel<Test> connectedGroupModel = new DefaultListModel<Test>(); 
+	DefaultListModel<Test> connectedGroupModel = new DefaultListModel<Test>();
+	
 	/**
 	 * Create the panel.
 	 */
@@ -163,7 +164,6 @@ public class TestGroupManager extends JPanel {
 		this.controller = c;
 		testModel = controller.getTestModel();
 		this.testList.setModel(testModel);
-		
 		// do some tests
 		doTestGroup();
 	}

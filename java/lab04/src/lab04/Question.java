@@ -30,6 +30,15 @@ public class Question {
 		this.id = _id;
 
 	}
+	String getQName() {
+		return this.questionTopic;
+	}
+	String [] getAnserws() {
+		return this.possiblAanswers;
+	}
+	int getCorrectAns() {
+		return this.correctAnswer;
+	}
 	@Override
 	public String toString() {	
 		return id+1 + ". " + questionTopic;
@@ -38,9 +47,11 @@ public class Question {
 	static int getuniqueId() {
 		return Question.uniqueId;
 	}
+	
 	static void setUniqueId(int UID) {
 		uniqueId = UID;
 	}
+	
 	int getId() {
 		return this.id;
 	}
