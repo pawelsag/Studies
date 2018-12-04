@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.NoSuchElementException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
@@ -16,15 +17,17 @@ public class Controller {
 	TestGroupManager tGManager;
 	Settings settings;
 	TestHandler testhandler;
+	Statistic sManager;
 	String folderBaseName = "./DB/";
 	// variable necessary to export/import data from database
 	String fileName;
-	Controller(QuestionManager _qManager, TestManager _tManager, TestGroupManager _tGroupManager,TestHandler _testhandler, Settings _settings ) {
+	Controller(QuestionManager _qManager, TestManager _tManager, TestGroupManager _tGroupManager,TestHandler _testhandler,Statistic _statistic,  Settings _settings ) {
 		qManager = _qManager;
 		tManager = _tManager;
 		tGManager = _tGroupManager;
 		settings = _settings;
 		testhandler = _testhandler;
+		sManager = _statistic;
 		new File( folderBaseName ).mkdirs();
 	}
 	
@@ -35,9 +38,11 @@ public class Controller {
 	DefaultListModel<Test> getTestModel(){
 		return this.tManager.getTestModel();
 	}
+	
 	Question getQuestionFromDatabse(int id) {
 		return this.qManager.getQuestionById(id);
 	}
+	
 	Test getTestFromDataBase(int id) {
 		return this.tManager.getTestByIndex(id);
 	}
@@ -45,8 +50,33 @@ public class Controller {
 	void setfileName(String fName) {
 		this.fileName = fName;
 	}
+	
 	void refreshAvailabaleTests(Enumeration<Test> tests) {
-		testhandler.fillActiveTests(tests);
+		Test t;
+		testhandler.clearTests();
+		sManager.clearTests();
+		while(true){
+			try { 
+				t = tests.nextElement();
+				testhandler.addActiveTests(t);
+				sManager.addActiveTest(t);
+			}catch(NoSuchElementException e) {
+				break;
+			}
+		}	
+	}
+	
+	void refershAvailableGroups(Enumeration<TestGroup> testgroups) {
+		TestGroup tg;
+		sManager.cleatTestGroups();
+		while(true){
+			try { 
+				tg = testgroups.nextElement();
+				sManager.addAvtiveGroup(tg);
+			}catch(NoSuchElementException e) {
+				break;
+			}
+		}
 	}
 	
 	public class ExportEventListener implements ActionListener {
@@ -60,8 +90,6 @@ public class Controller {
 				return;
 			}
 			
-			
-			
 			String name = fileName.split("\\.")[0];
 			try {
 				
@@ -71,7 +99,8 @@ public class Controller {
 				tManager.exportToDatabase(folderBaseName + name +"_T.txt");
 				// export groups
 				tGManager.exportToDatabase(folderBaseName + name + "_TG.txt");
-				
+				// export user results
+				sManager.exportToDatabase(folderBaseName + name + "_ST.txt");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				JOptionPane.showMessageDialog(null, "Exporting file can't be performed", "InfoBox: ", JOptionPane.ERROR_MESSAGE);
@@ -104,12 +133,14 @@ public class Controller {
 				tManager.importFromDatabase(folderBaseName + name +"_T.txt");
 				// export groups
 				tGManager.importFromDatabase(folderBaseName + name + "_TG.txt");
+				// import user results
+				sManager.importFromDatabase(folderBaseName + name + "_ST.txt");
 				
 			} catch (NumberFormatException | IOException e) {
 				// TODO Auto-generated catch block
 				JOptionPane.showMessageDialog(null, "Can't open file", "InfoBox: ", JOptionPane.ERROR_MESSAGE);
 			}
-			
 		}
 	}
+	
 }

@@ -84,18 +84,11 @@ public class TestHandler extends JPanel {
 		add(btnPla, gbc_btnPla);
 		
 	}
-	
-	void fillActiveTests(Enumeration<Test> tests) {
+	void clearTests() {
 		comboBox.removeAll();
-		Test t;
-		while(true){
-			try { 
-				t = tests.nextElement();
-				comboBox.addItem(t);
-			}catch(NoSuchElementException e) {
-				break;
-			}
-		}
+	}
+	void addActiveTests(Test test) {
+		comboBox.addItem(test);
 	}
 	
 	Test getActiveTest() {

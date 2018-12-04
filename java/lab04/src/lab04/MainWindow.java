@@ -74,7 +74,7 @@ public class MainWindow extends JFrame {
 		settings = new Settings();
 		// create test tab
 		testarea = new TestArea(this);
-		controller = new Controller(questionmanager,testmanager,groupmanager,testhandler,settings);
+		controller = new Controller(questionmanager,testmanager,groupmanager,testhandler,statistics,settings);
 		testmanager.setController(controller);
 		groupmanager.setController(controller);
 		settings.setController(controller);
@@ -120,7 +120,7 @@ public class MainWindow extends JFrame {
 			int testId = testhandler.getActiveTest().getId();
 			Result r = statistics.isUserExists(nickName);
 			if(r != null) {
-				r.AddPoints(result);
+				r.AddPoints(testId, result);
 			}else {
 				statistics.addResult(new Result(nickName, result,testId));
 			}

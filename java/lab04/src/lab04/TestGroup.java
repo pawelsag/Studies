@@ -42,12 +42,15 @@ public class TestGroup {
 	void removeTest(int idx) {
 		this.tests.remove(idx);
 	}
+	
 	static int getuniqueId() {
 		return TestGroup.uniqueId;
 	}
+	
 	static void setuniqueId(int UID) {
 		TestGroup.uniqueId = UID;
 	}
+	
 	String toDatabaseFormat() {
 		String fmt = 
 				  this.id + ",";
