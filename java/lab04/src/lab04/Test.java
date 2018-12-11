@@ -2,14 +2,16 @@ package lab04;
 import java.util.*;
 
 public class Test {
-	int id;
-	static int uiniqueId = 0;
+	private int id;
+	private static int uiniqueId = 0;
+	public int testPerformedCount;
 	ArrayList<Question> questions = new ArrayList<>();
 	String name;
 	Test(String _name,ArrayList<Question> _questions ){
 		this.name = _name;
 		this.questions = _questions;
 		this.id = Test.uiniqueId;
+		testPerformedCount =0;
 		Test.uiniqueId++;
 	}
 	
@@ -43,7 +45,9 @@ public class Test {
 	
 	public String toDatabaseFormat() {
 		String fmt = 
-				  this.id + ",";
+				  this.id + ","+
+				  this.testPerformedCount +",";
+				  
 		for(Question Q : this.questions ) {
 			fmt += Q.getId() + ",";
 		}

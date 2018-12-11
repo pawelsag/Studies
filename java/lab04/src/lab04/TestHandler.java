@@ -85,7 +85,7 @@ public class TestHandler extends JPanel {
 		
 	}
 	void clearTests() {
-		comboBox.removeAll();
+		comboBox.removeAllItems();
 	}
 	void addActiveTests(Test test) {
 		comboBox.addItem(test);
@@ -94,9 +94,11 @@ public class TestHandler extends JPanel {
 	Test getActiveTest() {
 		return (Test) comboBox.getSelectedItem();
 	}
+	
 	String getnickName() {
 		return this.textField.getText();
 	}
+	
 	boolean canTestBeStarted() {
 		return (textField.getText().length() != 0);
 	}

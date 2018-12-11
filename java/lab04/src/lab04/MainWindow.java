@@ -118,6 +118,7 @@ public class MainWindow extends JFrame {
 			String nickName = testhandler.getnickName();
 			int result = testarea.getcorrectAnsNum();
 			int testId = testhandler.getActiveTest().getId();
+			testhandler.getActiveTest().testPerformedCount++;
 			Result r = statistics.isUserExists(nickName);
 			if(r != null) {
 				r.AddPoints(testId, result);

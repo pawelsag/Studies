@@ -205,7 +205,7 @@ public class TestGroupManager extends JPanel {
 				return;
 			}
 			groupModel.addElement( new TestGroup(g_name) );
-			controller.refershAvailableGroups(groupModel.elements());
+			
 			groupName.setText("");
 		}
 		
@@ -221,7 +221,7 @@ public class TestGroupManager extends JPanel {
 				return;
 			}
 			groupModel.removeElementAt(idx);
-			controller.refershAvailableGroups(groupModel.elements());
+			
 		}	
 	}
 	
@@ -288,7 +288,7 @@ public class TestGroupManager extends JPanel {
 			for(int j = i-1; j <= i; j++)
 				groupModel.getElementAt(i-1).addTest(testModel.getElementAt(j));
 		}
-		controller.refershAvailableGroups(groupModel.elements());
+		
 	}
 
 	void exportToDatabase(String fileName) throws IOException {
@@ -327,9 +327,10 @@ public class TestGroupManager extends JPanel {
 			// after reading questions and validation add new te
 			this.groupModel.addElement(new TestGroup(id, args[args.length - 1], availableTests ) );
 		}
-		controller.refershAvailableGroups(groupModel.elements());
+		
 		// restore uniqueID
 		TestGroup.setuniqueId(uid);
 		reader.close();
 	}
+	
 }

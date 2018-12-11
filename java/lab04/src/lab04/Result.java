@@ -22,7 +22,25 @@ public class Result {
 		ArrayList<Integer> getpoints(){
 			return this.points;
 		}
-		
+		double getAvg() {
+			int avg = 0 ;
+			for(int p : points) {
+				avg += p;
+			}
+			int amount = points.size();
+			//  if there is no elements
+			if(amount == 0) 
+				return 0;
+			
+			return avg/(amount*1.0);
+		}
+		int getSum() {
+			int sum = 0;
+			for(int p : points) {
+				sum += p;
+			}
+			return sum;
+		}
 	}
 	
 	String nickName;
@@ -38,8 +56,10 @@ public class Result {
 		id = uniqueId;
 		uniqueId++;
 	}
-	
-	private ResultDescriptor getTestDescriptorByID(int id) {
+	ArrayList<ResultDescriptor> getuserResults(){
+		return this.userResults;
+	}
+	ResultDescriptor getTestDescriptorByID(int id) {
 		for(ResultDescriptor r : userResults) {
 			if(r.gettestId() == id)
 				return r;

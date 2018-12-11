@@ -66,19 +66,6 @@ public class Controller {
 		}	
 	}
 	
-	void refershAvailableGroups(Enumeration<TestGroup> testgroups) {
-		TestGroup tg;
-		sManager.cleatTestGroups();
-		while(true){
-			try { 
-				tg = testgroups.nextElement();
-				sManager.addAvtiveGroup(tg);
-			}catch(NoSuchElementException e) {
-				break;
-			}
-		}
-	}
-	
 	public class ExportEventListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
