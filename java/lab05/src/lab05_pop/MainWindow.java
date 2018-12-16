@@ -27,7 +27,8 @@ public class MainWindow extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	int positions = 10;
+	// amount of positions for workers and available places in conveyor belt
+	int positions = 20;
 	PuttingRobot[] puttingRobots;
 	TakingRobot[] takingRobots;
 	Worker[] workers;
