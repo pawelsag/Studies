@@ -57,19 +57,19 @@ ylabel('[V]')
 x_label_descriptor = 0:1:fs-1;
 figure
 subplot(3,1,1) 
-plot(x_label_descriptor,S1_amplitude)
+stem(x_label_descriptor,S1_amplitude)
 title('Widmo sygnalu s1')
 xlabel('Czestotliowsc [Hz]')
 ylabel('[V]')
 
 subplot(3,1,2) 
-plot(x_label_descriptor, S2_amplitude)
+stem(x_label_descriptor, S2_amplitude)
 title('Widmo sygnalu s1')
 xlabel('Czestotliowsc [Hz]')
 ylabel('[V]')
 
 subplot(3,1,3)
-plot(x_label_descriptor, x_amplitude)
+stem(x_label_descriptor, x_amplitude)
 title('Widmo sygnalow s1 + s2.')
 xlabel('Czestotliowsc [Hz]')
 ylabel('[V]')
