@@ -177,60 +177,94 @@ public class Dispositor extends JFrame {
 		
 		public void run() {
 			String[] request;
-			int classType;
-			int foreignPort;
-			String pckgName, category;
+			int packetType;
+
 			while(true) {
 				try {
 					// accept socket
 	                Socket socket = serverSocket.accept();
 	                // init readers and writers
-	                PrintWriter out =
-	                    new PrintWriter(socket.getOutputStream(), true);
 	                BufferedReader in = new BufferedReader(
 	                    new InputStreamReader( socket.getInputStream()) );
+	                packetType = Integer.valueOf(in.readLine());
 	                request = in.readLine().split(";");
-	                classType = Integer.valueOf(request[0]);
-	                foreignPort = Integer.valueOf(request[1]);
-	                category = request[2];
-	                // new thread for a client
-	                if(classType == 0x0) {
-	                	// create new client
-	                	ClientDescriptor client =  new ClientDescriptor( socket.getInetAddress().toString(),foreignPort);
-	                	clientArray.add( client );
-	                	pckgName = request[3];
-	                	// create packgae
-	                	Package pckg = client.createPackge(pckgName, category);
-	                	// check if there is any courier available with given category
-	                	CourierDescriptor courier = findCourier(category); 
-	                	// if so hire courier to deliver package
-	                	if( courier != null ) {
-	                		client.respond(ClientDescriptor.PackageState.PACKAGE_PROCESS, pckg, " ");
-	                		courier.deliverPackage(pckg);
-	                		continue;
-	                	}
-	                	// if there is no space in warehouse reject transaction  
-	                	else if(warehouse.size() >= warehouseLimit ){
-	                		client.respond(ClientDescriptor.PackageState.PACKAGE_REJECTED, pckg,"No avaliable courier and no space in warehouse");
-	                		continue;
-	                	}
-	                	// otherwise add package to warehouse and wait for courier
-	                	warehouse.add(pckg);
-	                	client.respond(ClientDescriptor.PackageState.PACKGAE_IN_WAREHOUSE, pckg, "Courier will take your package soon :)");
-	                	
-					}else if(classType == 0x1) {
-						
-	                	courierArray.add( new CourierDescriptor(socket.getInetAddress().toString(),foreignPort));
-	                	courierArray.get(courierArray.size()-1).start();
-					}
-	                
+	                manageRequest(socket, packetType,request);
 				} catch (IOException e) {
 	                System.out.println("I/O error: " + e);
 	            }
 			}
 		}
 	}
-	public CourierDescriptor findCourier(String category) {
+	
+	void manageRequest(Socket s, int packetType, String[] args) {
+		switch(packetType) {
+			case 0x0:
+				this.manageInitRequests(s.getInetAddress().toString(), args);
+				break;
+			case 0x1:
+				break;
+			case 0x2:
+				break;
+			case 0x3:
+				break;
+		}
+	}
+	// helper function to manage initializing tasks requests from client and courier
+	void manageInitRequests(String host,String[] args) {
+		int classType;
+		int foreignPort;
+		String pckgName, category;
+		classType = Integer.valueOf(args[0]);
+        foreignPort = Integer.valueOf(args[1]);
+        category = args[2];
+        // new thread for a client
+        if(classType == 0x0) {
+        	// create new client
+        	ClientDescriptor client =  new ClientDescriptor( host,foreignPort);
+        	ClientDescriptor result= findHost(clientArray,client);
+        	if(result ==null)
+        		clientArray.add( client );
+        	
+        	pckgName = args[3];
+        	// create package
+        	Package pckg = client.createPackge(pckgName, category);
+        	// check if there is any courier available with given category
+        	CourierDescriptor courier = findCourierByCategory(category); 
+        	// if so hire courier to deliver package
+        	if( courier != null ) {
+        		client.respond(ClientDescriptor.PackageState.PACKAGE_PROCESS, pckg, " ");
+        		courier.deliverPackage(pckg);
+        		return;
+        	}
+        	// if there is no space in warehouse reject transaction  
+        	else if(warehouse.size() >= warehouseLimit ){
+        		client.respond(ClientDescriptor.PackageState.PACKAGE_REJECTED, pckg,"No avaliable courier and no space in warehouse");
+        		return;
+        	}
+        	
+        	// otherwise add package to warehouse and wait for courier
+        	warehouse.add(pckg);
+        	client.respond(ClientDescriptor.PackageState.PACKGAE_IN_WAREHOUSE, pckg, "Courier will take your package soon :)");
+        	
+		}else if(classType == 0x1) {
+			
+        	courierArray.add( new CourierDescriptor(host,foreignPort));
+        	courierArray.get(courierArray.size()-1).start();
+		}       
+	}
+	
+	public static<T> T findHost(ArrayList<T> userArray, HostDescription user){
+		String uniqueid= user.getuniqueId();
+		for(T obj : userArray) {
+			if(uniqueid.equals( ((HostDescription)obj).getuniqueId()) ){
+				return ((T)obj);
+			}
+		}
+		return null;
+		
+	}
+	
+	public CourierDescriptor findCourierByCategory(String category) {
 		for(CourierDescriptor c : courierArray ) {
 			if(c.category.equals(category) && c.getStatus() == CourierDescriptor.State.FREE )
 				return c;

@@ -6,10 +6,20 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -22,14 +32,26 @@ public class Courier extends JFrame {
 	private JPanel contentPane;
 	private JTextArea messages;
 	private JComboBox<String> CatrgoryBox;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JButton getPackge;
+	private JTextField Host;
+	private JTextField Port;
+	private JButton getPackage;
 	private JLabel lblNewLabel_3;
 	private JButton CreateServer;
 	private JTextField ServerPort;
 	private JLabel lblServer;
-
+	private JButton Resign;
+	ServerSocket serverSocket = null;
+	String foreignHost;
+	int foreignPort;
+	int localPort;
+	// variable check if courier has been created
+	// cause new courier can be created only when old one 
+	// resign
+	boolean oldCorierStatus = true;
+	// id of the taken package by courier
+	// Necessary to inform dispacher class
+	// about finished task
+	String currentPackageid;
 	/**
 	 * Create the frame.
 	 */
@@ -63,21 +85,22 @@ public class Courier extends JFrame {
 		gbc_lblNewLabel.gridy = 1;
 		contentPane.add(lblNewLabel, gbc_lblNewLabel);
 		
-		textField = new JTextField();
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.insets = new Insets(0, 0, 5, 5);
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 1;
-		gbc_textField.gridy = 1;
-		contentPane.add(textField, gbc_textField);
-		textField.setColumns(10);
+		Host = new JTextField();
+		GridBagConstraints gbc_Host = new GridBagConstraints();
+		gbc_Host.insets = new Insets(0, 0, 5, 5);
+		gbc_Host.fill = GridBagConstraints.HORIZONTAL;
+		gbc_Host.gridx = 1;
+		gbc_Host.gridy = 1;
+		contentPane.add(Host, gbc_Host);
+		Host.setColumns(10);
 		
-		getPackge = new JButton("Get task");
-		GridBagConstraints gbc_getPackge = new GridBagConstraints();
-		gbc_getPackge.insets = new Insets(0, 0, 5, 0);
-		gbc_getPackge.gridx = 2;
-		gbc_getPackge.gridy = 1;
-		contentPane.add(getPackge, gbc_getPackge);
+		getPackage = new JButton("Get task");
+		GridBagConstraints gbc_getPackage = new GridBagConstraints();
+		gbc_getPackage.insets = new Insets(0, 0, 5, 0);
+		gbc_getPackage.gridx = 2;
+		gbc_getPackage.gridy = 1;
+		getPackage.addActionListener( new SendRequestEvent());
+		contentPane.add(getPackage, gbc_getPackage);
 		
 		JLabel lblNewLabel_1 = new JLabel("Port:");
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
@@ -87,14 +110,14 @@ public class Courier extends JFrame {
 		gbc_lblNewLabel_1.gridy = 2;
 		contentPane.add(lblNewLabel_1, gbc_lblNewLabel_1);
 		
-		textField_1 = new JTextField();
-		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
-		gbc_textField_1.insets = new Insets(0, 0, 5, 5);
-		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_1.gridx = 1;
-		gbc_textField_1.gridy = 2;
-		contentPane.add(textField_1, gbc_textField_1);
-		textField_1.setColumns(10);
+		Port = new JTextField();
+		GridBagConstraints gbc_Port = new GridBagConstraints();
+		gbc_Port.insets = new Insets(0, 0, 5, 5);
+		gbc_Port.fill = GridBagConstraints.HORIZONTAL;
+		gbc_Port.gridx = 1;
+		gbc_Port.gridy = 2;
+		contentPane.add(Port, gbc_Port);
+		Port.setColumns(10);
 		
 		JLabel CategoryBoxLabel = new JLabel("Category:");
 		GridBagConstraints gbc_CategoryBoxLabel = new GridBagConstraints();
@@ -123,11 +146,19 @@ public class Courier extends JFrame {
 		gbc_lblNewLabel_2.gridy = 4;
 		contentPane.add(lblNewLabel_2, gbc_lblNewLabel_2);
 		
+		Resign = new JButton("Resign");
+		GridBagConstraints gbc_Resign = new GridBagConstraints();
+		gbc_Resign.insets = new Insets(0, 0, 5, 5);
+		gbc_Resign.gridx = 0;
+		gbc_Resign.gridy = 6;
+		contentPane.add(Resign, gbc_Resign);
+		
 		CreateServer = new JButton("Create server");
 		GridBagConstraints gbc_CreateServer = new GridBagConstraints();
 		gbc_CreateServer.insets = new Insets(0, 0, 5, 5);
 		gbc_CreateServer.gridx = 0;
-		gbc_CreateServer.gridy = 6;
+		gbc_CreateServer.gridy = 7;
+		CreateServer.addActionListener( new ConnectServerEvent());
 		contentPane.add(CreateServer, gbc_CreateServer);
 		
 		lblServer = new JLabel("Port");
@@ -155,6 +186,144 @@ public class Courier extends JFrame {
 		gbc_messages.gridx = 1;
 		gbc_messages.gridy = 5;
 		contentPane.add(messages, gbc_messages);
+	}
+	
+	public
+	class SendRequestEvent implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent unused) {
+			// if old courier hasn't fished his job yet
+			// do not create new courier
+			if(!oldCorierStatus) return;
+			
+			String portText = Port.getText();
+			foreignHost = Host.getText();
+						
+			if( portText.length() == 0 || foreignHost.length() == 0 )
+				return;
+			
+			if( serverSocket == null && serverSocket.isClosed() )
+				return;
+			foreignPort = Integer.valueOf( portText );
+			
+			try (
+				    Socket clientSocket = new Socket( foreignHost,foreignPort );
+				    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+				){
+				// send credits to dispositor including package request
+				// class id | server port for incoming replays | category | pckgName
+				out.println( "0");
+				out.println("1;" + ServerPort.getText() + ";" + CatrgoryBox.getSelectedItem().toString() );
+				oldCorierStatus = false;
+				clientSocket.close();
+				
+			} catch (IOException e) {
+				System.out.print("Can't open server");
+				e.printStackTrace();
+					
+			}
+		}
+	}
+	private class ResignRequest implements ActionListener {
+		
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			
+			if(oldCorierStatus) return;
+			
+			if( serverSocket == null && serverSocket.isClosed() )
+				return;
+			try (
+				    Socket clientSocket = new Socket( foreignHost,foreignPort );
+				    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+				){
+				// send credits to dispositor including package request
+				// send request id | port to identification
+				out.println( "2;" + ServerPort.getText() );
+				clientSocket.close();
+				serverSocket.close();
+				serverSocket = null;
+				oldCorierStatus = true;
+			} catch (IOException e) {
+				System.out.print("Can't open server");
+				e.printStackTrace();
+			}			
+		}
+	}
+	
+	private class ListenForConnections extends Thread{
+		
+		public void run() {
+			String[] line;
+			int packetType;
+			String packetName;
+			while(true) {
+				try {
+					// accept socket
+	                Socket socket = serverSocket.accept();
+	                // catch stream for income requests
+	                BufferedReader in = new BufferedReader(
+	                    new InputStreamReader( socket.getInputStream()) );
+					line = in.readLine().split(";");
+					packetType = Integer.valueOf(line[0]);
+					currentPackageid = line[1];
+					packetName = line[2];
+					messages.setText(messages.getText() + packetName + "<-- processing\n"   );
+					doSomeJob();
+					messages.setText(messages.getText() + packetName + "<-- task done\n"   );
+					socket.close();
+				
+				} catch (IOException e) {
+	                System.out.println("I/O error: " + e);
+	            }
+			}
+		}
+	}
+	
+	public void doSomeJob() {
+		// simulate courier's job :)
+		try {Thread.sleep(5000);} catch (InterruptedException e) {}
+		finishTask();
+	}
+	
+	public void finishTask() {		
+		try (
+			    Socket clientSocket = new Socket( foreignHost, foreignPort );
+			    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+			){
+			// ping server, that courier fished his job
+			out.println("1;" + currentPackageid );
+			clientSocket.close();
+			
+		} catch (IOException e) {
+			System.out.print("Can't open server");
+			e.printStackTrace();
+		}
+	}
+	
+	public
+	class ConnectServerEvent implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent unused) {
+			String portText = ServerPort.getText();
+		
+			if( portText.length() == 0 )
+				return;
+			localPort = Integer.parseInt( portText );
+			
+			if( serverSocket != null && !serverSocket.isClosed() )
+				return;
+			try {
+				serverSocket = new ServerSocket( localPort );
+				System.out.println( "Client's Server created" );
+				new ListenForConnections().start();
+				
+			} catch (IOException e) {
+				System.out.print("Can't open server");
+				e.printStackTrace();		
+			}
+		}
 	}
 
 }

@@ -204,7 +204,7 @@ private class ListenForConnections extends Thread{
 	                BufferedReader in = new BufferedReader(
 	                    new InputStreamReader( socket.getInputStream()) );
 					line = in.readLine();
-					messages.setText(messages.getText() + line );
+					messages.setText(messages.getText() + line +"\n" );
 					socket.close();
 				
 				} catch (IOException e) {
@@ -259,7 +259,8 @@ private class ListenForConnections extends Thread{
 				){
 				// send credits to dispositor including package request
 				// class id | server port for incoming replays | category | pckgName
-				out.println( "0;" + serverPort.getText() + ";" + Categorybox.getSelectedItem().toString()+";" + pckgName );
+				out.println("0");
+				out.println("0;" + serverPort.getText() + ";" + Categorybox.getSelectedItem().toString()+";" + pckgName );
 				clientSocket.close();
 				
 			} catch (IOException e) {
