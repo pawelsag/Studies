@@ -26,6 +26,7 @@ import javax.swing.SwingConstants;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import java.awt.Font;
+import java.awt.Color;
 
 public class Courier extends JFrame {
 
@@ -52,6 +53,7 @@ public class Courier extends JFrame {
 	// Necessary to inform dispacher class
 	// about finished task
 	String currentPackageid;
+	private JLabel activeLabel;
 	/**
 	 * Create the frame.
 	 */
@@ -77,47 +79,50 @@ public class Courier extends JFrame {
 		gbc_lblNewLabel_3.gridy = 0;
 		contentPane.add(lblNewLabel_3, gbc_lblNewLabel_3);
 		
-		JLabel lblNewLabel = new JLabel("Host:");
-		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
-		gbc_lblNewLabel.anchor = GridBagConstraints.EAST;
-		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel.gridx = 0;
-		gbc_lblNewLabel.gridy = 1;
-		contentPane.add(lblNewLabel, gbc_lblNewLabel);
-		
-		Host = new JTextField();
-		GridBagConstraints gbc_Host = new GridBagConstraints();
-		gbc_Host.insets = new Insets(0, 0, 5, 5);
-		gbc_Host.fill = GridBagConstraints.HORIZONTAL;
-		gbc_Host.gridx = 1;
-		gbc_Host.gridy = 1;
-		contentPane.add(Host, gbc_Host);
-		Host.setColumns(10);
-		
 		getPackage = new JButton("Get task");
 		GridBagConstraints gbc_getPackage = new GridBagConstraints();
 		gbc_getPackage.insets = new Insets(0, 0, 5, 0);
 		gbc_getPackage.gridx = 2;
 		gbc_getPackage.gridy = 1;
 		getPackage.addActionListener( new SendRequestEvent());
-		contentPane.add(getPackage, gbc_getPackage);
+		getPackage.addActionListener(new SendRequestEvent() );
 		
 		JLabel lblNewLabel_1 = new JLabel("Port:");
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
 		gbc_lblNewLabel_1.anchor = GridBagConstraints.EAST;
 		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel_1.gridx = 0;
-		gbc_lblNewLabel_1.gridy = 2;
+		gbc_lblNewLabel_1.gridy = 1;
 		contentPane.add(lblNewLabel_1, gbc_lblNewLabel_1);
 		
 		Port = new JTextField();
+		Port.setText("1234");
 		GridBagConstraints gbc_Port = new GridBagConstraints();
 		gbc_Port.insets = new Insets(0, 0, 5, 5);
 		gbc_Port.fill = GridBagConstraints.HORIZONTAL;
 		gbc_Port.gridx = 1;
-		gbc_Port.gridy = 2;
+		gbc_Port.gridy = 1;
 		contentPane.add(Port, gbc_Port);
 		Port.setColumns(10);
+		contentPane.add(getPackage, gbc_getPackage);
+		
+		JLabel lblNewLabel = new JLabel("Host:");
+		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+		gbc_lblNewLabel.anchor = GridBagConstraints.EAST;
+		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_lblNewLabel.gridx = 0;
+		gbc_lblNewLabel.gridy = 2;
+		contentPane.add(lblNewLabel, gbc_lblNewLabel);
+		
+		Host = new JTextField();
+		Host.setText("localhost");
+		GridBagConstraints gbc_Host = new GridBagConstraints();
+		gbc_Host.insets = new Insets(0, 0, 5, 5);
+		gbc_Host.fill = GridBagConstraints.HORIZONTAL;
+		gbc_Host.gridx = 1;
+		gbc_Host.gridy = 2;
+		contentPane.add(Host, gbc_Host);
+		Host.setColumns(10);
 		
 		JLabel CategoryBoxLabel = new JLabel("Category:");
 		GridBagConstraints gbc_CategoryBoxLabel = new GridBagConstraints();
@@ -151,6 +156,15 @@ public class Courier extends JFrame {
 		gbc_Resign.insets = new Insets(0, 0, 5, 5);
 		gbc_Resign.gridx = 0;
 		gbc_Resign.gridy = 6;
+		Resign.addActionListener(new ResignRequest() );
+		
+		activeLabel = new JLabel("Active");
+		activeLabel.setForeground(Color.RED);
+		GridBagConstraints gbc_activeLabel = new GridBagConstraints();
+		gbc_activeLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_activeLabel.gridx = 0;
+		gbc_activeLabel.gridy = 5;
+		contentPane.add(activeLabel, gbc_activeLabel);
 		contentPane.add(Resign, gbc_Resign);
 		
 		CreateServer = new JButton("Create server");
@@ -169,6 +183,7 @@ public class Courier extends JFrame {
 		contentPane.add(lblServer, gbc_lblServer);
 		
 		ServerPort = new JTextField();
+		ServerPort.setText("8956");
 		GridBagConstraints gbc_ServerPort = new GridBagConstraints();
 		gbc_ServerPort.anchor = GridBagConstraints.WEST;
 		gbc_ServerPort.insets = new Insets(0, 0, 0, 5);
@@ -203,8 +218,9 @@ public class Courier extends JFrame {
 			if( portText.length() == 0 || foreignHost.length() == 0 )
 				return;
 			
-			if( serverSocket == null && serverSocket.isClosed() )
+			if( serverSocket == null || serverSocket.isClosed() )
 				return;
+			
 			foreignPort = Integer.valueOf( portText );
 			
 			try (
@@ -220,8 +236,7 @@ public class Courier extends JFrame {
 				
 			} catch (IOException e) {
 				System.out.print("Can't open server");
-				e.printStackTrace();
-					
+				e.printStackTrace();				
 			}
 		}
 	}
@@ -232,7 +247,7 @@ public class Courier extends JFrame {
 			
 			if(oldCorierStatus) return;
 			
-			if( serverSocket == null && serverSocket.isClosed() )
+			if( serverSocket == null || serverSocket.isClosed() )
 				return;
 			try (
 				    Socket clientSocket = new Socket( foreignHost,foreignPort );
@@ -240,11 +255,12 @@ public class Courier extends JFrame {
 				){
 				// send credits to dispositor including package request
 				// send request id | port to identification
-				out.println( "2;" + ServerPort.getText() );
+				out.println("2");
+				out.println( ServerPort.getText() );
 				clientSocket.close();
 				serverSocket.close();
-				serverSocket = null;
 				oldCorierStatus = true;
+				activeLabel.setForeground(Color.RED);
 			} catch (IOException e) {
 				System.out.print("Can't open server");
 				e.printStackTrace();
@@ -265,17 +281,18 @@ public class Courier extends JFrame {
 	                // catch stream for income requests
 	                BufferedReader in = new BufferedReader(
 	                    new InputStreamReader( socket.getInputStream()) );
-					line = in.readLine().split(";");
+					// get new task 
+	                line = in.readLine().split(";");
 					packetType = Integer.valueOf(line[0]);
 					currentPackageid = line[1];
 					packetName = line[2];
 					messages.setText(messages.getText() + packetName + "<-- processing\n"   );
 					doSomeJob();
 					messages.setText(messages.getText() + packetName + "<-- task done\n"   );
-					socket.close();
-				
+					socket.close();		
 				} catch (IOException e) {
 	                System.out.println("I/O error: " + e);
+	                break;
 	            }
 			}
 		}
@@ -291,15 +308,17 @@ public class Courier extends JFrame {
 		try (
 			    Socket clientSocket = new Socket( foreignHost, foreignPort );
 			    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-			){
+			)
+		{
 			// ping server, that courier fished his job
-			out.println("1;" + currentPackageid );
-			clientSocket.close();
+			out.println("1");
+			out.println( currentPackageid );
 			
+			clientSocket.close();	
 		} catch (IOException e) {
 			System.out.print("Can't open server");
 			e.printStackTrace();
-		}
+		}		
 	}
 	
 	public
@@ -316,9 +335,9 @@ public class Courier extends JFrame {
 				return;
 			try {
 				serverSocket = new ServerSocket( localPort );
-				System.out.println( "Client's Server created" );
+				System.out.println( "Courier's Server created" );
 				new ListenForConnections().start();
-				
+				activeLabel.setForeground(Color.GREEN);
 			} catch (IOException e) {
 				System.out.print("Can't open server");
 				e.printStackTrace();		

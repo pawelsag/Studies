@@ -1,8 +1,5 @@
 package lab06;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -25,9 +22,11 @@ import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.Font;
+import java.awt.Color;
 
 public class Client extends JFrame {
 
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField PckgName;
 	private JTextField Host;
@@ -40,6 +39,7 @@ public class Client extends JFrame {
 	private JTextField serverPort;
 	private JLabel lblNewLabel_2;
 	ServerSocket serverSocket =null;
+	private JLabel activeLabel;
 	
 	/**
 	 * Launch the application.
@@ -79,6 +79,7 @@ public class Client extends JFrame {
 		contentPane.add(PortinfoLabel, gbc_PortinfoLabel);
 		
 		Port = new JTextField();
+		Port.setText("1234");
 		GridBagConstraints gbc_Port = new GridBagConstraints();
 		gbc_Port.insets = new Insets(0, 0, 5, 5);
 		gbc_Port.fill = GridBagConstraints.HORIZONTAL;
@@ -96,6 +97,7 @@ public class Client extends JFrame {
 		contentPane.add(HostInfoLabel, gbc_HostInfoLabel);
 		
 		Host = new JTextField();
+		Host.setText("localhost");
 		GridBagConstraints gbc_Host = new GridBagConstraints();
 		gbc_Host.insets = new Insets(0, 0, 5, 5);
 		gbc_Host.fill = GridBagConstraints.HORIZONTAL;
@@ -113,6 +115,7 @@ public class Client extends JFrame {
 		contentPane.add(lblNewLabel, gbc_lblNewLabel);
 		
 		PckgName = new JTextField();
+		PckgName.setText("klocuszki");
 		GridBagConstraints gbc_PckgName = new GridBagConstraints();
 		gbc_PckgName.insets = new Insets(0, 0, 5, 5);
 		gbc_PckgName.fill = GridBagConstraints.HORIZONTAL;
@@ -149,6 +152,14 @@ public class Client extends JFrame {
 		InstructButton.addActionListener(new SendRequestEvent() );
 		contentPane.add(InstructButton, gbc_InstructButton);
 		
+		activeLabel = new JLabel("Active");
+		activeLabel.setForeground(Color.RED);
+		GridBagConstraints gbc_activeLabel = new GridBagConstraints();
+		gbc_activeLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_activeLabel.gridx = 0;
+		gbc_activeLabel.gridy = 5;
+		contentPane.add(activeLabel, gbc_activeLabel);
+		
 		JLabel lblComunicates = new JLabel("Announcements:");
 		GridBagConstraints gbc_lblComunicates = new GridBagConstraints();
 		gbc_lblComunicates.insets = new Insets(0, 0, 5, 5);
@@ -182,6 +193,7 @@ public class Client extends JFrame {
 		contentPane.add(lblNewLabel_2, gbc_lblNewLabel_2);
 		
 		serverPort = new JTextField();
+		serverPort.setText("5678");
 		GridBagConstraints gbc_serverPort = new GridBagConstraints();
 		gbc_serverPort.insets = new Insets(0, 0, 0, 5);
 		gbc_serverPort.fill = GridBagConstraints.HORIZONTAL;
@@ -231,7 +243,7 @@ private class ListenForConnections extends Thread{
 				serverSocket = new ServerSocket( currentPort );
 				System.out.println( "Client's Server created" );
 				new ListenForConnections().start();
-				
+				activeLabel.setForeground(Color.GREEN);
 			} catch (IOException e) {
 				System.out.print("Can't open server");
 				e.printStackTrace();		
@@ -250,7 +262,7 @@ private class ListenForConnections extends Thread{
 			if( portText.length() == 0 || pckgName.length() == 0 || host.length() == 0 )
 				return;
 			
-			if( serverSocket == null && serverSocket.isClosed() )
+			if( serverSocket == null || serverSocket.isClosed() )
 				return;
 			
 			try (

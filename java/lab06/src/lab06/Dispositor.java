@@ -23,9 +23,11 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
+import java.awt.Color;
 
 public class Dispositor extends JFrame {
 
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField Port;
 	private JButton ConnectServer;
@@ -42,7 +44,9 @@ public class Dispositor extends JFrame {
 	ArrayList<CourierDescriptor> courierArray = new ArrayList<>();
 	// warehouse
 	ArrayList<Package> warehouse = new ArrayList<>();
-	int warehouseLimit = 1;
+	int warehouseLimit = 5;
+	CustomEvent warehouseEvent = new CustomEvent();
+	private JLabel activeLabel;
 	/**
 	 * Launch the application.
 	 */
@@ -84,6 +88,7 @@ public class Dispositor extends JFrame {
 		contentPane.add(lblPort, gbc_lblPort);
 		
 		Port = new JTextField();
+		Port.setText("1234");
 		GridBagConstraints gbc_Port = new GridBagConstraints();
 		gbc_Port.insets = new Insets(0, 0, 5, 5);
 		gbc_Port.fill = GridBagConstraints.HORIZONTAL;
@@ -106,8 +111,16 @@ public class Dispositor extends JFrame {
 		gbc_NewClient.gridx = 1;
 		gbc_NewClient.gridy = 1;
 		NewClient.addActionListener( new CreateNewClientObjEvent() );
-		contentPane.add(NewClient, gbc_NewClient);
 		
+		activeLabel = new JLabel("Active");
+		activeLabel.setForeground(Color.RED);
+		GridBagConstraints gbc_activeLabel = new GridBagConstraints();
+		gbc_activeLabel.insets = new Insets(0, 0, 5, 0);
+		gbc_activeLabel.gridx = 3;
+		gbc_activeLabel.gridy = 0;
+		contentPane.add(activeLabel, gbc_activeLabel);
+		contentPane.add(NewClient, gbc_NewClient);
+
 		NewCourier = new JButton("New Courier ");
 		GridBagConstraints gbc_NewCourier = new GridBagConstraints();
 		gbc_NewCourier.insets = new Insets(0, 0, 5, 5);
@@ -123,7 +136,7 @@ public class Dispositor extends JFrame {
 		gbc_lblWarehauseSpace.gridy = 3;
 		contentPane.add(lblWarehauseSpace, gbc_lblWarehauseSpace);
 		
-		label = new JLabel("50");
+		label = new JLabel(String.valueOf(warehouseLimit));
 		label.setHorizontalAlignment(SwingConstants.LEFT);
 		GridBagConstraints gbc_label = new GridBagConstraints();
 		gbc_label.insets = new Insets(0, 0, 5, 5);
@@ -197,18 +210,44 @@ public class Dispositor extends JFrame {
 	}
 	
 	void manageRequest(Socket s, int packetType, String[] args) {
+		
 		switch(packetType) {
 			case 0x0:
 				this.manageInitRequests(s.getInetAddress().toString(), args);
 				break;
 			case 0x1:
+				String uid = args[0];
+				// find proper client
+				ClientDescriptor client = findHost(clientArray,uid);
+				// find proper courier	
+				CourierDescriptor courier = findCourierByPackageId(uid);
+				manageDeliverReply(client,courier);
 				break;
 			case 0x2:
-				break;
-			case 0x3:
+				 this.manageCourierResignation(s.getInetAddress().toString().substring(1), Integer.valueOf( args[0] )) ;
 				break;
 		}
 	}
+	// helper function to remove courier which resign
+	void manageCourierResignation(String host, int port) {
+		
+		String uniqueId = HostDescription.calculateUniqueId(host, port);
+		CourierDescriptor courier = findHost(courierArray,uniqueId);
+		if(courier == null) return;
+		courier.finishJob();
+		this.courierArray.remove(courier);
+	}
+	
+	//helper function to manage deliver reply
+	void manageDeliverReply(ClientDescriptor client, CourierDescriptor courier) {
+		// if it is such possibility, request courier to get new package 		
+		Package p = courier.packageDelivered();
+		// inform proper client that his/her package was delivered
+		client.respond(ClientDescriptor.PackageState.PACKAGE_DELIVERED, p, " Have a nice day! :)");	
+			
+		this.printWarehouseItems();
+	}
+	
 	// helper function to manage initializing tasks requests from client and courier
 	void manageInitRequests(String host,String[] args) {
 		int classType;
@@ -232,7 +271,7 @@ public class Dispositor extends JFrame {
         	CourierDescriptor courier = findCourierByCategory(category); 
         	// if so hire courier to deliver package
         	if( courier != null ) {
-        		client.respond(ClientDescriptor.PackageState.PACKAGE_PROCESS, pckg, " ");
+        		client.respond(ClientDescriptor.PackageState.PACKAGE_PROCESS, pckg, "Courier took your packge ");
         		courier.deliverPackage(pckg);
         		return;
         	}
@@ -243,32 +282,87 @@ public class Dispositor extends JFrame {
         	}
         	
         	// otherwise add package to warehouse and wait for courier
-        	warehouse.add(pckg);
+        	synchronized(warehouseEvent) {
+        		warehouse.add(pckg);
+        		this.printWarehouseItems();
+        	}    	
         	client.respond(ClientDescriptor.PackageState.PACKGAE_IN_WAREHOUSE, pckg, "Courier will take your package soon :)");
+        	courierArray.forEach( c -> c.newPackageEvent() );
         	
 		}else if(classType == 0x1) {
-			
-        	courierArray.add( new CourierDescriptor(host,foreignPort));
-        	courierArray.get(courierArray.size()-1).start();
-		}       
+			CourierDescriptor courier = new CourierDescriptor(host,foreignPort,category,this);
+			// there is no possibility to add same courier twice,
+			// cause courier side forbid this situation
+			// so i don't have to check this either
+        	courierArray.add( courier );
+        	courier.start();
+        	System.out.println("New curier created");    
+		}  
+	}
+	
+	public void printWarehouseItems(){
+		String fmt ="";
+		for( Package p : this.warehouse ) {
+			fmt += "Name :" + p.name + ", Category: " + p.Category + "\n";    
+		}
+		
+		this.messages.setText(fmt);
+		this.label.setText ( String.valueOf(warehouseLimit - this.warehouse.size()) );
 	}
 	
 	public static<T> T findHost(ArrayList<T> userArray, HostDescription user){
 		String uniqueid= user.getuniqueId();
+		return findHost(userArray,uniqueid);
+	}
+	
+	public static<T> T findHost(ArrayList<T> userArray, String uniqueid){
+		
 		for(T obj : userArray) {
 			if(uniqueid.equals( ((HostDescription)obj).getuniqueId()) ){
 				return ((T)obj);
 			}
 		}
 		return null;
-		
 	}
 	
+	
 	public CourierDescriptor findCourierByCategory(String category) {
-		for(CourierDescriptor c : courierArray ) {
-			if(c.category.equals(category) && c.getStatus() == CourierDescriptor.State.FREE )
+		for( CourierDescriptor c : courierArray ) {
+			if( c.category.equals(category) && c.getStatus() == CourierDescriptor.State.FREE )
 				return c;
 		}
+		return null;
+	}
+	
+	public Package getPackage(String category) {
+		
+		synchronized(warehouseEvent) {
+			Package p = findPackageByCategory(category);
+			this.warehouse.remove(p);
+			return p;
+		}		
+	}
+	
+	public Package findPackageByCategory(String category) {
+		for(Package pckg : this.warehouse)
+			if(category.equals(pckg.Category))
+				return pckg;
+		return null;
+	}
+	
+	public CourierDescriptor findCourierByPackageId(String id) {
+		
+		for(CourierDescriptor curier : this.courierArray) {
+			if(id.equals( curier.getPackage().getclientId() ) )
+				return curier;
+		}
+		return null;
+	}
+	
+	public Package findPackageById(String id) {
+		for(Package pckg : this.warehouse)
+			if(id.equals(pckg.getclientId()))
+				return pckg;
 		return null;
 	}
 	
@@ -288,7 +382,7 @@ public class Dispositor extends JFrame {
 				serverSocket = new ServerSocket( currentPort );
 				System.out.println( "Dispositor Server created" );
 				new ListenForConnections().start();
-				
+				activeLabel.setForeground(Color.GREEN);
 			} catch (IOException e) {
 				System.out.print("Can't open server");
 				e.printStackTrace();

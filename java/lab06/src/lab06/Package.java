@@ -10,4 +10,15 @@ public class Package {
 		this.name = name;
 		this.Category = Category;
 	}
+	public Package(Package p) {
+		if (p ==null)
+			return;
+		this.clientId = p.clientId;
+		this.name = p.name;
+		this.Category = p.Category;
+	}
+	
+	String getclientId() {
+		return this.clientId;
+	}
 }
