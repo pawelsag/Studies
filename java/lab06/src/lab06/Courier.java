@@ -262,8 +262,7 @@ public class Courier extends JFrame {
 				oldCorierStatus = true;
 				activeLabel.setForeground(Color.RED);
 			} catch (IOException e) {
-				System.out.print("Can't open server");
-				e.printStackTrace();
+				System.out.print("Can't connect to depositor ");	
 			}			
 		}
 	}
@@ -316,8 +315,7 @@ public class Courier extends JFrame {
 			
 			clientSocket.close();	
 		} catch (IOException e) {
-			System.out.print("Can't open server");
-			e.printStackTrace();
+			System.out.print("Can't create courier server");
 		}		
 	}
 	
@@ -339,8 +337,7 @@ public class Courier extends JFrame {
 				new ListenForConnections().start();
 				activeLabel.setForeground(Color.GREEN);
 			} catch (IOException e) {
-				System.out.print("Can't open server");
-				e.printStackTrace();		
+				System.out.print("Can't connect to depositor ");					
 			}
 		}
 	}

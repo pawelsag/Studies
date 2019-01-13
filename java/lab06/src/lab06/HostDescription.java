@@ -22,17 +22,8 @@ public class HostDescription extends Thread{
 	
 	static String calculateUniqueId(String host, int port) {
 		String token = host + port;
-		MessageDigest digest ;
-		String uniqueid = null;
-		try {
-			digest = MessageDigest.getInstance("SHA-256");
-			byte[] hash = digest.digest(token.getBytes(StandardCharsets.UTF_8));
-			uniqueid =hash.toString();
-			
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		return uniqueid;
+		// previously there was sha256 algorithm to calculate token 
+		return token;
 	}
 	
 }

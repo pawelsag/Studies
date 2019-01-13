@@ -217,11 +217,15 @@ public class Dispositor extends JFrame {
 				break;
 			case 0x1:
 				String uid = args[0];
-				// find proper client
-				ClientDescriptor client = findHost(clientArray,uid);
-				// find proper courier	
+				// find proper courier				
 				CourierDescriptor courier = findCourierByPackageId(uid);
-				manageDeliverReply(client,courier);
+				System.out.println(courier + " "+ uid );
+				
+				// find proper client
+				ClientDescriptor client = findHost(clientArray,courier.getPackage().getclientId());
+				
+				
+				manageDeliverReply(client, courier);
 				break;
 			case 0x2:
 				 this.manageCourierResignation(s.getInetAddress().toString().substring(1), Integer.valueOf( args[0] )) ;
@@ -325,6 +329,9 @@ public class Dispositor extends JFrame {
 		return null;
 	}
 	
+	ClientDescriptor findClientById(String uniqueId) {
+		return findHost(clientArray,uniqueId);
+	}
 	
 	public CourierDescriptor findCourierByCategory(String category) {
 		for( CourierDescriptor c : courierArray ) {
@@ -353,7 +360,7 @@ public class Dispositor extends JFrame {
 	public CourierDescriptor findCourierByPackageId(String id) {
 		
 		for(CourierDescriptor curier : this.courierArray) {
-			if(id.equals( curier.getPackage().getclientId() ) )
+			if( id.equals( curier.getPackage().getpckgId() ) )
 				return curier;
 		}
 		return null;

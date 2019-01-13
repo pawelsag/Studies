@@ -245,8 +245,7 @@ private class ListenForConnections extends Thread{
 				new ListenForConnections().start();
 				activeLabel.setForeground(Color.GREEN);
 			} catch (IOException e) {
-				System.out.print("Can't open server");
-				e.printStackTrace();		
+				System.out.print("Can't create server");		
 			}
 		}
 	}
@@ -272,12 +271,11 @@ private class ListenForConnections extends Thread{
 				// send credits to dispositor including package request
 				// class id | server port for incoming replays | category | pckgName
 				out.println("0");
-				out.println("0;" + serverPort.getText() + ";" + Categorybox.getSelectedItem().toString()+";" + pckgName );
+				out.println("0;" + serverPort.getText() + ";" + Categorybox.getSelectedItem().toString() + ";" + pckgName );
 				clientSocket.close();
 				
 			} catch (IOException e) {
-				System.out.print("Can't open server");
-				e.printStackTrace();
+				System.out.print("Can't connect to depositor");
 					
 			}
 		}

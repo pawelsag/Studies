@@ -43,10 +43,13 @@ public class CourierDescriptor extends HostDescription{
 				if(resignRequest)
 					break;
 				continue;
-			}					
+			}
+			System.out.println(this.port + " PCKG taken");
+			ClientDescriptor c = parent.findClientById(p.getclientId());
+			c.respond(ClientDescriptor.PackageState.PACKAGE_PROCESS, p, "Courier took your packge ");
 			this.deliverPackage(p);		
-			
 			// wait if there is no available packages in warehouse		
+			System.out.println(this.port + " waiting");
 			newPackageAvailableEvent.lock();
 			// check again		
 		}		
@@ -67,7 +70,7 @@ public class CourierDescriptor extends HostDescription{
 		this.status = State.FREE;
 		this.packageDeiveredEvent.unlockAll();
 		this.newPackageAvailableEvent.unlockAll();
-		
+		System.out.println(this.port + " delivered");
 		return this.packageToDeliver;
 	}
 	// method to close communication with courier
@@ -91,12 +94,11 @@ public class CourierDescriptor extends HostDescription{
 				    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
 				){
 				// forward package to courier
-				out.println("3;" + p.getclientId() + ";" + p.name);
+				out.println("3;" + p.getpckgId() + ";" + p.name);
 				clientSocket.close();
 				
 			} catch (IOException e) {
-				System.out.print("Can't open server");
-				e.printStackTrace();
+				System.out.print("Can't send package to courier");
 			}
 		}	
 	}		
