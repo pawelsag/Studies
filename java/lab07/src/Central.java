@@ -24,6 +24,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.rmi.AlreadyBoundException;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -52,15 +53,16 @@ public class Central extends JFrame implements ICentrala {
 	private int boardId = 1;
 	private ArrayList<stubRegister> stubArray = new ArrayList<>();
 	private boolean isActive =false;
-
+	private static Registry registry;
+	public static int centralPort = 1282;
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					Central frame = new Central();
 					frame.setVisible(true);
-					Registry registry;
-					registry = LocateRegistry.createRegistry(1282);
+					
+					registry = LocateRegistry.createRegistry(centralPort);
 					ICentrala stub = (ICentrala) UnicastRemoteObject.exportObject( frame, 0);
 					// Bind the remote object's stub in the registry
 					registry.bind("central", frame);	
@@ -119,7 +121,7 @@ public class Central extends JFrame implements ICentrala {
 		table.setModel(new MyTableModel(
 			new Object[][] {},
 			new String[] {
-				"ID", "Wind Readings", "Temp Readings", "Precipation Readings", "Toggle", "Interval[s]"
+				"ID", "Wind Readings", "Temp Readings", "Precipation Readings", "Toggle", "Interval"
 			}) {
 				private static final long serialVersionUID = -6997572805462762718L;
 			Class[] columnTypes = new Class[] {
@@ -137,25 +139,28 @@ public class Central extends JFrame implements ICentrala {
 		
 		table.getColumn("Toggle").setCellRenderer( new ButtonRenderer());
 		table.getColumn("Toggle").setCellEditor( new ButtonEditor(new JCheckBox()) );
-		table.getColumn("Interval[s]").setCellRenderer( new SliderRenderer(JSlider.HORIZONTAL, 1, 20, 1));
-		table.getColumn("Interval[s]").setCellEditor( new SliderEditor(JSlider.HORIZONTAL, 1, 20, 1) );
+		table.getColumn("Interval").setCellRenderer( new SliderRenderer(JSlider.HORIZONTAL, 1, 20, 1));
+		table.getColumn("Interval").setCellEditor( new SliderEditor(JSlider.HORIZONTAL, 1, 20, 1) );
 		
 	}
 	
 	
 	@Override
 	public int register(IBoard s) throws RemoteException {
-	
+		if(isStubExist(s) == true) return 0;
+		
 		BoardData board= s.getBoardData();
 		if(board == null) return 0;
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		if(model == null) return 0;	
 		model.addRow(new Object[]{boardId, board.wind, board.temperature,board.precipation,new JButton("Toggle"),new JSlider() });
+		
 		if(stubArray.add(new stubRegister(boardId, s)) ==false) return 0;
+		registry.rebind("board_" + boardId, s);
 		
 		return boardId++;
 	}
-
+	
 
 	@Override
 	public int unregister(int id) throws RemoteException {
@@ -167,6 +172,8 @@ public class Central extends JFrame implements ICentrala {
 		stubArray.get(i).reader.active = false;
 		stubArray.remove(i);
 		model.removeRow(i);
+		
+		try {registry.unbind( "board_" + id);} catch (NotBoundException e) {e.printStackTrace();}
 		return id;
 	}
 	
@@ -179,7 +186,12 @@ public class Central extends JFrame implements ICentrala {
 		}	
 		return -1;
 	}
-	
+	private boolean isStubExist(IBoard s) {
+		for(stubRegister stub : stubArray )
+			if(stub.stub.equals(s))
+				return true;
+		return false;
+	}
 	private class stubRegister{
 		public int id;
 		public IBoard stub;
@@ -207,13 +219,14 @@ public class Central extends JFrame implements ICentrala {
 					try {
 						BoardData board = stubReference.stub.getBoardData();
 						int i = findRowById(stubReference.id);
-						DefaultTableModel model = (DefaultTableModel) table.getModel();
-						
+						DefaultTableModel model = (DefaultTableModel) table.getModel();			
 						model.setValueAt(board.wind, i, 1);
 						model.setValueAt(board.temperature, i, 2);
 						model.setValueAt(board.precipation, i, 3);
+						
 					} catch (RemoteException e1) {
 						// if we get here probably our board has crushed
+						
 						try {unregister(stubReference.id);}catch (RemoteException e) {System.out.println(e.getMessage());}
 					}	
 					try { Thread.sleep( 1000 );} catch (InterruptedException e) {}
@@ -314,7 +327,6 @@ public class Central extends JFrame implements ICentrala {
 			    if (isSelected) {
 			      setForeground(table.getSelectionForeground());
 			      setBackground(table.getSelectionBackground());
-			      setValue(((Integer)value).intValue());
 			    } else {
 			      setForeground(table.getForeground());
 			      setBackground(UIManager.getColor("Button.background"));

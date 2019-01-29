@@ -5,7 +5,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
-public class BoardData  implements IBoard, Serializable  {
+public class BoardData implements IBoard, Serializable  {
 	 public float temperature;
 	 public float wind;
 	 public float precipation;
@@ -25,6 +25,7 @@ public class BoardData  implements IBoard, Serializable  {
 		this.wind = wind2;
 		this.precipation = precipation2;	
 	}
+	
 	@Override
 	public boolean register(ISensor s, char category) throws RemoteException {
 		if(sensors.size() >= 3)
@@ -35,8 +36,7 @@ public class BoardData  implements IBoard, Serializable  {
 		instance.start();
 		
 		this.parent.changeIfaceState( category, true);
-		System.out.println("Registered");
-		
+		System.out.println("done");
 		return true;
 	}
 
@@ -48,10 +48,17 @@ public class BoardData  implements IBoard, Serializable  {
 				// wake board to escape from while loop
 				boardActive = true;
 				sensors.remove(sm);
-				this.parent.changeIfaceState(sm.category, false);
+				if(sm.category == 't')
+					this.temperature = 0.0f;
+				else if(sm.category == 'w')
+					this.wind = 0.0f;
+				else 
+					this.precipation = 0.0f;
 				
+				this.parent.changeIfaceState(sm.category, false);
 				return true;
 			}
+		
 		return false;
 	}
 
@@ -96,9 +103,11 @@ public class BoardData  implements IBoard, Serializable  {
 		
 		@Override	
 		public void run() {
-			while(active) {			
+			while(active) {	
+				
 				try {
 					SensorReadings obj = iface.getSensorReadings();
+		
 					switch(category) {
 						case 'w':
 							wind =obj.value;
@@ -116,9 +125,10 @@ public class BoardData  implements IBoard, Serializable  {
 					
 					
 				} catch (RemoteException e1) {
+					System.out.println(e1.getMessage());
 					// if we get here probably our sensor has crushed
-					try {unregister(iface);}
-					catch (RemoteException e) {System.out.println(e1.getMessage());}
+					try { unregister(iface); }
+					catch (RemoteException e) {System.out.println( e1.getMessage() );}
 				}
 				
 				try { Thread.sleep( interval *1000 );} catch (InterruptedException e) {}			
