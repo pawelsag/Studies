@@ -155,11 +155,8 @@ public class Central extends JFrame implements ICentrala {
 		if(model == null) return 0;	
 		model.addRow(new Object[]{boardId, board.wind, board.temperature,board.precipation,new JButton("Toggle"),new JSlider() });
 		
-		if(stubArray.add(new stubRegister(boardId, s)) ==false) return 0;
+		if(stubArray.add(new stubRegister(boardId, s)) == false) return 0;
 		registry.rebind("board_" + boardId, s);
-		
-		for( String se :registry.list() )
-			 System.out.println(se);
 		
 		return boardId++;
 	}
@@ -293,11 +290,10 @@ public class Central extends JFrame implements ICentrala {
 		    	  for(stubRegister s : stubArray) {
 		   
 		    		  if(findRowById(s.id) == selectedId-1) {
-		    			  System.out.println(s.id + "Bind zawiodles" );
 		    			  try {s.stub.toggle();} catch (RemoteException e1) {System.out.println(e1.getMessage());}
 		    			  break;
 		    		  }
-		    	  }
+		    	  } 
 		      }
 		    });
 		  }

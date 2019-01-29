@@ -53,8 +53,7 @@ public class BoardData implements IBoard, Serializable  {
 				else if(sm.category == 'w')
 					this.wind = 0.0f;
 				else 
-					this.precipation = 0.0f;
-				
+					this.precipation = 0.0f;				
 				this.parent.changeIfaceState(sm.category, false);
 				return true;
 			}

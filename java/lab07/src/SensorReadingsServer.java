@@ -31,7 +31,6 @@ import javax.swing.JSlider;
 public class SensorReadingsServer extends JFrame{
 
 	private JPanel contentPane;
-	private JTextField sensorName;
 	private JLabel sensorValueDisplay;
 	private JComboBox<String> sensorCategory;
 	private JSlider freqSlider;
@@ -41,13 +40,14 @@ public class SensorReadingsServer extends JFrame{
 	private JLabel stateDisplay;
 	private JLabel freqValue;
 	int speed = 1;
-	int registeredCount =0;
-	String sName = "wind", tmpName="wind";
+	int registeredCount =0;	
 	int localPort, foreignPort;
 	boolean isActive = false, onceActivated = false;
+	
 	Meassurments meassuremntsObject;
 	SensorReadings sensor;
-	ISensor stub;
+	ISensor sensorStub;
+	
 	private JButton lookUp;
 	private JComboBox<String> boardName;
 	
@@ -64,14 +64,15 @@ public class SensorReadingsServer extends JFrame{
 			}
 		});
 	}
-
+ 
 	public SensorReadingsServer() {
 		
 		try {
 			this.sensor  = new SensorReadings();
-			stub = (ISensor) UnicastRemoteObject.exportObject(sensor, 0);
-		} catch (RemoteException e1) {
-		}
+			sensorStub = (ISensor) UnicastRemoteObject.exportObject(sensor, 0);
+		} catch (RemoteException e1) {}
+		
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
@@ -92,24 +93,6 @@ public class SensorReadingsServer extends JFrame{
 		gbc_lblState.gridx = 5;
 		gbc_lblState.gridy = 0;
 		contentPane.add(lblState, gbc_lblState);
-		
-		JLabel lblSensorPort = new JLabel("Sensor name :");
-		GridBagConstraints gbc_lblSensorPort = new GridBagConstraints();
-		gbc_lblSensorPort.anchor = GridBagConstraints.EAST;
-		gbc_lblSensorPort.insets = new Insets(0, 0, 5, 5);
-		gbc_lblSensorPort.gridx = 1;
-		gbc_lblSensorPort.gridy = 1;
-		contentPane.add(lblSensorPort, gbc_lblSensorPort);
-		
-		sensorName = new JTextField();
-		sensorName.setText("wind");
-		GridBagConstraints gbc_sensorName = new GridBagConstraints();
-		gbc_sensorName.fill = GridBagConstraints.HORIZONTAL;
-		gbc_sensorName.insets = new Insets(0, 0, 5, 5);
-		gbc_sensorName.gridx = 2;
-		gbc_sensorName.gridy = 1;
-		contentPane.add(sensorName, gbc_sensorName);
-		sensorName.setColumns(10);
 		
 		stateDisplay = new JLabel("Inactive");
 		GridBagConstraints gbc_stateDisplay = new GridBagConstraints();
@@ -141,13 +124,10 @@ public class SensorReadingsServer extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				int c = sensorCategory.getSelectedIndex();
 				if(c == 0) {
-					sName = "wind";
 					sensor.category = 'w';
 				}else if(c == 1) {
-					sName = "temp";
 					sensor.category='t';
 				}else {
-					sName = "rain";
 					sensor.category = 'p';
 				}
 			}		
@@ -267,9 +247,8 @@ public class SensorReadingsServer extends JFrame{
 	            for(String item : registry.list()) {
 	            	// add all except central
 	            	if( item.startsWith("b") )
-	            		boardName.addItem(item);
+	            		boardName.addItem(item); 
 	            }
-	           
 	        } catch (Exception e2) {
 	            System.err.println("Error during getting board names " + e2.toString());
 	        }
@@ -281,60 +260,27 @@ public class SensorReadingsServer extends JFrame{
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			
-			if( sensorName.getText().length() == 0 ) {
-				return;
-			}	
-			
 			if(isActive == false) {
-				tmpName = sName;
-				sName += sensorName.getText();
-				Registry registry;
-				try {
-					registry = LocateRegistry.getRegistry(Central.centralPort);
-					// Bind the remote object's stub in the registry	
-					registry.bind(sName, stub);
-					
-				} catch (RemoteException e1) {
-					System.err.println("Sensor creation error: " + e1.toString());
-					return;
-				} catch (AlreadyBoundException e) {
-					System.err.println("Sensor already bounded: " + e.toString());
-					return;
-				}
+
 				stateDisplay.setText("Active");
 				isActive = true;
 				stateDisplay.setForeground(Color.GREEN);
 				meassuremntsObject = new Meassurments();
 				meassuremntsObject.start();
 				sensorCategory.setEnabled(false);
-				sensorName.setEnabled(false);
-				
 			}else{
 				
-				if(registeredCount >0) return;
-				
-				try {
-					LocateRegistry.getRegistry(Central.centralPort).unbind(sName);
-				} catch (AccessException e1) {
-					System.err.println("Can't access register" + e1.toString());
-				} catch (RemoteException e1) {
-					System.err.println("Remote exception: " + e1.toString());
-				} catch (NotBoundException e1) {
-					System.err.println("Sensor hasn't been bounded " + e1.toString());
-				}
-				
+				if(registeredCount >0) 
+					return;
 				isActive = false;
 				stateDisplay.setText("InActive");
 				stateDisplay.setForeground(Color.RED);
 				try {meassuremntsObject.join();} catch (InterruptedException e) {System.out.println(" can\'t join ");}
 				System.out.println("Joined");
 				sensorCategory.setEnabled(true);
-				sensorName.setEnabled(true);
 				sensorValueDisplay.setText("0.0");
-				
-				sName = tmpName;
 			}
-		}
+		} 
 	}
 	
 	private class Register implements ActionListener{
@@ -349,11 +295,13 @@ public class SensorReadingsServer extends JFrame{
 			try {
 	            Registry registry = LocateRegistry.getRegistry(Central.centralPort); // 1282 is central port
 	            IBoard stub = (IBoard) registry.lookup(selectedBoard);      
-	            boolean response = stub.register( (ISensor)LocateRegistry.getRegistry(1282).lookup(sName), sensor.category );
-	            if(response ==true) {
+	            boolean response = stub.register(sensorStub, sensor.category );
+	            
+	            if(response == true) {
 	            	System.out.println("Registration correct");
 	            	registeredCount++;
 	            }
+	            
 	        } catch (Exception e2) {
 	            System.err.println("Error during sensor registration: " + e2.toString());
 	        }			
@@ -372,7 +320,7 @@ public class SensorReadingsServer extends JFrame{
 			try {
 	            Registry registry = LocateRegistry.getRegistry(Central.centralPort);
 	            IBoard stub = (IBoard) registry.lookup(selectedBoard);
-	            boolean response = stub.unregister((ISensor)LocateRegistry.getRegistry(Central.centralPort).lookup(sName));
+	            boolean response = stub.unregister((ISensor)sensorStub);
 	            if(response == true) {
 	            	System.out.println("Unregistration correct");
 	            	registeredCount--;
@@ -380,7 +328,6 @@ public class SensorReadingsServer extends JFrame{
 	            
 	        } catch (Exception e2) {
 	            System.err.println("Error during sensor unregistration: " + e2.toString());
-	       
 	        }			
 		}
 	}

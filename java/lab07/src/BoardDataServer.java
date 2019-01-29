@@ -300,7 +300,8 @@ public class BoardDataServer extends JFrame{
 	            	// if stub was registered, add info about assign stub to port
 	            	stubArray.add(new stubRegister(response,remotePort) );
 	            	remoteId.setText(String.valueOf( response ));
-	            }           
+	            } 
+	            
 	        }catch (Exception e2) {
 	        	
 	        	System.err.println("Registration failed " + e2.toString());
@@ -310,7 +311,7 @@ public class BoardDataServer extends JFrame{
 		
 	}
 	
-	
+	 
 	private class Unregister implements ActionListener{
 
 		@Override
