@@ -66,6 +66,7 @@ public class SensorReadingsServer extends JFrame{
 	}
 
 	public SensorReadingsServer() {
+		
 		try {
 			this.sensor  = new SensorReadings();
 			stub = (ISensor) UnicastRemoteObject.exportObject(sensor, 0);
@@ -343,8 +344,8 @@ public class SensorReadingsServer extends JFrame{
 			if(isActive == false) return;
 
 			String selectedBoard = boardName.getSelectedItem().toString();
-			System.out.println(selectedBoard);
 			if(selectedBoard.length() == 0) return;
+			
 			try {
 	            Registry registry = LocateRegistry.getRegistry(Central.centralPort); // 1282 is central port
 	            IBoard stub = (IBoard) registry.lookup(selectedBoard);      
@@ -366,7 +367,6 @@ public class SensorReadingsServer extends JFrame{
 			if(isActive == false) return;
 	
 			String selectedBoard = boardName.getSelectedItem().toString();
-			System.out.println(selectedBoard);
 			if(selectedBoard.length() == 0) return;
 			
 			try {

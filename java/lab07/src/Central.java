@@ -158,6 +158,9 @@ public class Central extends JFrame implements ICentrala {
 		if(stubArray.add(new stubRegister(boardId, s)) ==false) return 0;
 		registry.rebind("board_" + boardId, s);
 		
+		for( String se :registry.list() )
+			 System.out.println(se);
+		
 		return boardId++;
 	}
 	
@@ -172,8 +175,8 @@ public class Central extends JFrame implements ICentrala {
 		stubArray.get(i).reader.active = false;
 		stubArray.remove(i);
 		model.removeRow(i);
+		try { registry.unbind( "board_" + id); } catch (NotBoundException e) {e.printStackTrace();}
 		
-		try {registry.unbind( "board_" + id);} catch (NotBoundException e) {e.printStackTrace();}
 		return id;
 	}
 	
@@ -186,12 +189,14 @@ public class Central extends JFrame implements ICentrala {
 		}	
 		return -1;
 	}
+	
 	private boolean isStubExist(IBoard s) {
 		for(stubRegister stub : stubArray )
 			if(stub.stub.equals(s))
 				return true;
 		return false;
 	}
+	
 	private class stubRegister{
 		public int id;
 		public IBoard stub;
@@ -284,8 +289,11 @@ public class Central extends JFrame implements ICentrala {
 		    button.addActionListener(new ActionListener() {
 		      public void actionPerformed(ActionEvent e) {
 		    	  int selectedId = table.getSelectedRow() + 1;
+		    	  
 		    	  for(stubRegister s : stubArray) {
-		    		  if(s.id == selectedId) {
+		   
+		    		  if(findRowById(s.id) == selectedId-1) {
+		    			  System.out.println(s.id + "Bind zawiodles" );
 		    			  try {s.stub.toggle();} catch (RemoteException e1) {System.out.println(e1.getMessage());}
 		    			  break;
 		    		  }

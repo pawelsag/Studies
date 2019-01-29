@@ -178,14 +178,14 @@ public class BoardDataServer extends JFrame{
 		JLabel label_5 = new JLabel("Value:");
 		GridBagConstraints gbc_label_5 = new GridBagConstraints();
 		gbc_label_5.insets = new Insets(0, 0, 5, 5);
-		gbc_label_5.gridx = 8;
+		gbc_label_5.gridx = 7;
 		gbc_label_5.gridy = 3;
 		contentPane.add(label_5, gbc_label_5);
 		
 		rainValue = new JLabel("0.0");
 		GridBagConstraints gbc_rainValue = new GridBagConstraints();
 		gbc_rainValue.insets = new Insets(0, 0, 5, 5);
-		gbc_rainValue.gridx = 9;
+		gbc_rainValue.gridx = 8;
 		gbc_rainValue.gridy = 3;
 		contentPane.add(rainValue, gbc_rainValue);
 		
@@ -294,7 +294,7 @@ public class BoardDataServer extends JFrame{
 	            
 	            ICentrala stub = (ICentrala) registry.lookup("central");
 	            
-	            int response = stub.register(stub_board );
+	            int response = stub.register( stub_board );
 	            
 	            if( response != 0 ) {
 	            	// if stub was registered, add info about assign stub to port
