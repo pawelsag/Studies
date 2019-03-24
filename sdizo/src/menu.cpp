@@ -6,6 +6,7 @@
 #include<string>
 #include<iostream>
 #include "table.h"
+#include "list.h"
 using namespace std;
 
 void displayMenu(string info)
@@ -76,7 +77,7 @@ void menu_table()
 		case '5':  //tutaj generowanie  tablicy
 			cout << "Podaj ilosc elementów tablicy:";
 			cin >> value;
-			myTab.generate_table(value);
+			myTab.generate_data(value);
 			myTab.display();
 			break;
 		case '6':  //tutaj wyœwietlanie tablicy
@@ -97,7 +98,68 @@ void menu_table()
 
 void menu_list()
 {
-	 //analogicznie jak menu_table()
+		char opt;
+	string fileName;
+	int index, value;
+	
+	list my_list;
+
+	do{
+		displayMenu("--- LISTA ---");
+		opt = getche();
+		cout << endl;
+		switch (opt){
+		case '1': 
+			cout << " Podaj nazwe zbioru:";
+			cin >> fileName;
+			my_list.load_from_file(fileName);
+			my_list.display();
+			break;
+
+		case '2': 
+			cout << " podaj wartosc:";
+			cin >> value;
+			my_list.remove(value);
+			my_list.display();
+			break;
+
+		case '3': 
+			cout << " podaj index:";
+			cin >> index;
+			cout << " podaj wartosc:";
+			cin >> value;
+			my_list.insert(index,value);
+			my_list.display();			
+			break;
+
+		case '4': 
+			cout << " podaj wartosc:";
+			cin >> value;
+			if (my_list.find(value) != nullptr)
+				cout << "poadana wartoœc jest w tablicy";
+			else
+				cout << "poadanej wartoœci NIE ma w tablicy";
+			break;
+
+		case '5':  //tutaj generowanie  tablicy
+			cout << "Podaj ilosc elementów tablicy:";
+			cin >> value;
+			my_list.generate_data(value);
+			my_list.display();
+			break;
+		case '6':  //tutaj wyœwietlanie tablicy
+			my_list.display();
+			break;
+		case '7': 
+				// pomiary
+			break;
+		case '8':
+			my_list.clear();
+			my_list.display();
+			break;		
+		}
+
+	} while (opt != '0');
 }
 
 void menu_heap()

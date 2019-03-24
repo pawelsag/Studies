@@ -13,8 +13,23 @@ public:
 	table()=default;
 	table(std::initializer_list<int32_t> args_vector);
 	~table();
-	void generate_table(int32_t size);
+	void generate_data(int32_t size) override;
 
+	void clear();
+
+	bool load_from_file(std::string file_name) override;
+
+	int32_t find(int32_t value);
+
+	// indexes starts from 0 up to count-1	
+	bool insert(int32_t index, int32_t value) override;
+	
+	// indexes starts from 0 up to count-1
+	bool remove(int32_t index) override;
+
+	void display() override;
+
+private:
 	void push_back(int32_t value);
 
 	void push_front(int32_t value);
@@ -22,18 +37,6 @@ public:
 	void pop_back();
 	
 	void pop_front();
-
-	void clear();
-
-	bool load_from_file(std::string file_name) override;
-
-	int32_t find(int32_t value) override;
-	
-	bool insert(int32_t index, int32_t value) override;
-
-	bool remove(int32_t index) override;
-
-	void display() override;
 
 };
 

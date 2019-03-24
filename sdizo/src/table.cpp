@@ -34,13 +34,14 @@ void table::pop_front(){
 
 bool table::load_from_file(std::string file_name){
 	this->count =0; 
-	
+
 	std::fstream fs (file_name, std::fstream::in | std::fstream::out);
 	
 	if (!fs.is_open())
 		return false;
 
 	int value;
+	// read data from file until eof
 	while(!fs.eof()){
 		fs >> value;
 		this->push_back(value);
@@ -122,13 +123,13 @@ bool table::remove(int32_t index){
 }
 
 int32_t table::find(int32_t value){
+	// loop whole table and search for item
 	for(int i =0; i < this->count; i++)
 		if(this->tab[i] == value)
 			return i;
 	return -1;
 }
-
-void table::generate_table(int32_t size){
+void table::generate_data(int32_t size){
 	srand(time(0));
 	for(int i =0; i < size; i++){
 		this->push_back( rand() %1337 );
