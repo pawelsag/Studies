@@ -40,9 +40,11 @@ bool table::load_from_file(std::string file_name){
 	if (!fs.is_open())
 		return false;
 
-	int value;
+	int value, elements_count;
+	// read size
+	fs>>elements_count;
 	// read data from file until eof
-	while(!fs.eof()){
+	while( (elements_count--) ){
 		fs >> value;
 		this->push_back(value);
 	}

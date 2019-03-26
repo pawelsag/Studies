@@ -7,6 +7,7 @@
 #include<iostream>
 #include "table.h"
 #include "list.h"
+#include "binary_heap.h"
 using namespace std;
 
 void displayMenu(string info)
@@ -98,7 +99,7 @@ void menu_table()
 
 void menu_list()
 {
-		char opt;
+	char opt;
 	string fileName;
 	int index, value;
 	
@@ -164,7 +165,66 @@ void menu_list()
 
 void menu_heap()
 {
-	//analogicznie jak menu_table()
+	char opt;
+	string fileName;
+	int value;
+	
+	binary_heap my_heap;
+
+	do{
+		displayMenu("--- HEAP ---");
+		opt = getche();
+		cout << endl;
+		switch (opt){
+		case '1': 
+			cout << " Podaj nazwe zbioru:";
+			cin >> fileName;
+			my_heap.load_from_file(fileName);
+			my_heap.display("","",0);
+			break;
+
+		case '2': 
+			cout << " podaj wartosc:";
+			cin >> value;
+			my_heap.remove(value);
+			my_heap.display("","",0);
+			break;
+
+		case '3':
+			cout << " podaj wartosc:";
+			cin >> value;
+			my_heap.push_back(value);
+			my_heap.display("","",0);			
+			break;
+
+		case '4': 
+			cout << " podaj wartosc:";
+			cin >> value;
+			if (my_heap.find(value) != -1)
+				cout << "poadana wartoœc jest w tablicy";
+			else
+				cout << "poadanej wartoœci NIE ma w tablicy";
+			break;
+
+		case '5':  //tutaj generowanie  tablicy
+			cout << "Podaj ilosc elementów tablicy:";
+			cin >> value;
+			my_heap.generate_data(value);
+			my_heap.display("","",0);
+			break;
+		case '6':  //tutaj wyœwietlanie tablicy
+			my_heap.display("","",0);
+			break;
+		case '7': 
+				// pomiary
+			break;
+		case '8':
+			my_heap.clear();
+			my_heap.display("","",0);
+			break;		
+		}
+
+	} while (opt != '0');
 }
 
 int main(int argc, char* argv[])

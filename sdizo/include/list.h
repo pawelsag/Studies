@@ -19,7 +19,7 @@ class list : public container_base
 public:
 	list() =default;
 	list(std::initializer_list<int32_t> args_vector);
-	
+	~list();
 	void generate_data(int32_t size) override;
 
 	bool load_from_file(std::string FileName) override;
