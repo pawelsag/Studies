@@ -79,12 +79,13 @@ bool binary_heap::push_back(int32_t key){
 		if( !this->realloc(MEMORY_OP::RESIZE_UP))
 			return false;
 	}
-
+	// put child in heap
 	this->tab[this->elements] = key;
-
+	// get parent index
 	int32_t parent = this->parent(this->elements);
+	// copy last index
 	int32_t element_idx = this->elements;
-	
+	// do heapify
 	while(element_idx > 0 && this->tab[parent] < key){
 		std::swap(this->tab[parent], this->tab[element_idx]);
 		element_idx = parent;
@@ -114,21 +115,23 @@ bool binary_heap::remove(int32_t key){
 	// get children
 	l_child_idx = this->left_child(key_idx);
 	r_child_idx = this->right_child(key_idx);
-	// while there are elments in table 
+	// while index of currently handled child is bigger than last element index 
 	while(l_child_idx < this->elements-1){
-
-		if(this->tab[l_child_idx] > this->tab[r_child_idx]){
+		// find smallest child
+		if(this->tab[l_child_idx] > this->tab[r_child_idx] || r_child_idx >= this->elements){
 			max_element  = this->tab[l_child_idx];
 			max_index =l_child_idx;
 		}else{
 			max_element  = this->tab[r_child_idx];
 			max_index =r_child_idx;			
 		}
-
+		// if child is smaller than currently handled element
+		// stop heapifing
  		if(max_element < this->tab[key_idx])
 			break;
-		
+		// otherwise spaw elements
 		std::swap(this->tab[ key_idx ], this->tab[ max_index ]);
+		// get new children
 		l_child_idx = this->left_child(max_index);
 		r_child_idx = this->right_child(max_index);
 		key_idx =max_index;
