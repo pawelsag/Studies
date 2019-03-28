@@ -5,8 +5,8 @@
 #include <initializer_list>
 #include <algorithm>
 #include <new>
-#include <string>
-class binary_heap 
+
+class binary_heap : public container_base 
 {
 	static constexpr int32_t REDUNDANT_SIZE = 32; 
 
@@ -17,6 +17,7 @@ class binary_heap
 	int32_t elements = 0; // amount of elements inserted to heap
 						  // points to free space just after last element
 
+	bool is_ok = true;
 	enum class MEMORY_OP{
 		RESIZE_DOWN =0,
 		RESIZE_UP =1,
@@ -28,21 +29,27 @@ public:
 	binary_heap(std::initializer_list<int32_t> args_vector);
 	~binary_heap();
 
-	void generate_data(int32_t size);
-
 	void clear();
 
-	bool load_from_file(std::string file_name);
-
-	int32_t find(int32_t key);
+	bool find(int32_t key) override;
 
 	// push key to heap
-	bool push_back(int32_t key);
-	
-	// remove element from heap by given value 
-	bool remove(int32_t key);
+	void push_back(int32_t key);
+
+	void display() override;
 
 	void display(std::string sp, std::string sn, int v);
+
+	// the key is the only value we need to create new node
+	// based on key we will know where to put new item 
+	bool insert(int32_t key, [[maybe_unused]]int32_t index = -1) {
+		this->push_back(key);
+		return this->is_ok;
+	};
+	
+	// the key is the only value we need to delete node
+	// based on the key we will know where desired item lies
+	bool remove(int32_t key);
 
 private:
 	inline int32_t left_child(int32_t idx){
@@ -54,6 +61,10 @@ private:
 	inline int32_t parent(int32_t idx){
 		return (idx-1)/2; // int cast should floor it
 	}
+
+	// get index by given key
+	int32_t find_index(int32_t key);
+
 	// automaticly expand or shrink size
 	// depends on size
 	bool realloc(MEMORY_OP operation){

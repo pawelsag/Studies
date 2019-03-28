@@ -8,6 +8,7 @@
 #include "table.h"
 #include "list.h"
 #include "binary_heap.h"
+#include "binary_tree.h"
 using namespace std;
 
 void displayMenu(string info)
@@ -69,7 +70,7 @@ void menu_table()
 		case '4': 
 			cout << " podaj wartosc:";
 			cin >> value;
-			if (myTab.find(value) != -1)
+			if (myTab.find(value) == true)
 				cout << "poadana wartoœc jest w tablicy";
 			else
 				cout << "poadanej wartoœci NIE ma w tablicy";
@@ -136,7 +137,7 @@ void menu_list()
 		case '4': 
 			cout << " podaj wartosc:";
 			cin >> value;
-			if (my_list.find(value) != nullptr)
+			if (my_list.find(value) == true)
 				cout << "poadana wartoœc jest w tablicy";
 			else
 				cout << "poadanej wartoœci NIE ma w tablicy";
@@ -180,27 +181,27 @@ void menu_heap()
 			cout << " Podaj nazwe zbioru:";
 			cin >> fileName;
 			my_heap.load_from_file(fileName);
-			my_heap.display("","",0);
+			my_heap.display();
 			break;
 
 		case '2': 
 			cout << " podaj wartosc:";
 			cin >> value;
 			my_heap.remove(value);
-			my_heap.display("","",0);
+			my_heap.display();
 			break;
 
 		case '3':
 			cout << " podaj wartosc:";
 			cin >> value;
-			my_heap.push_back(value);
-			my_heap.display("","",0);			
+			my_heap.insert(value);
+			my_heap.display();			
 			break;
 
 		case '4': 
 			cout << " podaj wartosc:";
 			cin >> value;
-			if (my_heap.find(value) != -1)
+			if (my_heap.find(value) == true)
 				cout << "poadana wartoœc jest w tablicy";
 			else
 				cout << "poadanej wartoœci NIE ma w tablicy";
@@ -210,24 +211,88 @@ void menu_heap()
 			cout << "Podaj ilosc elementów tablicy:";
 			cin >> value;
 			my_heap.generate_data(value);
-			my_heap.display("","",0);
+			my_heap.display();
 			break;
 		case '6':  //tutaj wyœwietlanie tablicy
-			my_heap.display("","",0);
+			my_heap.display();
 			break;
 		case '7': 
 				// pomiary
 			break;
 		case '8':
 			my_heap.clear();
-			my_heap.display("","",0);
+			my_heap.display();
 			break;		
 		}
 
 	} while (opt != '0');
 }
 
-int main(int argc, char* argv[])
+void menu_tree()
+{
+	char opt;
+	string fileName;
+	int value;
+	
+	binary_tree my_tree;
+	
+	do{
+		displayMenu("--- BINARY TREE ---");
+		opt = getche();
+		cout << endl;
+		switch (opt){
+		case '1': 
+			cout << " Podaj nazwe zbioru:";
+			cin >> fileName;
+			my_tree.load_from_file(fileName);
+			my_tree.display();
+			break;
+
+		case '2': 
+			cout << " podaj wartosc:";
+			cin >> value;
+			my_tree.remove(value);
+			my_tree.display();
+			break;
+
+		case '3':
+			cout << " podaj wartosc:";
+			cin >> value;
+			my_tree.insert(value);
+			my_tree.display();			
+			break;
+
+		case '4': 
+			cout << " podaj wartosc:";
+			cin >> value;
+			if (my_tree.find(value) == true)
+				cout << "poadana wartoœc jest w tablicy";
+			else
+				cout << "poadanej wartoœci NIE ma w tablicy";
+			break;
+
+		case '5':  //tutaj generowanie  tablicy
+			cout << "Podaj ilosc elementów tablicy:";
+			cin >> value;
+			my_tree.generate_data(value);
+			my_tree.display();
+			break;
+		case '6':  //tutaj wyœwietlanie tablicy
+			my_tree.display();
+			break;
+		case '7': 
+				// pomiary
+			break;
+		case '8':
+			my_tree.clear();
+			my_tree.display();
+			break;		
+		}
+
+	} while (opt != '0');
+}
+
+int main([[maybe_unused]]int argc,[[maybe_unused]] char* argv[])
 {
 
 	char option;
@@ -237,6 +302,7 @@ int main(int argc, char* argv[])
 		cout << "1.Tablica" << endl;
 		cout << "2.Lista" << endl;
 		cout << "3.Kopiec" << endl;
+		cout << "4.Binary search tree" << endl;
 		cout << "0.Wyjscie" << endl;
 		cout << "Podaj opcje:";		
 		option = getche();
@@ -253,7 +319,10 @@ int main(int argc, char* argv[])
 
 		case '3':
 			menu_heap();
-			break;		
+			break;
+		case '4':
+			menu_tree();
+			break;
 		}
 
 	} while (option != '0');

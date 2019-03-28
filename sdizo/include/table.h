@@ -13,13 +13,10 @@ public:
 	table()=default;
 	table(std::initializer_list<int32_t> args_vector);
 	~table();
-	void generate_data(int32_t size) override;
 
 	void clear();
 
-	bool load_from_file(std::string file_name) override;
-
-	int32_t find(int32_t value);
+	bool find(int32_t value) override;
 
 	// indexes starts from 0 up to count-1	
 	bool insert(int32_t index, int32_t value) override;
@@ -28,6 +25,7 @@ public:
 	bool remove(int32_t index) override;
 
 	void display() override;
+
 
 private:
 	void push_back(int32_t value);
@@ -38,6 +36,7 @@ private:
 	
 	void pop_front();
 
+	int32_t find_index(int32_t value);
 };
 
 #endif

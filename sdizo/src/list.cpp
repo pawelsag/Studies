@@ -1,8 +1,5 @@
 #include "list.h"
 #include <iostream>
-#include <time.h>
-#include <random>
-#include <fstream>
 
 list::list(std::initializer_list<int32_t> args_vector){
 	for (auto&& val : args_vector){
@@ -10,37 +7,16 @@ list::list(std::initializer_list<int32_t> args_vector){
 	}
 }
 
-void list::generate_data(int32_t size){
-	srand(time(0));
-	for(int i =0; i < size; i++){
-		this->push_back( rand() %1337 );
-	}
-}
-
-bool list::load_from_file(std::string file_name){
-	this->clear(); 
-
-	std::fstream fs (file_name, std::fstream::in | std::fstream::out);
-	
-	if (!fs.is_open())
-		return false;
-
-	int value, elements_count;
-	// read size
-	fs>>elements_count;
-	// read data from file until eof
-	while( (elements_count--) ){
-		fs >> value;
-		this->push_back(value);
-	}
-	
-	fs.close();
-	return true;
-}
-
 list::~list(){
 	this->clear();
 }
+
+bool list::find(int32_t value){
+	if(this->find_node(value) == nullptr)
+		return false;
+	return true;
+}	
+
 bool list::insert(int32_t index, int32_t value){
 	if(index < 0 || index > this->count )
 		return false;
@@ -83,7 +59,7 @@ bool list::insert(int32_t index, int32_t value){
 bool list::remove(int32_t value){
 
 	// find desired element
-	node* item_to_remove = this->find(value);
+	node* item_to_remove = this->find_node(value);
 	if( item_to_remove == nullptr)
 		return false;
 	
@@ -102,7 +78,7 @@ bool list::remove(int32_t value){
 	return true;
 }
 
-node* list::find(int32_t value){
+node* list::find_node(int32_t value){
 	node* item;
 	for(item = this->head; item; item = item->next)
 		if(item->value == value)

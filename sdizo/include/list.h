@@ -20,11 +20,8 @@ public:
 	list() =default;
 	list(std::initializer_list<int32_t> args_vector);
 	~list();
-	void generate_data(int32_t size) override;
 
-	bool load_from_file(std::string FileName) override;
-
-	node* find(int32_t value);
+	bool find(int32_t value) override;
 	
 	bool insert(int32_t index, int32_t value) override;
 	// search value than remove it from list
@@ -42,6 +39,7 @@ private:
 	
 	void pop_front();
 
+	node* find_node(int32_t value);
 };
 
 #endif

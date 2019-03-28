@@ -1,5 +1,5 @@
-#ifndef SDIZO_HEAP
-#define SDIZO_HEAP
+#ifndef SDIZO_TREE
+#define SDIZO_TREE
 
 #include "container_base.h"
 #include <initializer_list>
@@ -14,7 +14,7 @@ struct BST_Node
 	int32_t key; // this variable is in the same time the key and our data 
 };
 
-class binary_tree 
+class binary_tree: public container_base 
 {
 	static constexpr int32_t REDUNDANT_SIZE = 32; 
 
@@ -22,28 +22,47 @@ class binary_tree
 	
 	int32_t elements = 0; // amount of elements inserted to heap
 						  // points to free space just after last element
+	// helper variables for tree printing
 	std::string cr,cl,cp;
+	// 
+	bool is_ok = true;
 
 public:
-	binary_tree()=default;
+	binary_tree();
 	binary_tree(std::initializer_list<int32_t> args_vector);
 	~binary_tree();
 
-	void generate_data(int32_t size);
+	void clear() override;
 
-	void clear();
-
-	bool load_from_file(std::string file_name);
-
-	BST_Node* find(int32_t key);
+	bool find(int32_t key) override;
 
 	// push key to heap
-	bool push_back(int32_t key);
+	void push_back(int32_t key) override;
 	
-	// remove element from heap by given value 
-	bool remove(int32_t key);
+	// to save compatiblity with interface 
+	bool insert(int32_t key, [[maybe_unused]]int32_t index = -1) {
+		this->push_back(key);
+		return this->is_ok;
+	};
 
-	void display(std::string sp, std::string sn, int v);
+	// remove element from heap by given value 
+	bool remove(int32_t key) override;
+
+	void display() override;
+
+private:
+
+	BST_Node* find_node(int32_t key);
+	void display(std::string sp, std::string sn,BST_Node* node);
+	
+	void rotate_right(BST_Node* node);
+	void rotate_left(BST_Node* node);
+	BST_Node* tree_succesor(BST_Node*node);
+	BST_Node* tree_predecessor(BST_Node*node);
+	BST_Node* tree_maximum(BST_Node*node);
+	BST_Node* tree_minimum(BST_Node*node);
+	void tree_DSW();
+	int32_t calculate_DSW_num(int32_t n);
 
 };
 

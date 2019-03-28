@@ -1,10 +1,8 @@
 #include "table.h"
-#include <fstream>
 #include <iostream>
 #include <algorithm>
 #include <new>
-#include <time.h>
-#include <random>
+
 
 table::table(std::initializer_list<int32_t> args_vector){
 	for (auto&& val : args_vector){
@@ -30,27 +28,6 @@ void table::pop_back(){
 
 void table::pop_front(){
 	this->remove(0);
-}
-
-bool table::load_from_file(std::string file_name){
-	this->count =0; 
-
-	std::fstream fs (file_name, std::fstream::in | std::fstream::out);
-	
-	if (!fs.is_open())
-		return false;
-
-	int value, elements_count;
-	// read size
-	fs>>elements_count;
-	// read data from file until eof
-	while( (elements_count--) ){
-		fs >> value;
-		this->push_back(value);
-	}
-
-	fs.close();
-	return true;
 }
 
 bool table::insert(int32_t index, int32_t value){
@@ -85,8 +62,8 @@ bool table::insert(int32_t index, int32_t value){
 	this->tab = temp;
 
 	this->count++;
-	return true;
 
+	return true;
 }
 
 bool table::remove(int32_t index){
@@ -121,22 +98,24 @@ bool table::remove(int32_t index){
 	// set new table to main table pointer
 	this->tab = temp;
 	this->count--;
+
 	return true;
 }
+bool table::find(int32_t value){
+	if(this->find_index(value) == -1)
+		return false;
+	return true;
+}	
 
-int32_t table::find(int32_t value){
+
+int32_t table::find_index(int32_t value){
 	// loop whole table and search for item
 	for(int i =0; i < this->count; i++)
 		if(this->tab[i] == value)
 			return i;
 	return -1;
 }
-void table::generate_data(int32_t size){
-	srand(time(0));
-	for(int i =0; i < size; i++){
-		this->push_back( rand() %1337 );
-	}
-}
+
 void table::clear(){
 	int copy_count =  this->count;
 	for (int i = 0; i < copy_count; ++i)

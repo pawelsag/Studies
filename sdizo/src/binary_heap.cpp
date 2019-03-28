@@ -1,7 +1,4 @@
 #include "binary_heap.h"
-#include <time.h>
-#include <random>
-#include <fstream>
 #include<iostream>
 
 binary_heap::binary_heap(){
@@ -31,13 +28,6 @@ binary_heap::~binary_heap(){
 	delete [] this->tab;
 }
 
-void binary_heap::generate_data(int32_t size){
-	srand(time(0));
-	for(int i =0; i < size; i++){
-		this->push_back( rand() %1337 );
-	}
-}
-
 void binary_heap::clear(){
 	this->elements = 0;
 	this->size = binary_heap::REDUNDANT_SIZE;
@@ -45,27 +35,13 @@ void binary_heap::clear(){
 	this->tab = new int32_t[this->size];	
 }
 
-bool binary_heap::load_from_file(std::string file_name){
-	this->elements =0; 
-
-	std::fstream fs (file_name, std::fstream::in | std::fstream::out);
-	
-	if (!fs.is_open())
+bool binary_heap::find(int32_t value){
+	if(this->find_index(value) == -1)
 		return false;
-
-	int value, elements_count;
-	// read size
-	fs>>elements_count;
-	// read data from file until eof
-	while( (elements_count--) ){
-		fs >> value;
-		this->push_back(value);
-	}
-	fs.close();
 	return true;
-}
+}	
 
-int32_t binary_heap::find(int32_t key){
+int32_t binary_heap::find_index(int32_t key){
 	// loop whole table and search for item
 	for(int i =0; i < this->elements; i++)
 		if(this->tab[i] == key)
@@ -74,10 +50,13 @@ int32_t binary_heap::find(int32_t key){
 }
 
 
-bool binary_heap::push_back(int32_t key){
+
+void binary_heap::push_back(int32_t key){
 	if(this->elements >= this->size){
-		if( !this->realloc(MEMORY_OP::RESIZE_UP))
-			return false;
+		if( !this->realloc(MEMORY_OP::RESIZE_UP)){
+			this->is_ok =false;
+			return;
+		}
 	}
 	// put child in heap
 	this->tab[this->elements] = key;
@@ -92,7 +71,8 @@ bool binary_heap::push_back(int32_t key){
 		parent =  this->parent(element_idx);
 	}
 	this->elements++;
-	return true;
+
+	this->is_ok = true;
 }
 
 
@@ -103,7 +83,7 @@ bool binary_heap::remove(int32_t key){
 			return false;
 	}
 
-	int32_t key_idx = this->find(key);
+	int32_t key_idx = this->find_index(key);
 	if(key_idx == -1) 
 		return false;
 
@@ -161,3 +141,6 @@ void binary_heap::display(std::string sp, std::string sn, int v){
   }
 }
 
+void binary_heap::display(){
+	this->display("","", 0);
+}
