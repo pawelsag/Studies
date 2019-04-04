@@ -1,14 +1,15 @@
 // menu.cpp : Defines the entry point for the console application.
 //
 
-
 #include<conio.h>
 #include<string>
 #include<iostream>
 #include "table.h"
 #include "list.h"
 #include "binary_heap.h"
-#include "binary_tree.h"
+#include "red_black_tree.h"
+#include "container_test.h"
+
 using namespace std;
 
 void displayMenu(string info)
@@ -21,13 +22,21 @@ void displayMenu(string info)
 	cout << "4.Znajdz" << endl;
 	cout << "5.Utworz losowo" << endl;
 	cout << "6.Wyswietl" << endl;
-	cout << "7.Test (pomiary)" << endl;
-	cout << "8.Wyczysc wszystko" << endl;
+	cout << "7.Wyczysc wszystko" << endl;
 	cout << "0.Powrot do menu" << endl;
 	cout << "Podaj opcje:";
 }
 
-
+void displayTestMenu()
+{
+	cout << endl;
+	cout << "1.Test tablicy" << endl;
+	cout << "2.Test listy" << endl;
+	cout << "3.Test kopca" << endl;
+	cout << "4.Test drzewa" << endl;
+	cout << "3.Testuj wszystko" << endl;
+	cout << "Podaj opcje:";
+}
 
 
 void menu_table()
@@ -71,9 +80,9 @@ void menu_table()
 			cout << " podaj wartosc:";
 			cin >> value;
 			if (myTab.find(value) == true)
-				cout << "poadana wartoœc jest w tablicy";
+				cout << "poadana wartosc jest w tablicy";
 			else
-				cout << "poadanej wartoœci NIE ma w tablicy";
+				cout << "poadanej wartosci NIE ma w tablicy";
 			break;
 
 		case '5':  //tutaj generowanie  tablicy
@@ -85,11 +94,7 @@ void menu_table()
 		case '6':  //tutaj wyœwietlanie tablicy
 			myTab.display();
 			break;
-		case '7': 
-				// pomiary
-				
-			break;
-		case '8':
+		case '7':
 			myTab.clear();
 			myTab.display();
 			break;			
@@ -138,9 +143,9 @@ void menu_list()
 			cout << " podaj wartosc:";
 			cin >> value;
 			if (my_list.find(value) == true)
-				cout << "poadana wartoœc jest w tablicy";
+				cout << "poadana wartosc jest w tablicy";
 			else
-				cout << "poadanej wartoœci NIE ma w tablicy";
+				cout << "poadanej wartosci NIE ma w tablicy";
 			break;
 
 		case '5':  //tutaj generowanie  tablicy
@@ -152,10 +157,7 @@ void menu_list()
 		case '6':  //tutaj wyœwietlanie tablicy
 			my_list.display();
 			break;
-		case '7': 
-				// pomiary
-			break;
-		case '8':
+		case '7':
 			my_list.clear();
 			my_list.display();
 			break;		
@@ -202,9 +204,9 @@ void menu_heap()
 			cout << " podaj wartosc:";
 			cin >> value;
 			if (my_heap.find(value) == true)
-				cout << "poadana wartoœc jest w tablicy";
+				cout << "poadana wartosc jest w tablicy";
 			else
-				cout << "poadanej wartoœci NIE ma w tablicy";
+				cout << "poadanej wartosci NIE ma w tablicy";
 			break;
 
 		case '5':  //tutaj generowanie  tablicy
@@ -216,10 +218,7 @@ void menu_heap()
 		case '6':  //tutaj wyœwietlanie tablicy
 			my_heap.display();
 			break;
-		case '7': 
-				// pomiary
-			break;
-		case '8':
+		case '7':
 			my_heap.clear();
 			my_heap.display();
 			break;		
@@ -234,10 +233,10 @@ void menu_tree()
 	string fileName;
 	int value;
 	
-	binary_tree my_tree;
+	red_black_tree my_tree;
 	
 	do{
-		displayMenu("--- BINARY TREE ---");
+		displayMenu("--- READ BLACK TREE ---");
 		opt = getche();
 		cout << endl;
 		switch (opt){
@@ -266,9 +265,9 @@ void menu_tree()
 			cout << " podaj wartosc:";
 			cin >> value;
 			if (my_tree.find(value) == true)
-				cout << "poadana wartoœc jest w tablicy";
+				cout << "poadana wartosc jest w tablicy";
 			else
-				cout << "poadanej wartoœci NIE ma w tablicy";
+				cout << "poadanej wartosci NIE ma w tablicy";
 			break;
 
 		case '5':  //tutaj generowanie  tablicy
@@ -280,10 +279,7 @@ void menu_tree()
 		case '6':  //tutaj wyœwietlanie tablicy
 			my_tree.display();
 			break;
-		case '7': 
-				// pomiary
-			break;
-		case '8':
+		case '7':
 			my_tree.clear();
 			my_tree.display();
 			break;		
@@ -302,7 +298,8 @@ int main([[maybe_unused]]int argc,[[maybe_unused]] char* argv[])
 		cout << "1.Tablica" << endl;
 		cout << "2.Lista" << endl;
 		cout << "3.Kopiec" << endl;
-		cout << "4.Binary search tree" << endl;
+		cout << "4.Red-Black tree" << endl;
+		cout << "5.Przeprowadz testy" << endl;
 		cout << "0.Wyjscie" << endl;
 		cout << "Podaj opcje:";		
 		option = getche();
@@ -323,6 +320,14 @@ int main([[maybe_unused]]int argc,[[maybe_unused]] char* argv[])
 		case '4':
 			menu_tree();
 			break;
+		case '5':
+			displayTestMenu();
+			option = getche();
+
+			meassure::perform_test(meassure::convert_to_TEST_TYPE(option),
+								   meassure::convert_to_TEST_NAME(option));
+			break;
+
 		}
 
 	} while (option != '0');

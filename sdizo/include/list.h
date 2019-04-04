@@ -17,7 +17,7 @@ class list : public container_base
 	
 	int32_t count = 0;		// amount of elements in table 
 public:
-	list() =default;
+	list() = default;
 	list(std::initializer_list<int32_t> args_vector);
 	~list();
 
@@ -30,6 +30,9 @@ public:
 	void display() override;
 
 	void clear();
+
+	void perform_test(std::fstream& write, int32_t population_size, int32_t* population =nullptr, int32_t* indexes =nullptr);
+
 private:
 	void push_back(int32_t value);
 
@@ -40,6 +43,7 @@ private:
 	void pop_front();
 
 	node* find_node(int32_t value);
+
 };
 
 #endif

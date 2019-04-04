@@ -50,6 +50,7 @@ public:
 
 	void display() override;
 
+	void perform_test(std::fstream& write, int32_t population_size, int32_t* population =nullptr, int32_t* indexes =nullptr) override;
 private:
 
 	BST_Node* find_node(int32_t key);

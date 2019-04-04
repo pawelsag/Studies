@@ -1,11 +1,8 @@
 #include "binary_tree.h"
-#include <time.h>
-#include <random>
 #include <iostream>
-#include <fstream>
 #include <string>
-#include<new>
-
+#include <new>
+#include <chrono>
 binary_tree::binary_tree(){
 
 	// variables used in printing
@@ -13,6 +10,7 @@ binary_tree::binary_tree(){
 	cr[0] = 218; cr[1] = 196;
 	cl[0] = 192; cl[1] = 196;
 	cp[0] = 179;
+	
 }
 
 binary_tree::binary_tree(std::initializer_list<int32_t> args_vector){
@@ -104,6 +102,9 @@ void binary_tree::push_back(int32_t key){
 
 bool binary_tree::remove(int32_t key){
 	BST_Node *node = this->find_node(key);
+	if(node == nullptr)
+		return false;
+
 	BST_Node *node_to_remove, *child;
 	
 	// if node has at most one child
@@ -162,6 +163,7 @@ void binary_tree::display(std::string sp, std::string sn,BST_Node* node){
 }
 
 void binary_tree::rotate_right(BST_Node* A){
+	if(A == nullptr) return;
 	BST_Node *parent, *B;
 	parent = A->up;
 	// store A left element
@@ -190,7 +192,7 @@ void binary_tree::rotate_right(BST_Node* A){
 }
 
 void binary_tree::rotate_left(BST_Node* A){
-
+	if(A == nullptr) return;
 	BST_Node *parent, *B;
 	parent = A->up;
 	// store A right element
@@ -297,4 +299,68 @@ int32_t binary_tree::calculate_DSW_num(int32_t n){
 
 void binary_tree::display(){
 	this->display("","", this->root);
+}
+
+void binary_tree::perform_test(std::fstream& write, int32_t population_size, int32_t* population, int32_t* indexes ){
+	using namespace std;
+	using namespace std::chrono;
+	// chrono measure variables
+	duration<double> time_span;
+	high_resolution_clock::time_point t1;
+	high_resolution_clock::time_point t2;
+			
+
+	// push back test;
+  	std::cout << "Dodanie na koniec " << population_size <<" wartosci"<<endl;
+	t1 = high_resolution_clock::now();
+	for (int32_t j = 0; j < population_size ; ++j)
+	{
+		this->push_back(population[j]); 
+	}		
+	t2 = high_resolution_clock::now();
+
+	time_span = duration_cast<duration<double>>(t2 - t1);
+
+	std::cout << "Zajelo :" << time_span.count() << " sekund.";
+	std::cout << std::endl;
+	// save result in file
+	write <<time_span.count() <<";";
+	
+
+	// search test;
+  	std::cout << "Wyszukiwanie "<<population_size << " wartosci sposrod " << population_size <<" egzemplarzy"<<endl;
+	t1 = high_resolution_clock::now();
+	for (int32_t j = 0; j < population_size ; ++j)
+	{
+		this->find(population[indexes[j]]); 
+	}		
+	t2 = high_resolution_clock::now();
+
+	time_span = duration_cast<duration<double>>(t2 - t1);
+
+	std::cout << "Zajelo :" << time_span.count() << " sekund.";
+	std::cout << std::endl;
+	
+	// save result in file
+	write <<time_span.count() <<";";
+	
+
+	
+	// random delete test;
+  	std::cout << "Usuwanie losowe " << population_size <<" wartosci"<<endl;
+	t1 = high_resolution_clock::now();
+	for (int32_t j = 0; j < population_size; ++j)
+	{
+		this->remove(population[j]); 
+	}		
+	t2 = high_resolution_clock::now();
+
+	time_span = duration_cast<duration<double>>(t2 - t1);
+
+	std::cout << "Zajelo :" << time_span.count() << " sekund.";
+	std::cout << std::endl;
+	// save result in file
+	write <<time_span.count() <<";";
+
+	write << population_size<<endl;
 }

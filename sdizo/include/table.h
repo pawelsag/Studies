@@ -26,6 +26,7 @@ public:
 
 	void display() override;
 
+	void perform_test(std::fstream& write, int32_t population_size, int32_t* population = nullptr, int32_t* indexes =nullptr) override;
 
 private:
 	void push_back(int32_t value);

@@ -1,5 +1,7 @@
 #include "binary_heap.h"
-#include<iostream>
+#include <iostream>
+#include <random>
+#include <chrono>
 
 binary_heap::binary_heap(){
 	this->size = binary_heap::REDUNDANT_SIZE;
@@ -116,7 +118,6 @@ bool binary_heap::remove(int32_t key){
 		r_child_idx = this->right_child(max_index);
 		key_idx =max_index;
 	}
-	
 	this->elements--;
 
 	return true;
@@ -143,4 +144,69 @@ void binary_heap::display(std::string sp, std::string sn, int v){
 
 void binary_heap::display(){
 	this->display("","", 0);
+}
+
+void binary_heap::perform_test(std::fstream& write, int32_t population_size, int32_t* population , int32_t* indexes ){
+	using namespace std;
+	using namespace std::chrono;
+	// chrono measure variables
+	duration<double> time_span;
+	high_resolution_clock::time_point t1;
+	high_resolution_clock::time_point t2;
+			
+
+	// push back test;
+  	std::cout << "Dodanie na koniec " << population_size <<" wartosci"<<endl;
+	t1 = high_resolution_clock::now();
+	for (int32_t j = 0; j < population_size ; ++j)
+	{
+		this->push_back(population[j]); 
+	}		
+	t2 = high_resolution_clock::now();
+
+	time_span = duration_cast<duration<double>>(t2 - t1);
+
+	std::cout << "Zajelo :" << time_span.count() << " sekund.";
+	std::cout << std::endl;
+	// save result in file
+	write <<time_span.count() <<";";
+	
+
+	// search test;
+  	std::cout << "Wyszukiwanie "<<population_size << "wartosci sposrod " << population_size <<" egzemplarzy"<<endl;
+	t1 = high_resolution_clock::now();
+	for (int32_t j = 0; j < population_size ; ++j)
+	{
+		this->find(population[indexes[j]]); 
+	}		
+	t2 = high_resolution_clock::now();
+
+	time_span = duration_cast<duration<double>>(t2 - t1);
+
+	std::cout << "Zajelo :" << time_span.count() << " sekund.";
+	std::cout << std::endl;
+	
+	// save result in file
+	write <<time_span.count() <<";";
+	
+
+	
+	// random delete test;
+  	std::cout << "Usuwanie losowe " << population_size <<" wartosci"<<endl;
+	t1 = high_resolution_clock::now();
+	for (int32_t j = population_size - 1; j >=0 ; --j)
+	{
+		this->remove(population[indexes[j]]); 
+	}		
+	t2 = high_resolution_clock::now();
+
+	time_span = duration_cast<duration<double>>(t2 - t1);
+
+	std::cout << "Zajelo :" << time_span.count() << " sekund.";
+	std::cout << std::endl;
+	// save result in file
+	write <<time_span.count() <<";";
+
+
+	write << population_size<<endl;
 }
