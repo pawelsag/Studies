@@ -9,15 +9,19 @@
 #include <string>
 #include <functional>
 
+enum class NODE_COLOR{
+  BLACK = 0,
+  RED = 1
+};
+
 struct RBT_Node
 {
   RBT_Node* up;
   RBT_Node* left;
   RBT_Node* right;
   int32_t key; // this variable is in the same time the key and our data 
-  char color;
+  NODE_COLOR color;
 };
-
 class red_black_tree: public container_base 
 {
   static constexpr int32_t REDUNDANT_SIZE = 32; 

@@ -1,3 +1,5 @@
+#ifndef MISC_FUN
+#define MISC_FUN
 #include <stdint.h>
 #include <iostream>
 #include <windows.h>
@@ -23,3 +25,4 @@ namespace text_colors{
       return s;
   }
 }
+#endif

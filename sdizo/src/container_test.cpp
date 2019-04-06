@@ -2,8 +2,7 @@
 #include "table.h"
 #include "list.h"
 #include "binary_heap.h"
-#include "binary_tree.h"
-#include "misc.h"
+#include "red_black_tree.h"
 
 #include <random>
 #include <iostream>
@@ -19,7 +18,7 @@ namespace meassure{
 		table my_table;
 		list my_list;
 		binary_heap my_heap;
-		binary_tree my_tree;
+		red_black_tree my_tree;
 		container_base* containers[] = {&my_table, &my_list, &my_heap, &my_tree};
 
 		// create csv file
@@ -64,33 +63,43 @@ namespace meassure{
 
 			switch(type){
 				case TEST_TYPE::TEST_TABLE:
-					cout <<"Testy przeprowdzane na tablicy: "<<endl;
-					if(i == 0) write << extended_test_header <<endl;
+					if(i == 0){
+						cout <<"Testy przeprowdzane na tablicy: "<<endl;
+						if(i == 0) write << extended_test_header <<endl;
+					}
 					my_table.perform_test(write, current_pop_size, population,indexes);
-
+					cout <<endl;
 				break;
 
 				case TEST_TYPE::TEST_LIST:
-					cout <<"Testy przeprowdzane na liscie: "<<endl;
-					if(i == 0) write << extended_test_header <<endl;
+					if(i == 0){
+						cout <<"Testy przeprowdzane na liscie: "<<endl;
+						write << extended_test_header <<endl;
+					}
 					my_list.perform_test(write, current_pop_size, population,indexes);
+					cout <<endl;
 				break;
 				case TEST_TYPE::TEST_HEAP:
-					cout <<"Testy przeprowdzane na kopcu: "<<endl;
-					write << base_test_header <<endl;
+					if(i == 0){
+						cout <<"Testy przeprowdzane na kopcu: "<<endl;
+						write << base_test_header <<endl;
+					}
 					my_heap.perform_test(write, current_pop_size, population,indexes);
-
+					cout << endl;
 				break;
 				case TEST_TYPE::TEST_TREE:
-					cout <<"Testy przeprowdzane na drzewie: "<<endl;
-					write << base_test_header <<endl;
+					if(i == 0){
+						cout << endl <<"Testy przeprowdzane na drzewie: "<<endl;
+						write << base_test_header <<endl;
+					}
 					my_tree.perform_test(write, current_pop_size, population,indexes);
-
+					cout <<endl;
 				break;
 				case TEST_TYPE::TEST_ALL:
 					cout <<"Testy przeprowdzane na wszystkich klasach" <<endl;
 					for(auto&& con : containers){
 						con->perform_test(write, current_pop_size, population,indexes);
+						cout << endl;
 					}
 				break;
 

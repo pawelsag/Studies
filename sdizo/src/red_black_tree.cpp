@@ -11,7 +11,7 @@ red_black_tree::red_black_tree(){
   cl[0] = 192; cl[1] = 196;
   cp[0] = 179;
   // init guard
-  this->guard.color = 'B';          
+  this->guard.color = NODE_COLOR::BLACK;          
   this->guard.up    = &this->guard;
   this->guard.left  = &this->guard;
   this->guard.right = &this->guard;
@@ -27,7 +27,7 @@ red_black_tree::red_black_tree(std::initializer_list<int32_t> args_vector){
   cl[0] = 192; cl[1] = 196;
   cp[0] = 179;
   // init guard
-  this->guard.color = 'B';          
+  this->guard.color = NODE_COLOR::BLACK;          
   this->guard.up    = &this->guard;
   this->guard.left  = &this->guard;
   this->guard.right = &this->guard;
@@ -119,15 +119,15 @@ RBT_Node* red_black_tree::tree_insert(int32_t key){
 void red_black_tree::push_back(int32_t key){
   RBT_Node *inserted_node = this->tree_insert(key);
   RBT_Node *uncle;
-  inserted_node->color = 'R';
+  inserted_node->color = NODE_COLOR::RED;
 
-  while(inserted_node != this->root && inserted_node->up->color == 'R'){
+  while(inserted_node != this->root && inserted_node->up->color == NODE_COLOR::RED){
     if(inserted_node->up == inserted_node->up->up->left){
       uncle = inserted_node->up->up->right;
-      if(uncle->color == 'R'){
-        inserted_node->up->color = 'B';
-        uncle->color = 'B';
-        uncle->up->color = 'R';
+      if(uncle->color == NODE_COLOR::RED){
+        inserted_node->up->color = NODE_COLOR::BLACK;
+        uncle->color = NODE_COLOR::BLACK;
+        uncle->up->color = NODE_COLOR::RED;
         inserted_node = inserted_node->up->up;       
         continue;
       }
@@ -136,15 +136,15 @@ void red_black_tree::push_back(int32_t key){
         inserted_node = inserted_node->up;
         this->rotate_left(inserted_node);
       }
-      inserted_node->up->color = 'B';
-      inserted_node->up->up->color = 'R';
+      inserted_node->up->color = NODE_COLOR::BLACK;
+      inserted_node->up->up->color = NODE_COLOR::RED;
       this->rotate_right(inserted_node->up->up);
     }else{
       uncle = inserted_node->up->up->left;
-      if(uncle->color == 'R'){
-        inserted_node->up->color = 'B';
-        uncle->color = 'B';
-        uncle->up->color = 'R';
+      if(uncle->color == NODE_COLOR::RED){
+        inserted_node->up->color = NODE_COLOR::BLACK;
+        uncle->color = NODE_COLOR::BLACK;
+        uncle->up->color = NODE_COLOR::RED;
         inserted_node = inserted_node->up->up;       
         continue;
       }
@@ -153,25 +153,25 @@ void red_black_tree::push_back(int32_t key){
         inserted_node = inserted_node->up;
         this->rotate_right(inserted_node);
       }
-      inserted_node->up->color = 'B';
-      inserted_node->up->up->color = 'R';
+      inserted_node->up->color = NODE_COLOR::BLACK;
+      inserted_node->up->up->color = NODE_COLOR::RED;
       this->rotate_left(inserted_node->up->up);    
     }
   }
   
-  this->root->color = 'B';
+  this->root->color = NODE_COLOR::BLACK;
 }
 
 
 bool red_black_tree::remove(int32_t key){
   RBT_Node *node = this->find_node(key);
-  if(node == nullptr)
+  if(node == &this->guard)
     return false;
 
-  RBT_Node *node_to_remove, *child;
+  RBT_Node *node_to_remove, *child, *brother;
   
   // if node has at most one child
-  if(node->left == nullptr || node->right == nullptr)
+  if(node->left == &this->guard || node->right == &this->guard)
     node_to_remove = node;
   else // node has more than one child
     // find successor of current  child 
@@ -180,29 +180,89 @@ bool red_black_tree::remove(int32_t key){
   // find child of removing node
   // the only possible scenario here is that 
   // node can have at most one child
-  if(node_to_remove->left)
+  if(node_to_remove->left != &this->guard)
     child = node_to_remove->left;
   else
     child = node_to_remove->right;
-  // if if removing node is the tree root
-  if(node_to_remove->up == nullptr)
-    // substitute root with its child 
-    this->root = child; 
-  else{
-    //otherwise we need to substitute deleted node with its child 
-    if(node_to_remove->up->left == node_to_remove)
-      node_to_remove->up->left = child;
-    else
-      node_to_remove->up->right = child;
-  }
-  // if node we want to remove is successor
-  if(node != node_to_remove){
-    // copy data from successor
-    node->key = node_to_remove->key;
-  }
-  delete node_to_remove;
-  this->elements--;
+
+  // set new child's parent
+  child->up = node_to_remove->up;
   
+  if(child->up == &this->guard) 
+    this->root = child; // child has no parent, so child has to be root
+  else if(node_to_remove->up->left == node_to_remove)
+    node_to_remove->up->left = child;  // otherwise set new parent's left child 
+  else
+    node_to_remove->up->right = child; // otherwise set new parent's right child
+  // if our removed node has two children we will delete successor 
+  // so we need to copy key from succesor to  node we begin with
+  if(node_to_remove != node ) node->key = node_to_remove->key;
+
+  // restore red black tree properties
+  if(node_to_remove->color == NODE_COLOR::BLACK){
+    while((child != root) && (child->color == NODE_COLOR::BLACK))
+      if(child == child->up->left){
+        brother = child->up->right;
+
+        if(brother->color == NODE_COLOR::RED){              
+          brother->color = NODE_COLOR::BLACK;
+          child->up->color = NODE_COLOR::RED;
+          this->rotate_left(child->up);
+          brother = child->up->right;
+        }
+
+        if((brother->left->color == NODE_COLOR::BLACK) && (brother->right->color == NODE_COLOR::BLACK)){              
+          brother->color = NODE_COLOR::RED;
+          child = child->up;
+          continue;
+        }
+
+        if(brother->right->color == NODE_COLOR::BLACK){              
+          brother->left->color = NODE_COLOR::BLACK;
+          brother->color = NODE_COLOR::RED;
+          this->rotate_right(brother);
+          brother = child->up->right;
+        }
+        brother->color = child->up->color; 
+        child->up->color = NODE_COLOR::BLACK;
+        brother->right->color = NODE_COLOR::BLACK;
+        this->rotate_left(child->up);
+        child = root;         
+      }
+      else{ // reflected cases                
+        brother = child->up->left;
+
+        if(brother->color == NODE_COLOR::RED){              
+          brother->color = NODE_COLOR::BLACK;
+          child->up->color = NODE_COLOR::RED;
+          this->rotate_right(child->up);
+          brother = child->up->left;}
+
+        if((brother->left->color == NODE_COLOR::BLACK) && (brother->right->color == NODE_COLOR::BLACK)){              
+          brother->color = NODE_COLOR::RED;
+          child = child->up;
+          continue;
+        }
+
+        if(brother->left->color == NODE_COLOR::BLACK){              
+          brother->right->color = NODE_COLOR::BLACK;
+          brother->color = NODE_COLOR::RED;
+          this->rotate_left(brother);
+          brother = child->up->left;
+        }
+
+        brother->color = child->up->color;
+        child->up->color = NODE_COLOR::BLACK;
+        brother->left->color = NODE_COLOR::BLACK;
+        this->rotate_right(child->up);
+        child = root;
+      }
+  }
+  
+  child->color = NODE_COLOR::BLACK;
+
+  delete node_to_remove;
+
   return true;
 }
 
@@ -218,7 +278,7 @@ void red_black_tree::display(std::string sp, std::string sn,RBT_Node* node){
     this->display(s + cp, cr, node->right);
 
     s = s.substr(0,sp.length()-2);
-    if(node->color == 'R')
+    if(node->color == NODE_COLOR::RED)
       cout << s << sn <<text_colors::red<< node->key << text_colors::white << endl;
     else
       cout << s << sn << node->key << endl;

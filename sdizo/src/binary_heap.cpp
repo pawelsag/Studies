@@ -81,7 +81,7 @@ void binary_heap::push_back(int32_t key){
 // remove element from heap by given value 
 bool binary_heap::remove(int32_t key){
 	if(this->elements < this->size - binary_heap::REDUNDANT_SIZE ){
-		if( !this->realloc(MEMORY_OP::RESIZE_UP))
+		if( !this->realloc(MEMORY_OP::RESIZE_DOWN))
 			return false;
 	}
 
