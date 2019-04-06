@@ -117,10 +117,12 @@ bool binary_tree::remove(int32_t key){
 	// find child of removing node
 	// the only possible scenario here is that 
 	// node can have at most one child
-	if(node_to_remove->left)
+	if(node_to_remove->left != nullptr)
 		child = node_to_remove->left;
 	else
 		child = node_to_remove->right;
+
+	if (child != nullptr) child->up = node_to_remove->up; 
 	// if if removing node is the tree root
 	if(node_to_remove->up == nullptr)
 		// substitute root with its child 
