@@ -31,7 +31,7 @@ public:
 
 	void clear();
 
-	void perform_test(std::fstream& write, int32_t population_size, int32_t* population =nullptr, int32_t* indexes =nullptr);
+	void perform_test(int32_t population_size, int32_t* population =nullptr, int32_t* indexes =nullptr);
 
 private:
 	void push_back(int32_t value);

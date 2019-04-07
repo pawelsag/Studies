@@ -51,7 +51,7 @@ public:
 	// based on the key we will know where desired item lies
 	bool remove(int32_t key);
 
-	void perform_test(std::fstream& write, int32_t population_size, int32_t* population =nullptr, int32_t* indexes =nullptr);
+	void perform_test(int32_t population_size, int32_t* population =nullptr, int32_t* indexes =nullptr);
 
 private:
 	inline int32_t left_child(int32_t idx){

@@ -124,6 +124,7 @@ void red_black_tree::push_back(int32_t key){
   while(inserted_node != this->root && inserted_node->up->color == NODE_COLOR::RED){
     if(inserted_node->up == inserted_node->up->up->left){
       uncle = inserted_node->up->up->right;
+      
       if(uncle->color == NODE_COLOR::RED){
         inserted_node->up->color = NODE_COLOR::BLACK;
         uncle->color = NODE_COLOR::BLACK;
@@ -236,7 +237,8 @@ bool red_black_tree::remove(int32_t key){
           brother->color = NODE_COLOR::BLACK;
           child->up->color = NODE_COLOR::RED;
           this->rotate_right(child->up);
-          brother = child->up->left;}
+          brother = child->up->left;
+        }
 
         if((brother->left->color == NODE_COLOR::BLACK) && (brother->right->color == NODE_COLOR::BLACK)){              
           brother->color = NODE_COLOR::RED;
@@ -389,7 +391,7 @@ void red_black_tree::display(){
   this->display("","", this->root);
 }
 
-void red_black_tree::perform_test(std::fstream& write, int32_t population_size, int32_t* population, int32_t* indexes ){
+void red_black_tree::perform_test( int32_t population_size, int32_t* population, int32_t* indexes ){
   using namespace std;
   using namespace std::chrono;
   // chrono measure variables
@@ -398,12 +400,12 @@ void red_black_tree::perform_test(std::fstream& write, int32_t population_size, 
   high_resolution_clock::time_point t2;
       
 
-  // push back test;
-    std::cout << "Dodanie  " << population_size <<" wartosci"<<endl;
+    // random insert test   
+    std::cout << "Wstawianie losowe " << population_size <<" wartosci"<<endl;
   t1 = high_resolution_clock::now();
-  for (int32_t j = 0; j < population_size ; ++j)
+  for (int32_t j = 0; j < population_size; ++j)
   {
-    this->push_back(population[j]); 
+    this->push_back( population[j]); 
   }   
   t2 = high_resolution_clock::now();
 
@@ -411,12 +413,12 @@ void red_black_tree::perform_test(std::fstream& write, int32_t population_size, 
 
   std::cout << "Zajelo :" << time_span.count() << " sekund.";
   std::cout << std::endl;
-  // save result in file
-  write <<time_span.count() <<";";
-  
+  // udpate results
+  this->update_average(time_span.count(), OPERATION_TYPE::INSERT);
+
 
   // search test;
-    std::cout << "Wyszukiwanie "<<population_size << " wartosci sposrod " << population_size <<" egzemplarzy"<<endl;
+    std::cout << "Wyszukiwanie "<< population_size << " wartosci sposrod " << population_size <<" egzemplarzy"<<endl;
   t1 = high_resolution_clock::now();
   for (int32_t j = 0; j < population_size ; ++j)
   {
@@ -429,9 +431,8 @@ void red_black_tree::perform_test(std::fstream& write, int32_t population_size, 
   std::cout << "Zajelo :" << time_span.count() << " sekund.";
   std::cout << std::endl;
   
-  // save result in file
-  write <<time_span.count() <<";";
-  
+  // udpate results
+  this->update_average(time_span.count(), OPERATION_TYPE::SEARCH);  
 
   
   // random delete test;
@@ -447,8 +448,6 @@ void red_black_tree::perform_test(std::fstream& write, int32_t population_size, 
 
   std::cout << "Zajelo :" << time_span.count() << " sekund.";
   std::cout << std::endl;
-  // save result in file
-  write <<time_span.count() <<";";
-
-  write << population_size<<endl;
+  // udpate results
+  this->update_average(time_span.count(), OPERATION_TYPE::REMOVE);
 }

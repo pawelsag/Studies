@@ -34,7 +34,7 @@ void displayTestMenu()
 	cout << "2.Test listy" << endl;
 	cout << "3.Test kopca" << endl;
 	cout << "4.Test drzewa" << endl;
-	cout << "3.Testuj wszystko" << endl;
+	cout << "5.Testuj wszystko" << endl;
 	cout << "Podaj opcje:";
 }
 

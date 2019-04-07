@@ -146,7 +146,7 @@ void binary_heap::display(){
 	this->display("","", 0);
 }
 
-void binary_heap::perform_test(std::fstream& write, int32_t population_size, int32_t* population , int32_t* indexes ){
+void binary_heap::perform_test(int32_t population_size, int32_t* population , int32_t* indexes ){
 	using namespace std;
 	using namespace std::chrono;
 	// chrono measure variables
@@ -155,12 +155,13 @@ void binary_heap::perform_test(std::fstream& write, int32_t population_size, int
 	high_resolution_clock::time_point t2;
 			
 
-	// push back test;
-  	std::cout << "Dodanie na koniec " << population_size <<" wartosci"<<endl;
+	// insert test		
+  	std::cout << "Wstawianie losowe " << population_size <<" wartosci"<<endl;
+
 	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size ; ++j)
+	for (int32_t j = 0; j < population_size; ++j)
 	{
-		this->push_back(population[j]); 
+		this->push_back( population[j]); 
 	}		
 	t2 = high_resolution_clock::now();
 
@@ -168,12 +169,12 @@ void binary_heap::perform_test(std::fstream& write, int32_t population_size, int
 
 	std::cout << "Zajelo :" << time_span.count() << " sekund.";
 	std::cout << std::endl;
-	// save result in file
-	write <<time_span.count() <<";";
-	
+	// udpate results
+	this->update_average(time_span.count(), OPERATION_TYPE::INSERT);
+
 
 	// search test;
-  	std::cout << "Wyszukiwanie "<<population_size << "wartosci sposrod " << population_size <<" egzemplarzy"<<endl;
+  	std::cout << "Wyszukiwanie "<< population_size << " wartosci sposrod " << population_size <<" egzemplarzy"<<endl;
 	t1 = high_resolution_clock::now();
 	for (int32_t j = 0; j < population_size ; ++j)
 	{
@@ -186,17 +187,16 @@ void binary_heap::perform_test(std::fstream& write, int32_t population_size, int
 	std::cout << "Zajelo :" << time_span.count() << " sekund.";
 	std::cout << std::endl;
 	
-	// save result in file
-	write <<time_span.count() <<";";
-	
+	// udpate results
+	this->update_average(time_span.count(), OPERATION_TYPE::SEARCH);	
 
 	
-	// random delete test;
+	// delete test;
   	std::cout << "Usuwanie losowe " << population_size <<" wartosci"<<endl;
 	t1 = high_resolution_clock::now();
-	for (int32_t j = population_size - 1; j >=0 ; --j)
+	for (int32_t j = 0; j < population_size; ++j)
 	{
-		this->remove(population[indexes[j]]); 
+	  this->remove(population[j]); 
 	}		
 	t2 = high_resolution_clock::now();
 
@@ -204,9 +204,7 @@ void binary_heap::perform_test(std::fstream& write, int32_t population_size, int
 
 	std::cout << "Zajelo :" << time_span.count() << " sekund.";
 	std::cout << std::endl;
-	// save result in file
-	write <<time_span.count() <<";";
+	// udpate results
+	this->update_average(time_span.count(), OPERATION_TYPE::REMOVE);		
 
-
-	write << population_size<<endl;
 }

@@ -169,7 +169,7 @@ void list::clear(){
 	}
 }
 
-void list::perform_test(std::fstream& write, int32_t population_size, int32_t* population , int32_t* indexes){
+void list::perform_test( int32_t population_size, int32_t* population , int32_t* indexes){
 
 	using namespace std;
 	using namespace std::chrono;
@@ -179,43 +179,7 @@ void list::perform_test(std::fstream& write, int32_t population_size, int32_t* p
 	high_resolution_clock::time_point t2;
 			
 
-	// push front test;
-  	std::cout << "Wstwianie na poczatek " << population_size <<" wartosci"<<endl;
-	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size; ++j)
-	{
-		this->push_front(population[j]);
-	}
-	t2 = high_resolution_clock::now();
-
-	time_span = duration_cast<duration<double>>(t2 - t1);
-
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
-	std::cout << std::endl;
-	// save result in file
-	write <<time_span.count() <<";";
-	
-
-
-	// front delete test;
-	std::cout << "Usuwanie z poczatku " << population_size <<" wartosci"<<endl;
-	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size; ++j)
-	{
-		this->pop_front(); 
-	}		
-	t2 = high_resolution_clock::now();
-
-	time_span = duration_cast<duration<double>>(t2 - t1);
-
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
-	std::cout << std::endl;
-	// save result in file
-	write <<time_span.count() <<";";
-
-
-
-	// random insert test		
+		// random insert test		
   	std::cout << "Wstawianie losowe " << population_size <<" wartosci"<<endl;
 	t1 = high_resolution_clock::now();
 	for (int32_t j = 0; j < population_size; ++j)
@@ -228,16 +192,16 @@ void list::perform_test(std::fstream& write, int32_t population_size, int32_t* p
 
 	std::cout << "Zajelo :" << time_span.count() << " sekund.";
 	std::cout << std::endl;
-	// save result in file
-	write <<time_span.count() <<";";
+	// udpate results
+	this->update_average(time_span.count(), OPERATION_TYPE::INSERT);
 
 
-	// random delete test;
-  	std::cout << "Usuwanie losowe " << population_size <<" wartosci"<<endl;
+	// search test;
+  	std::cout << "Wyszukiwanie "<< population_size << " wartosci sposrod " << population_size <<" egzemplarzy"<<endl;
 	t1 = high_resolution_clock::now();
-	for (int32_t j = population_size-1; j >=0 ; --j)
+	for (int32_t j = 0; j < population_size ; ++j)
 	{
-		this->remove( population[indexes[j]] ); 
+		this->find(population[indexes[j]]); 
 	}		
 	t2 = high_resolution_clock::now();
 
@@ -245,9 +209,26 @@ void list::perform_test(std::fstream& write, int32_t population_size, int32_t* p
 
 	std::cout << "Zajelo :" << time_span.count() << " sekund.";
 	std::cout << std::endl;
-	// save result in file
-	write <<time_span.count() <<";";
 	
+	// udpate results
+	this->update_average(time_span.count(), OPERATION_TYPE::SEARCH);	
+
+	
+	// random delete test;
+  	std::cout << "Usuwanie losowe " << population_size <<" wartosci"<<endl;
+	t1 = high_resolution_clock::now();
+	for (int32_t j = population_size-1; j >=0 ; --j)
+	{
+		this->remove(indexes[j]); 
+	}		
+	t2 = high_resolution_clock::now();
+
+	time_span = duration_cast<duration<double>>(t2 - t1);
+
+	std::cout << "Zajelo :" << time_span.count() << " sekund.";
+	std::cout << std::endl;
+	// udpate results
+	this->update_average(time_span.count(), OPERATION_TYPE::REMOVE);		
 
 	// push back test;
   	std::cout << "Dodanie na koniec " << population_size <<" wartosci"<<endl;
@@ -262,35 +243,15 @@ void list::perform_test(std::fstream& write, int32_t population_size, int32_t* p
 
 	std::cout << "Zajelo :" << time_span.count() << " sekund.";
 	std::cout << std::endl;
-	// save result in file
-	write <<time_span.count() <<";";
-	
-
-	// search test;
-  	std::cout << "Wyszukiwanie "<<population_size << " wartosci sposrod " << population_size <<" egzemplarzy"<<endl;
-	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size ; ++j)
-	{
-		this->find(population[indexes[j]]); 
-	}		
-	t2 = high_resolution_clock::now();
-
-	time_span = duration_cast<duration<double>>(t2 - t1);
-
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
-	std::cout << std::endl;
-	
-	// save result in file
-	write <<time_span.count() <<";";
-	
-
+	// udpate results
+	this->update_average(time_span.count(), OPERATION_TYPE::PUSH_BACK);	
 	
 	// back delete test;
   	std::cout << "Usuwanie z konca " << population_size <<" wartosci"<<endl;
 	t1 = high_resolution_clock::now();
 	for (int32_t j = 0; j < population_size ; ++j)
 	{
-		this->pop_back();
+		this->pop_back(); 
 	}		
 	t2 = high_resolution_clock::now();
 
@@ -298,8 +259,40 @@ void list::perform_test(std::fstream& write, int32_t population_size, int32_t* p
 
 	std::cout << "Zajelo :" << time_span.count() << " sekund.";
 	std::cout << std::endl;
-	// save result in file
-	write <<time_span.count() <<";";
+	// udpate results
+	this->update_average(time_span.count(), OPERATION_TYPE::POP_BACK);
 	
-	write << population_size<<endl;
+	// push front test;
+  	std::cout << "Wstwianie na poczatek " << population_size <<" wartosci"<<endl;
+	t1 = high_resolution_clock::now();
+	for (int32_t j = 0; j < population_size; ++j)
+	{
+		this->push_front(population[j]);
+	}
+	t2 = high_resolution_clock::now();
+
+	time_span = duration_cast<duration<double>>(t2 - t1);
+
+	std::cout << "Zajelo :" << time_span.count() << " sekund.";
+	std::cout << std::endl;
+	// udpate results
+	this->update_average(time_span.count(), OPERATION_TYPE::PUSH_FRONT);
+	
+
+	// front delete test;
+	std::cout << "Usuwanie z poczatku " << population_size <<" wartosci"<<endl;
+	t1 = high_resolution_clock::now();
+	for (int32_t j = 0; j < population_size; ++j)
+	{
+		this->pop_front(); 
+	}		
+	t2 = high_resolution_clock::now();
+
+	time_span = duration_cast<duration<double>>(t2 - t1);
+
+	std::cout << "Zajelo :" << time_span.count() << " sekund.";
+	std::cout << std::endl;
+	// udpate results
+	this->update_average(time_span.count(), OPERATION_TYPE::POP_FRONT);
+
 }

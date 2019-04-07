@@ -59,7 +59,7 @@ public:
 
   void display() override;
 
-  void perform_test(std::fstream& write, int32_t population_size, int32_t* population =nullptr, int32_t* indexes =nullptr) override;
+  void perform_test(int32_t population_size, int32_t* population =nullptr, int32_t* indexes =nullptr) override;
   
   void make_list(){
     RBT_Node *rotate_element = this->root;
