@@ -317,7 +317,7 @@ void binary_tree::perform_test( int32_t population_size, int32_t* population, in
 	t1 = high_resolution_clock::now();
 	for (int32_t j = 0; j < population_size; ++j)
 	{
-		this->push_back( population[j]); 
+		this->push_back( population[j] ); 
 	}		
 	t2 = high_resolution_clock::now();
 
@@ -327,10 +327,10 @@ void binary_tree::perform_test( int32_t population_size, int32_t* population, in
 	std::cout << std::endl;
 	// udpate results
 	this->update_average(time_span.count(), OPERATION_TYPE::INSERT);
-
+  
 
 	// search test;
-  	std::cout << "Wyszukiwanie "<< population_size << " wartosci sposrod " << population_size <<" egzemplarzy"<<endl;
+  std::cout << "Wyszukiwanie "<< population_size << " wartosci sposrod " << population_size <<" egzemplarzy"<<endl;
 	t1 = high_resolution_clock::now();
 	for (int32_t j = 0; j < population_size ; ++j)
 	{
@@ -348,7 +348,7 @@ void binary_tree::perform_test( int32_t population_size, int32_t* population, in
 
 	
 	// random delete test;
-  	std::cout << "Usuwanie " << population_size <<" wartosci"<<endl;
+  std::cout << "Usuwanie " << population_size <<" wartosci"<<endl;
 	t1 = high_resolution_clock::now();
 	for (int32_t j = 0; j < population_size; ++j)
 	{
@@ -362,5 +362,5 @@ void binary_tree::perform_test( int32_t population_size, int32_t* population, in
 	std::cout << std::endl;
 	// udpate results
 	this->update_average(time_span.count(), OPERATION_TYPE::REMOVE);	
-
+  this->clear();
 }

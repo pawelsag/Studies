@@ -8,6 +8,7 @@
 #include <random>
 #include <iostream>
 #include <time.h>
+
 namespace meassure{
 
 	void perform_test(TEST_TYPE type, std::string file_name){
@@ -34,11 +35,11 @@ namespace meassure{
 		}
 
 		// population table for tests
-		int population_table[15];
-		for(int i =0; i < 15; i++)
-			population_table[i] = 1000;
+		int population_table[POPULATION_SIZE];
+		for(auto i =0llu; i < POPULATION_SIZE; i++)
+			population_table[i] = 10000 + 1000 * i;
 		//  
-		int n = 10 ;
+		int n = 30 ;
 		int32_t tab_size = get_tab_size(population_table);
 		int32_t *population,*indexes, current_pop_size;
 		

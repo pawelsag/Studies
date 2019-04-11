@@ -14,12 +14,12 @@ enum class OPERATION_TYPE{
 	POP_FRONT   = 6
 };
 
-constexpr const size_t tests_count = 7;
-
+constexpr const size_t TEST_COUNT = 7;
+constexpr const size_t POPULATION_SIZE = 30;
 class container_base
 {
-	double performance_average[tests_count] = {};
-	size_t n[tests_count] = {};
+	double performance_average[TEST_COUNT] = {};
+	size_t n[TEST_COUNT] = {};
 
 public:
 	container_base() {};
@@ -44,14 +44,14 @@ public:
 	virtual void perform_test(int32_t population_size, int32_t* population = nullptr, int32_t* indexes =nullptr)=0;
 
 	void save_test_averege(std::fstream& write){
-		for(auto i = 0llu; i < tests_count; i++){
+		for(auto i = 0llu; i < TEST_COUNT; i++){
 			if(n[i] != 0) 
 				write << this->performance_average[i] / this->n[i] << ";";
 		}
 	}
 
 	void reset_average(){
-		for(auto i = 0llu; i < tests_count; i++ ){
+		for(auto i = 0llu; i < TEST_COUNT; i++ ){
 			this->n[i] = 0;
 			this->performance_average[i] = 0;
 		}

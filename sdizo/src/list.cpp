@@ -152,13 +152,31 @@ void list::push_front(int32_t value){
 }
 
 void list::pop_back(){
-	if(this->count > 0)
-		this->remove(this->tail->value);
+	if(this->count == 0)
+		return;
+  if(this->count == 1)
+    this->head = nullptr;
+  
+  node *node_to_remove = this->tail;
+  if(node_to_remove->prev)
+    node_to_remove->prev->next = nullptr;
+  this->tail = node_to_remove->prev;
+  delete node_to_remove;
+  this->count--;
 }
 
 void list::pop_front(){
-	if(this->count > 0)
-		this->remove(this->head->value);
+  if(this->count == 0)
+    return;
+  if(this->count == 1)
+    this->tail = nullptr;
+  
+  node *node_to_remove = this->head;
+  if(node_to_remove->next)
+    node_to_remove->next->prev = nullptr;
+  this->head = node_to_remove->next;
+  delete node_to_remove;
+  this->count--;
 }
 
 void list::clear(){
@@ -229,6 +247,7 @@ void list::perform_test( int32_t population_size, int32_t* population , int32_t*
 	std::cout << std::endl;
 	// udpate results
 	this->update_average(time_span.count(), OPERATION_TYPE::REMOVE);		
+  this->clear();
 
 	// push back test;
   	std::cout << "Dodanie na koniec " << population_size <<" wartosci"<<endl;

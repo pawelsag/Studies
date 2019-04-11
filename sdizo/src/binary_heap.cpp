@@ -189,14 +189,19 @@ void binary_heap::perform_test(int32_t population_size, int32_t* population , in
 	
 	// udpate results
 	this->update_average(time_span.count(), OPERATION_TYPE::SEARCH);	
-
+  
+  // generate data
+  for (int32_t j = 0; j < population_size; ++j)
+  {
+    population[j] = rand() %10000; 
+  }
 	
 	// delete test;
-  	std::cout << "Usuwanie losowe " << population_size <<" wartosci"<<endl;
+  std::cout << "Usuwanie losowe " << population_size <<" wartosci"<<endl;
 	t1 = high_resolution_clock::now();
 	for (int32_t j = 0; j < population_size; ++j)
 	{
-	  this->remove(population[j]); 
+	  this->remove( population[j] ); 
 	}		
 	t2 = high_resolution_clock::now();
 
@@ -207,4 +212,5 @@ void binary_heap::perform_test(int32_t population_size, int32_t* population , in
 	// udpate results
 	this->update_average(time_span.count(), OPERATION_TYPE::REMOVE);		
 
+  this->clear();
 }

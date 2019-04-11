@@ -323,8 +323,8 @@ int main([[maybe_unused]]int argc,[[maybe_unused]] char* argv[])
 		case '5':
 			displayTestMenu();
 			option = getche();
-
-			meassure::perform_test(meassure::convert_to_TEST_TYPE(option),
+      if(option != '0')
+			   meassure::perform_test(meassure::convert_to_TEST_TYPE(option),
 								   meassure::convert_to_TEST_NAME(option));
 			break;
 

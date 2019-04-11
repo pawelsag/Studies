@@ -17,5 +17,5 @@ ${OBJDIR}/%.o : ${SRCDIR}/%.cpp
 	${CC} ${INCLUDE_PATHS} ${CFLAGS} -c $? -o $@
 
 clean:
-	del /F /Q ${OBJDIR}\\*
-	del ${TARGET}.exe
+	rm -rf ${OBJDIR}/*
+	rm ./${TARGET}.exe

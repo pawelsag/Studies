@@ -450,4 +450,5 @@ void red_black_tree::perform_test( int32_t population_size, int32_t* population,
   std::cout << std::endl;
   // udpate results
   this->update_average(time_span.count(), OPERATION_TYPE::REMOVE);
+  this->clear();
 }

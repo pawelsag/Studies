@@ -199,6 +199,7 @@ void table::perform_test(int32_t population_size, int32_t* population , int32_t*
 	std::cout << std::endl;
 	// udpate results
 	this->update_average(time_span.count(), OPERATION_TYPE::REMOVE);		
+  this->clear(); 
 
 	// push back test;
   	std::cout << "Dodanie na koniec " << population_size <<" wartosci"<<endl;
@@ -265,5 +266,5 @@ void table::perform_test(int32_t population_size, int32_t* population , int32_t*
 	// udpate results
 	this->update_average(time_span.count(), OPERATION_TYPE::POP_FRONT);
 
-	
+ 
 }
