@@ -18,10 +18,11 @@ namespace meassure{
 		std::string base_test_header = "Random insert;Search operation;Random remove;Probe size";
 
 		table my_table;
-		list my_list;
+		list_sdizo my_list;
 		binary_heap my_heap;
 		binary_tree my_tree;
-		container_base* containers[] = {&my_table, &my_list, &my_heap, &my_tree};
+		
+    container_base* containers[] = {&my_table, &my_list, &my_heap, &my_tree};
 		TEST_TYPE type_array[] = {TEST_TYPE::TEST_TABLE, TEST_TYPE::TEST_LIST, TEST_TYPE::TEST_HEAP, TEST_TYPE::TEST_TREE}; 
 
 		auto type_index = convert_TEST_TYPE_to_num(type);
@@ -37,13 +38,10 @@ namespace meassure{
 		// population table for tests
 		int population_table[POPULATION_SIZE];
 		for(auto i =0llu; i < POPULATION_SIZE; i++)
-			population_table[i] = 10000 + 1000 * i;
-		//  
-		int n = 30 ;
-		int32_t tab_size = get_tab_size(population_table);
-		int32_t *population,*indexes, current_pop_size;
+			population_table[i] = 10000 + 5000 * i;
 		
-		
+		int n = 50;
+		int32_t current_pop_size, index, value;
 
 		// init seed
 		srand(time(0));
@@ -77,36 +75,23 @@ namespace meassure{
 				break;
 			};
 			// perform deep efficency test for given structure
-			for (int32_t i = 0; i < tab_size; ++i)
+			for (auto i = 0llu; i < POPULATION_SIZE; ++i)
 			{
 				// get probe size
 				current_pop_size = population_table[i];
-				population = new int32_t[ current_pop_size ];
-				indexes = new int32_t[ current_pop_size ];
-				for(int32_t _n =0 ; _n < n; _n++){
-					
-					// generate data
-					for (int32_t j = 0; j < current_pop_size; ++j)
-					{
-						population[j] = rand() %10000; 
-					}
-					// genrate indexes
-					indexes[0] = 0;
-
-					// genearte random indexes but they shouldn't be grater then container elements count 
-					for (int32_t j = 1; j < current_pop_size; ++j)
-					{	
-						indexes[j] = rand() % j;
-					}
-
-					containers[type_index]->perform_test(current_pop_size, population, indexes);
-
+        containers[type_index]->generate_data(current_pop_size);
+        for(int32_t _n =0 ; _n < n; _n++){ 
+          // generate value to put
+          value = rand() % 0xbadcafe;
+          // genrate index
+					index = rand() % current_pop_size;
+					containers[type_index]->perform_test(index,value);
 				}
+
+        containers[type_index]->clear();
 				containers[type_index]->save_test_averege(write);
 				write << current_pop_size<<endl;
 				containers[type_index]->reset_average();
-				delete [] population;
-				delete [] indexes;
 			}
 		}else{
 			for(auto type: type_array){
@@ -141,37 +126,27 @@ namespace meassure{
 					break;
 				};
 				// perform deep efficency test for given structure
-				for (int32_t i = 0; i < tab_size; ++i)
-				{
-					// get probe size
-					current_pop_size = population_table[i];
-					population = new int32_t[ current_pop_size ];
-					indexes = new int32_t[ current_pop_size ];
-					for(int32_t _n =0 ; _n < n; _n++){
-						
-						// generate data
-						for (int32_t j = 0; j < current_pop_size; ++j)
-						{
-							population[j] = rand() %10000; 
-						}
-						// genrate indexes
-						indexes[0] = 0;
+				for (auto i = 0llu; i < POPULATION_SIZE; ++i)
+        {
+          // get probe size
+          current_pop_size = population_table[i];
+          
+          containers[type_index]->generate_data(current_pop_size);
 
-						// genearte random indexes but they shouldn't be grater then container elements count 
-						for (int32_t j = 1; j < current_pop_size; ++j)
-						{	
-							indexes[j] = rand() % j;
-						}
-
-						containers[type_index]->perform_test(current_pop_size, population, indexes);
-
-					}
-					containers[type_index]->save_test_averege(write);
-					write << current_pop_size<<endl;
-					containers[type_index]->reset_average();
-					delete [] population;
-					delete [] indexes;
-				}
+          for(int32_t _n =0 ; _n < n; _n++){ 
+            // generate value to put
+            value = rand() % 0xbadcafe;
+            // genrate index
+            index = rand() % current_pop_size;
+            
+            containers[type_index]->perform_test(index,value);
+            
+          }
+          containers[type_index]->clear();
+          containers[type_index]->save_test_averege(write);
+          write << current_pop_size<<endl;
+          containers[type_index]->reset_average();
+        }
 			}
 		}
 		write.close();

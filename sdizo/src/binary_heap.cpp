@@ -93,7 +93,9 @@ bool binary_heap::remove(int32_t key){
 	int32_t max_element, max_index;
 
 	// swap found item with last element
-	std::swap(this->tab[key_idx], this->tab[ this->elements - 1 ]);
+	std::swap(this->tab[key_idx], this->tab[ this->elements -1 ]);
+	this->elements--;
+
 	// get children
 	l_child_idx = this->left_child(key_idx);
 	r_child_idx = this->right_child(key_idx);
@@ -111,14 +113,13 @@ bool binary_heap::remove(int32_t key){
 		// stop heapifing
  		if(max_element < this->tab[key_idx])
 			break;
-		// otherwise spaw elements
+		// otherwise swap elements
 		std::swap(this->tab[ key_idx ], this->tab[ max_index ]);
 		// get new children
 		l_child_idx = this->left_child(max_index);
 		r_child_idx = this->right_child(max_index);
 		key_idx =max_index;
 	}
-	this->elements--;
 
 	return true;
 }
@@ -146,71 +147,57 @@ void binary_heap::display(){
 	this->display("","", 0);
 }
 
-void binary_heap::perform_test(int32_t population_size, int32_t* population , int32_t* indexes ){
+void binary_heap::perform_test(int32_t value, [[maybe_unused]]int32_t index ){
 	using namespace std;
 	using namespace std::chrono;
 	// chrono measure variables
-	duration<double> time_span;
+	std::chrono::nanoseconds time_span;
 	high_resolution_clock::time_point t1;
 	high_resolution_clock::time_point t2;
 			
 
-	// insert test		
-  	std::cout << "Wstawianie losowe " << population_size <<" wartosci"<<endl;
-
-	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size; ++j)
-	{
-		this->push_back( population[j]); 
-	}		
-	t2 = high_resolution_clock::now();
-
-	time_span = duration_cast<duration<double>>(t2 - t1);
-
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
-	std::cout << std::endl;
-	// udpate results
-	this->update_average(time_span.count(), OPERATION_TYPE::INSERT);
-
-
-	// search test;
-  	std::cout << "Wyszukiwanie "<< population_size << " wartosci sposrod " << population_size <<" egzemplarzy"<<endl;
-	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size ; ++j)
-	{
-		this->find(population[indexes[j]]); 
-	}		
-	t2 = high_resolution_clock::now();
-
-	time_span = duration_cast<duration<double>>(t2 - t1);
-
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
-	std::cout << std::endl;
 	
-	// udpate results
-	this->update_average(time_span.count(), OPERATION_TYPE::SEARCH);	
+  // random insert test   
+  std::cout << "HEAP::Wstawianie wartosci"<<endl;
+    
+  t1 = high_resolution_clock::now(); 
+  this->push_back(value); 
+  t2 = high_resolution_clock::now();
+
+  time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
+
+  std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
+  std::cout << std::endl;
+  // udpate results
+  this->update_average(time_span.count(), OPERATION_TYPE::INSERT);
+
+
+  // search test;
+  std::cout << "HEAP::Wyszukiwanie sposrod " << this->elements <<" egzemplarzy"<<endl;
+  t1 = high_resolution_clock::now();
+  this->find(value); 
+  t2 = high_resolution_clock::now();
+
+  time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
+
+  std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
+  std::cout << std::endl;
   
-  // generate data
-  for (int32_t j = 0; j < population_size; ++j)
-  {
-    population[j] = rand() %10000; 
-  }
-	
-	// delete test;
-  std::cout << "Usuwanie losowe " << population_size <<" wartosci"<<endl;
-	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size; ++j)
-	{
-	  this->remove( population[j] ); 
-	}		
-	t2 = high_resolution_clock::now();
+  // udpate results
+  this->update_average(time_span.count(), OPERATION_TYPE::SEARCH);  
 
-	time_span = duration_cast<duration<double>>(t2 - t1);
+  
+  // random delete test;
+  std::cout << "HEAP::Usuwanie wartosci"<<endl;
+  t1 = high_resolution_clock::now();
+  this->remove(value); 
+  t2 = high_resolution_clock::now();
 
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
-	std::cout << std::endl;
-	// udpate results
-	this->update_average(time_span.count(), OPERATION_TYPE::REMOVE);		
+  time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
 
-  this->clear();
+  std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
+  std::cout << std::endl;
+  // udpate results
+  this->update_average(time_span.count(), OPERATION_TYPE::REMOVE);
+
 }

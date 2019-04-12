@@ -303,64 +303,55 @@ void binary_tree::display(){
 	this->display("","", this->root);
 }
 
-void binary_tree::perform_test( int32_t population_size, int32_t* population, int32_t* indexes ){
+void binary_tree::perform_test(int32_t value, [[maybe_unused]]int32_t index ){
 	using namespace std;
 	using namespace std::chrono;
 	// chrono measure variables
-	duration<double> time_span;
+	std::chrono::nanoseconds time_span;
 	high_resolution_clock::time_point t1;
 	high_resolution_clock::time_point t2;
 			
 
-	// random insert test		
-  	std::cout << "Wstawianie " << population_size <<" wartosci"<<endl;
-	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size; ++j)
-	{
-		this->push_back( population[j] ); 
-	}		
-	t2 = high_resolution_clock::now();
+	 // random insert test   
+  std::cout << "BINARY_TREE::Wstawianie wartosci"<<endl;
+    
+  t1 = high_resolution_clock::now(); 
+  this->push_back(value); 
+  t2 = high_resolution_clock::now();
 
-	time_span = duration_cast<duration<double>>(t2 - t1);
+  time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
 
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
-	std::cout << std::endl;
-	// udpate results
-	this->update_average(time_span.count(), OPERATION_TYPE::INSERT);
+  std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
+  std::cout << std::endl;
+  // udpate results
+  this->update_average(time_span.count(), OPERATION_TYPE::INSERT);
+
+
+  // search test;
+    std::cout << "BINARY_TREE::Wyszukiwanie sposrod "<<  this->elements <<" egzemplarzy"<<endl;
+  t1 = high_resolution_clock::now();
+  this->find(value); 
+  t2 = high_resolution_clock::now();
+
+  time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
+
+  std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
+  std::cout << std::endl;
   
+  // udpate results
+  this->update_average(time_span.count(), OPERATION_TYPE::SEARCH);  
 
-	// search test;
-  std::cout << "Wyszukiwanie "<< population_size << " wartosci sposrod " << population_size <<" egzemplarzy"<<endl;
-	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size ; ++j)
-	{
-		this->find(population[indexes[j]]); 
-	}		
-	t2 = high_resolution_clock::now();
+  
+  // random delete test;
+  std::cout << "BINARY_TREE::Usuwanie wartosci"<<endl;
+  t1 = high_resolution_clock::now();
+  this->remove(value); 
+  t2 = high_resolution_clock::now();
 
-	time_span = duration_cast<duration<double>>(t2 - t1);
+  time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
 
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
-	std::cout << std::endl;
-	
-	// udpate results
-	this->update_average(time_span.count(), OPERATION_TYPE::SEARCH);	
-
-	
-	// random delete test;
-  std::cout << "Usuwanie " << population_size <<" wartosci"<<endl;
-	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size; ++j)
-	{
-	  this->remove(population[j]); 
-	}		
-	t2 = high_resolution_clock::now();
-
-	time_span = duration_cast<duration<double>>(t2 - t1);
-
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
-	std::cout << std::endl;
-	// udpate results
-	this->update_average(time_span.count(), OPERATION_TYPE::REMOVE);	
-  this->clear();
+  std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
+  std::cout << std::endl;
+  // udpate results
+  this->update_average(time_span.count(), OPERATION_TYPE::REMOVE);
 }

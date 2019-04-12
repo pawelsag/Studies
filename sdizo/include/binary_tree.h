@@ -16,7 +16,7 @@ struct BST_Node
 
 class binary_tree: public container_base 
 {
-	static constexpr int32_t REDUNDANT_SIZE = 32; 
+	static constexpr int32_t REDUNDANT_SIZE = 10000; 
 
 	BST_Node* root = nullptr; // pointer to data structure 
 	
@@ -50,7 +50,7 @@ public:
 
 	void display() override;
 
-	void perform_test(int32_t population_size, int32_t* population =nullptr, int32_t* indexes =nullptr) override;
+  void perform_test(int32_t value, [[maybe_unused]]int32_t index ) override;
 private:
 
 	BST_Node* find_node(int32_t key);

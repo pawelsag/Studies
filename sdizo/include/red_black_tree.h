@@ -59,7 +59,7 @@ public:
 
   void display() override;
 
-  void perform_test(int32_t population_size, int32_t* population =nullptr, int32_t* indexes =nullptr) override;
+  void perform_test(int32_t value,[[maybe_unused]] int32_t index ) override;
   
   void make_list(){
     RBT_Node *rotate_element = this->root;

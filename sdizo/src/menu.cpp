@@ -1,12 +1,13 @@
 // menu.cpp : Defines the entry point for the console application.
 //
 
-#include<conio.h>
+#include<stdio.h>
 #include<string>
 #include<iostream>
 #include "table.h"
 #include "list.h"
 #include "binary_heap.h"
+#include "binary_tree.h"
 #include "red_black_tree.h"
 #include "container_test.h"
 
@@ -49,7 +50,7 @@ void menu_table()
 
 	do{
 		displayMenu("--- TABLICA ---");
-		opt = getche();
+		opt = getchar();
 		cout << endl;
 		switch (opt){
 		case '1': 
@@ -109,11 +110,11 @@ void menu_list()
 	string fileName;
 	int index, value;
 	
-	list my_list;
+	list_sdizo my_list;
 
 	do{
 		displayMenu("--- LISTA ---");
-		opt = getche();
+		opt = getchar();
 		cout << endl;
 		switch (opt){
 		case '1': 
@@ -176,7 +177,7 @@ void menu_heap()
 
 	do{
 		displayMenu("--- HEAP ---");
-		opt = getche();
+		opt = getchar();
 		cout << endl;
 		switch (opt){
 		case '1': 
@@ -233,11 +234,11 @@ void menu_tree()
 	string fileName;
 	int value;
 	
-	red_black_tree my_tree;
+	binary_tree my_tree;
 	
 	do{
-		displayMenu("--- READ BLACK TREE ---");
-		opt = getche();
+		displayMenu("--- BINARY TREE ---");
+		opt = getchar();
 		cout << endl;
 		switch (opt){
 		case '1': 
@@ -298,11 +299,11 @@ int main([[maybe_unused]]int argc,[[maybe_unused]] char* argv[])
 		cout << "1.Tablica" << endl;
 		cout << "2.Lista" << endl;
 		cout << "3.Kopiec" << endl;
-		cout << "4.Red-Black tree" << endl;
+		cout << "4.Drzewo binarne" << endl;
 		cout << "5.Przeprowadz testy" << endl;
 		cout << "0.Wyjscie" << endl;
 		cout << "Podaj opcje:";		
-		option = getche();
+		option = getchar();
 		cout << endl;
 
 		switch (option){
@@ -322,7 +323,8 @@ int main([[maybe_unused]]int argc,[[maybe_unused]] char* argv[])
 			break;
 		case '5':
 			displayTestMenu();
-			option = getche();
+			option = getchar();
+      option = getchar();
       if(option != '0')
 			   meassure::perform_test(meassure::convert_to_TEST_TYPE(option),
 								   meassure::convert_to_TEST_NAME(option));

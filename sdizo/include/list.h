@@ -10,16 +10,16 @@ struct node{
 	int32_t value = 0; 
 };
 
-class list : public container_base 
+class list_sdizo : public container_base 
 {
 	node *head = nullptr; // pointer to data structure
 	node *tail = nullptr; // pointer to data structure
 	
 	int32_t count = 0;		// amount of elements in table 
 public:
-	list() = default;
-	list(std::initializer_list<int32_t> args_vector);
-	~list();
+	list_sdizo() = default;
+	list_sdizo(std::initializer_list<int32_t> args_vector);
+	~list_sdizo();
 
 	bool find(int32_t value) override;
 	
@@ -31,8 +31,8 @@ public:
 
 	void clear();
 
-	void perform_test(int32_t population_size, int32_t* population =nullptr, int32_t* indexes =nullptr);
-
+  void perform_test(int32_t value, int32_t index ) override;
+  
 private:
 	void push_back(int32_t value);
 

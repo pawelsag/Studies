@@ -140,44 +140,38 @@ void table::display(){
 }
 
 
-void table::perform_test(int32_t population_size, int32_t* population , int32_t* indexes ){
+void table::perform_test(int32_t value, int32_t index){
 	using namespace std;
 	using namespace std::chrono;
 	// chrono measure variables
-	duration<double> time_span;
+	std::chrono::nanoseconds time_span;
 	high_resolution_clock::time_point t1;
 	high_resolution_clock::time_point t2;
 	
 	// random insert test		
-  	std::cout << "Wstawianie " << population_size <<" wartosci"<<endl;
+  std::cout << "TABLICA::Wstawianie wartosci"<<endl;
   	
-	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size; ++j)
-	{ 
-		this->insert(indexes[j], population[j]); 
-	}		
+	t1 = high_resolution_clock::now(); 
+	this->insert(index, value); 
 	t2 = high_resolution_clock::now();
 
-	time_span = duration_cast<duration<double>>(t2 - t1);
+	time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
 
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
+	std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
 	std::cout << std::endl;
 	// udpate results
 	this->update_average(time_span.count(), OPERATION_TYPE::INSERT);
 
 
 	// search test;
-  	std::cout << "Wyszukiwanie "<< population_size << " wartosci sposrod " << population_size <<" egzemplarzy"<<endl;
+  	std::cout << "TABLICA::Wyszukiwanie sposrod " << this->count <<" egzemplarzy"<<endl;
 	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size ; ++j)
-	{
-		this->find(population[indexes[j]]); 
-	}		
+	this->find(value); 
 	t2 = high_resolution_clock::now();
 
-	time_span = duration_cast<duration<double>>(t2 - t1);
+	time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
 
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
+	std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
 	std::cout << std::endl;
 	
 	// udpate results
@@ -185,86 +179,68 @@ void table::perform_test(int32_t population_size, int32_t* population , int32_t*
 
 	
 	// random delete test;
-  	std::cout << "Usuwanie " << population_size <<" wartosci"<<endl;
+	std::cout << "TABLICA::Usuwanie wartosci"<<endl;
 	t1 = high_resolution_clock::now();
-	for (int32_t j = population_size-1; j >=0 ; --j)
-	{
-		this->remove(indexes[j]); 
-	}		
+  this->remove(index); 
 	t2 = high_resolution_clock::now();
 
-	time_span = duration_cast<duration<double>>(t2 - t1);
+	time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
 
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
+	std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
 	std::cout << std::endl;
 	// udpate results
-	this->update_average(time_span.count(), OPERATION_TYPE::REMOVE);		
-  this->clear(); 
+	this->update_average(time_span.count(), OPERATION_TYPE::REMOVE);
 
 	// push back test;
-  	std::cout << "Dodanie na koniec " << population_size <<" wartosci"<<endl;
+	std::cout << "TABLICA::Dodanie na koniec " << endl;
 	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size ; ++j)
-	{
-		this->push_back(population[j]); 
-	}		
+	this->push_back(value); 
 	t2 = high_resolution_clock::now();
 
-	time_span = duration_cast<duration<double>>(t2 - t1);
+	time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
 
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
+	std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
 	std::cout << std::endl;
 	// udpate results
 	this->update_average(time_span.count(), OPERATION_TYPE::PUSH_BACK);	
 	
 	// back delete test;
-  	std::cout << "Usuwanie z konca " << population_size <<" wartosci"<<endl;
+  	std::cout << "TABLICA::Usuwanie z konca " << endl;
 	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size ; ++j)
-	{
-		this->pop_back(); 
-	}		
+  this->pop_back(); 
 	t2 = high_resolution_clock::now();
 
-	time_span = duration_cast<duration<double>>(t2 - t1);
+	time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
 
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
+	std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
 	std::cout << std::endl;
 	// udpate results
 	this->update_average(time_span.count(), OPERATION_TYPE::POP_BACK);
 	
 	// push front test;
-  	std::cout << "Wstwianie na poczatek " << population_size <<" wartosci"<<endl;
+  	std::cout << "TABLICA::Wstwianie na poczatek "<<endl;
 	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size; ++j)
-	{
-		this->push_front(population[j]);
-	}
+	this->push_front(value);	
 	t2 = high_resolution_clock::now();
 
-	time_span = duration_cast<duration<double>>(t2 - t1);
+	time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
 
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
+	std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
 	std::cout << std::endl;
 	// udpate results
 	this->update_average(time_span.count(), OPERATION_TYPE::PUSH_FRONT);
 	
 
 	// front delete test;
-	std::cout << "Usuwanie z poczatku " << population_size <<" wartosci"<<endl;
+	std::cout << "TABLICA::Usuwanie z poczatku "<<endl;
 	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size; ++j)
-	{
-		this->pop_front(); 
-	}		
+	this->pop_front(); 	
 	t2 = high_resolution_clock::now();
 
-	time_span = duration_cast<duration<double>>(t2 - t1);
+	time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
 
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
+	std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
 	std::cout << std::endl;
 	// udpate results
 	this->update_average(time_span.count(), OPERATION_TYPE::POP_FRONT);
-
- 
 }

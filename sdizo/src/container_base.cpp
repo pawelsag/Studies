@@ -24,6 +24,6 @@ void container_base::load_from_file(std::string file_name){
 void container_base::generate_data(int32_t size){
 	srand(time(0));
 	for(int i =0; i < size; i++){
-		this->push_back( rand() %1337 );
+		this->push_back( rand() % 0xbadcafe );
 	}
 }

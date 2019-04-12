@@ -15,7 +15,7 @@ enum class OPERATION_TYPE{
 };
 
 constexpr const size_t TEST_COUNT = 7;
-constexpr const size_t POPULATION_SIZE = 30;
+constexpr const size_t POPULATION_SIZE = 150;
 class container_base
 {
 	double performance_average[TEST_COUNT] = {};
@@ -41,7 +41,7 @@ public:
 
 	virtual void push_back(int32_t value)=0;
 
-	virtual void perform_test(int32_t population_size, int32_t* population = nullptr, int32_t* indexes =nullptr)=0;
+	virtual void perform_test(int32_t value, int32_t index )=0;
 
 	void save_test_averege(std::fstream& write){
 		for(auto i = 0llu; i < TEST_COUNT; i++){

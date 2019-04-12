@@ -3,23 +3,23 @@
 #include <random>
 #include <chrono>
 
-list::list(std::initializer_list<int32_t> args_vector){
+list_sdizo::list_sdizo(std::initializer_list<int32_t> args_vector){
 	for (auto&& val : args_vector){
 		this->push_back(val);
 	}
 }
 
-list::~list(){
+list_sdizo::~list_sdizo(){
 	this->clear();
 }
 
-bool list::find(int32_t value){
+bool list_sdizo::find(int32_t value){
 	if(this->find_node(value) == nullptr)
 		return false;
 	return true;
 }	
 
-bool list::insert(int32_t index, int32_t value){
+bool list_sdizo::insert(int32_t index, int32_t value){
 	if(index < 0 || index > this->count )
 		return false;
 	// if we want prepend item
@@ -58,7 +58,7 @@ bool list::insert(int32_t index, int32_t value){
 	return true;
 }
 
-bool list::remove(int32_t value){
+bool list_sdizo::remove(int32_t value){
 
 	// find desired element
 	node* item_to_remove = this->find_node(value);
@@ -80,7 +80,7 @@ bool list::remove(int32_t value){
 	return true;
 }
 
-node* list::find_node(int32_t value){
+node* list_sdizo::find_node(int32_t value){
 	node* item;
 	for(item = this->head; item; item = item->next)
 		if(item->value == value)
@@ -88,7 +88,7 @@ node* list::find_node(int32_t value){
 	return item;
 }
 
-void list::display(){
+void list_sdizo::display(){
 	using std::cout;
 	using std::endl;
 
@@ -113,7 +113,7 @@ void list::display(){
 	cout<<endl;
 }
 
-void list::push_back(int32_t value){
+void list_sdizo::push_back(int32_t value){
 	// create new node
 	node* tmp = new node;  
     // add value to created node 
@@ -132,7 +132,7 @@ void list::push_back(int32_t value){
     this->count++;  	
 }
 
-void list::push_front(int32_t value){
+void list_sdizo::push_front(int32_t value){
 	// create new node
 	node* tmp = new node;  
     // add value to created node 
@@ -151,7 +151,7 @@ void list::push_front(int32_t value){
 	this->count++;	
 }
 
-void list::pop_back(){
+void list_sdizo::pop_back(){
 	if(this->count == 0)
 		return;
   if(this->count == 1)
@@ -165,7 +165,7 @@ void list::pop_back(){
   this->count--;
 }
 
-void list::pop_front(){
+void list_sdizo::pop_front(){
   if(this->count == 0)
     return;
   if(this->count == 1)
@@ -179,7 +179,7 @@ void list::pop_front(){
   this->count--;
 }
 
-void list::clear(){
+void list_sdizo::clear(){
 	int copy_count =  this->count;
 	for (int i = 0; i < copy_count; ++i)
 	{
@@ -187,131 +187,110 @@ void list::clear(){
 	}
 }
 
-void list::perform_test( int32_t population_size, int32_t* population , int32_t* indexes){
+void list_sdizo::perform_test(int32_t value, int32_t index ){
 
 	using namespace std;
 	using namespace std::chrono;
 	// chrono measure variables
-	duration<double> time_span;
+	std::chrono::nanoseconds time_span;
 	high_resolution_clock::time_point t1;
 	high_resolution_clock::time_point t2;
 			
 
-		// random insert test		
-  	std::cout << "Wstawianie losowe " << population_size <<" wartosci"<<endl;
-	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size; ++j)
-	{
-		this->insert(indexes[j], population[j]); 
-	}		
-	t2 = high_resolution_clock::now();
+  // random insert test   
+  std::cout << "LISTA::Wstawianie wartosci"<<endl;
+    
+  t1 = high_resolution_clock::now(); 
+  this->insert(index, value); 
+  t2 = high_resolution_clock::now();
 
-	time_span = duration_cast<duration<double>>(t2 - t1);
+  time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
 
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
-	std::cout << std::endl;
-	// udpate results
-	this->update_average(time_span.count(), OPERATION_TYPE::INSERT);
+  std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
+  std::cout << std::endl;
+  // udpate results
+  this->update_average(time_span.count(), OPERATION_TYPE::INSERT);
 
 
-	// search test;
-  	std::cout << "Wyszukiwanie "<< population_size << " wartosci sposrod " << population_size <<" egzemplarzy"<<endl;
-	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size ; ++j)
-	{
-		this->find(population[indexes[j]]); 
-	}		
-	t2 = high_resolution_clock::now();
+  // search test;
+    std::cout << "LISTA::Wyszukiwanie sposrod " << this->count <<" egzemplarzy"<<endl;
+  t1 = high_resolution_clock::now();
+  this->find(value); 
+  t2 = high_resolution_clock::now();
 
-	time_span = duration_cast<duration<double>>(t2 - t1);
+  time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
 
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
-	std::cout << std::endl;
-	
-	// udpate results
-	this->update_average(time_span.count(), OPERATION_TYPE::SEARCH);	
+  std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
+  std::cout << std::endl;
+  
+  // udpate results
+  this->update_average(time_span.count(), OPERATION_TYPE::SEARCH);  
 
-	
-	// random delete test;
-  	std::cout << "Usuwanie losowe " << population_size <<" wartosci"<<endl;
-	t1 = high_resolution_clock::now();
-	for (int32_t j = population_size-1; j >=0 ; --j)
-	{
-		this->remove(indexes[j]); 
-	}		
-	t2 = high_resolution_clock::now();
+  
+  // random delete test;
+  std::cout << "LISTA::Usuwanie wartosci"<<endl;
+  t1 = high_resolution_clock::now();
+  this->remove(index); 
+  t2 = high_resolution_clock::now();
 
-	time_span = duration_cast<duration<double>>(t2 - t1);
+  time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
 
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
-	std::cout << std::endl;
-	// udpate results
-	this->update_average(time_span.count(), OPERATION_TYPE::REMOVE);		
-  this->clear();
+  std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
+  std::cout << std::endl;
+  // udpate results
+  this->update_average(time_span.count(), OPERATION_TYPE::REMOVE);
 
-	// push back test;
-  	std::cout << "Dodanie na koniec " << population_size <<" wartosci"<<endl;
-	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size ; ++j)
-	{
-		this->push_back(population[j]); 
-	}		
-	t2 = high_resolution_clock::now();
+  // push back test;
+  std::cout << "LISTA::Dodanie na koniec " << endl;
+  t1 = high_resolution_clock::now();
+  this->push_back(value); 
+  t2 = high_resolution_clock::now();
 
-	time_span = duration_cast<duration<double>>(t2 - t1);
+  time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
 
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
-	std::cout << std::endl;
-	// udpate results
-	this->update_average(time_span.count(), OPERATION_TYPE::PUSH_BACK);	
-	
-	// back delete test;
-  	std::cout << "Usuwanie z konca " << population_size <<" wartosci"<<endl;
-	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size ; ++j)
-	{
-		this->pop_back(); 
-	}		
-	t2 = high_resolution_clock::now();
+  std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
+  std::cout << std::endl;
+  // udpate results
+  this->update_average(time_span.count(), OPERATION_TYPE::PUSH_BACK); 
+  
+  // back delete test;
+    std::cout << "LISTA::Usuwanie z konca " << endl;
+  t1 = high_resolution_clock::now();
+  this->pop_back(); 
+  t2 = high_resolution_clock::now();
 
-	time_span = duration_cast<duration<double>>(t2 - t1);
+  time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
 
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
-	std::cout << std::endl;
-	// udpate results
-	this->update_average(time_span.count(), OPERATION_TYPE::POP_BACK);
-	
-	// push front test;
-  	std::cout << "Wstwianie na poczatek " << population_size <<" wartosci"<<endl;
-	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size; ++j)
-	{
-		this->push_front(population[j]);
-	}
-	t2 = high_resolution_clock::now();
+  std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
+  std::cout << std::endl;
+  // udpate results
+  this->update_average(time_span.count(), OPERATION_TYPE::POP_BACK);
+  
+  // push front test;
+    std::cout << "LISTA::Wstwianie na poczatek "<<endl;
+  t1 = high_resolution_clock::now();
+  this->push_front(value);  
+  t2 = high_resolution_clock::now();
 
-	time_span = duration_cast<duration<double>>(t2 - t1);
+  time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
 
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
-	std::cout << std::endl;
-	// udpate results
-	this->update_average(time_span.count(), OPERATION_TYPE::PUSH_FRONT);
-	
+  std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
+  std::cout << std::endl;
+  // udpate results
+  this->update_average(time_span.count(), OPERATION_TYPE::PUSH_FRONT);
+  
 
-	// front delete test;
-	std::cout << "Usuwanie z poczatku " << population_size <<" wartosci"<<endl;
-	t1 = high_resolution_clock::now();
-	for (int32_t j = 0; j < population_size; ++j)
-	{
-		this->pop_front(); 
-	}		
-	t2 = high_resolution_clock::now();
+  // front delete test;
+  std::cout << "LISTA::Usuwanie z poczatku "<<endl;
+  t1 = high_resolution_clock::now();
+  this->pop_front();  
+  t2 = high_resolution_clock::now();
 
-	time_span = duration_cast<duration<double>>(t2 - t1);
+  time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
 
-	std::cout << "Zajelo :" << time_span.count() << " sekund.";
-	std::cout << std::endl;
-	// udpate results
-	this->update_average(time_span.count(), OPERATION_TYPE::POP_FRONT);
+  std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
+  std::cout << std::endl;
+  // udpate results
+  this->update_average(time_span.count(), OPERATION_TYPE::POP_FRONT);
 
 }

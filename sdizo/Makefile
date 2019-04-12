@@ -1,5 +1,5 @@
-CC=g++
-CFLAGS=-Wall -Wextra -std=c++17 -g3 -ggdb
+CC=clang-cl
+CFLAGS= /GX
 OUTDIR=.
 SRCDIR= src
 OBJDIR= obj
