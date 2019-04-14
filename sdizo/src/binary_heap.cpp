@@ -92,9 +92,9 @@ bool binary_heap::remove(int32_t key){
 	int32_t l_child_idx, r_child_idx;
 	int32_t max_element, max_index;
 
-	// swap found item with last element
-	std::swap(this->tab[key_idx], this->tab[ this->elements -1 ]);
 	this->elements--;
+	// swap found item with last element
+	std::swap(this->tab[key_idx], this->tab[ this->elements ]);
 
 	// get children
 	l_child_idx = this->left_child(key_idx);

@@ -34,6 +34,25 @@ bool binary_tree::find(int32_t value){
 	return true;
 }	
 
+void binary_tree::load_from_file(std::string file_name){
+  this->clear();
+
+  std::fstream fs (file_name, std::fstream::in | std::fstream::out);
+  
+  if (!fs.is_open())
+    return;
+
+  int value, elements_count;
+  // read size
+  fs>>elements_count;
+  // read data from file until eof
+  while( (elements_count--) ){
+    fs >> value;
+    this->push_back_DSW_free(value);
+  }
+  fs.close();
+}
+
 void binary_tree::clear(){
 	BST_Node *rotate_element = this->root;
 	// expand binary structure to straight line 
@@ -100,6 +119,39 @@ void binary_tree::push_back(int32_t key){
 	this->tree_DSW();
 }
 
+void binary_tree::push_back_DSW_free(int32_t key){
+  BST_Node *new_node;
+  try{
+    new_node = new BST_Node;
+  }catch(const std::bad_alloc& e){
+    is_ok = false;
+    return;
+  }
+  new_node->left = nullptr;
+  new_node->right = nullptr;
+  new_node->key = key;
+
+  BST_Node* top = this->root, *parent = nullptr;
+
+  while(top != nullptr){
+    parent = top;
+    if (new_node->key < top->key)
+      top = top->left;
+    else
+      top = top->right;
+  }
+
+  new_node->up = parent;
+  if(parent == nullptr){
+    this->root = new_node;
+  }else if(new_node->key < parent->key)
+    parent->left = new_node;
+  else
+    parent->right = new_node;
+  this->elements++;
+  this->is_ok = true;
+}
+
 bool binary_tree::remove(int32_t key){
 	BST_Node *node = this->find_node(key);
 	if(node == nullptr)
@@ -142,8 +194,53 @@ bool binary_tree::remove(int32_t key){
 	delete node_to_remove;
 	this->elements--;
 	this->tree_DSW();
-	
+
 	return true;
+}
+
+bool binary_tree::remove_DSW_free(int32_t key){
+  BST_Node *node = this->find_node(key);
+  if(node == nullptr)
+    return false;
+
+  BST_Node *node_to_remove, *child;
+  
+  // if node has at most one child
+  if(node->left == nullptr || node->right == nullptr)
+    node_to_remove = node;
+  else // node has more than one child
+    // find successor of current  child 
+    node_to_remove = this->tree_succesor(node);
+
+  // find child of removing node
+  // the only possible scenario here is that 
+  // node can have at most one child
+  if(node_to_remove->left != nullptr)
+    child = node_to_remove->left;
+  else
+    child = node_to_remove->right;
+
+  if (child != nullptr) child->up = node_to_remove->up; 
+  // if if removing node is the tree root
+  if(node_to_remove->up == nullptr)
+    // substitute root with its child 
+    this->root = child; 
+  else{
+    //otherwise we need to substitute deleted node with its child 
+    if(node_to_remove->up->left == node_to_remove)
+      node_to_remove->up->left = child;
+    else
+      node_to_remove->up->right = child;
+  }
+  // if node we want to remove is successor
+  if(node != node_to_remove){
+    // copy data from successor
+    node->key = node_to_remove->key;
+  }
+  delete node_to_remove;
+  this->elements--;
+  
+  return true;
 }
 
 void binary_tree::display(std::string sp, std::string sn,BST_Node* node){

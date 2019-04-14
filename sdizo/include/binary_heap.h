@@ -8,7 +8,7 @@
 
 class binary_heap : public container_base 
 {
-	static constexpr int32_t REDUNDANT_SIZE = 32; 
+	static constexpr int32_t REDUNDANT_SIZE = 20000; 
 
 	int32_t *tab = nullptr; // pointer to data structure 
 	
@@ -29,7 +29,7 @@ public:
 	binary_heap(std::initializer_list<int32_t> args_vector);
 	~binary_heap();
 
-	void clear();
+	void clear()override;
 
 	bool find(int32_t key) override;
 
@@ -49,7 +49,7 @@ public:
 	
 	// the key is the only value we need to delete node
 	// based on the key we will know where desired item lies
-	bool remove(int32_t key);
+	bool remove(int32_t key)override;
 
   void perform_test(int32_t value,[[maybe_unused]]int32_t index ) override;
 

@@ -31,6 +31,8 @@ public:
 	binary_tree();
 	binary_tree(std::initializer_list<int32_t> args_vector);
 	~binary_tree();
+  
+  void load_from_file(std::string);
 
 	void clear() override;
 
@@ -38,15 +40,17 @@ public:
 
 	// push key to heap
 	void push_back(int32_t key) override;
+  void push_back_DSW_free(int32_t key);
 	
 	// to save compatiblity with interface 
-	bool insert(int32_t key, [[maybe_unused]]int32_t index = -1) {
+	bool insert(int32_t key, [[maybe_unused]]int32_t index = -1)override {
 		this->push_back(key);
 		return this->is_ok;
 	};
 
 	// remove element from heap by given value 
 	bool remove(int32_t key) override;
+  bool remove_DSW_free(int32_t key);
 
 	void display() override;
 

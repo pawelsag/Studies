@@ -38,9 +38,9 @@ namespace meassure{
 		// population table for tests
 		int population_table[POPULATION_SIZE];
 		for(auto i =0llu; i < POPULATION_SIZE; i++)
-			population_table[i] = 10000 + 5000 * i;
+			population_table[i] = 10000 + 20000 * i;
 		
-		int n = 50;
+		int n = 100;
 		int32_t current_pop_size, index, value;
 
 		// init seed
@@ -82,7 +82,7 @@ namespace meassure{
         containers[type_index]->generate_data(current_pop_size);
         for(int32_t _n =0 ; _n < n; _n++){ 
           // generate value to put
-          value = rand() % 0xbadcafe;
+          value = 0xffffffff;
           // genrate index
 					index = rand() % current_pop_size;
 					containers[type_index]->perform_test(index,value);

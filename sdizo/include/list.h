@@ -29,12 +29,12 @@ public:
 
 	void display() override;
 
-	void clear();
+	void clear()override;
 
   void perform_test(int32_t value, int32_t index ) override;
   
 private:
-	void push_back(int32_t value);
+	void push_back(int32_t value)override;
 
 	void push_front(int32_t value);
 

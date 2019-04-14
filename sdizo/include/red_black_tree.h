@@ -49,7 +49,7 @@ public:
   void push_back(int32_t key) override;
   
   // to save compatiblity with interface 
-  bool insert(int32_t key, [[maybe_unused]]int32_t index = -1) {
+  bool insert(int32_t key, [[maybe_unused]]int32_t index = -1)override {
     this->push_back(key);
     return this->is_ok;
   };
