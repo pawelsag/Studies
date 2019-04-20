@@ -2,7 +2,6 @@
 #include <iostream>
 #include <random>
 #include <chrono>
-
 binary_heap::binary_heap(){
 	this->size = binary_heap::REDUNDANT_SIZE;
 	this->tab = new int32_t[this->size];
@@ -72,6 +71,7 @@ void binary_heap::push_back(int32_t key){
 		element_idx = parent;
 		parent =  this->parent(element_idx);
 	}
+	
 	this->elements++;
 
 	this->is_ok = true;
@@ -89,16 +89,18 @@ bool binary_heap::remove(int32_t key){
 	if(key_idx == -1) 
 		return false;
 
-	int32_t l_child_idx, r_child_idx;
+	int32_t l_child_idx, r_child_idx, parent;
 	int32_t max_element, max_index;
 
 	this->elements--;
 	// swap found item with last element
 	std::swap(this->tab[key_idx], this->tab[ this->elements ]);
+	key = this->tab[key_idx];
 
 	// get children
 	l_child_idx = this->left_child(key_idx);
 	r_child_idx = this->right_child(key_idx);
+
 	// while index of currently handled child is bigger than last element index 
 	while(l_child_idx < this->elements-1){
 		// find smallest child
@@ -119,6 +121,15 @@ bool binary_heap::remove(int32_t key){
 		l_child_idx = this->left_child(max_index);
 		r_child_idx = this->right_child(max_index);
 		key_idx =max_index;
+	}
+	
+	parent =  this->parent(key_idx);
+ 
+	// do heapify when elemets should move to upper layers
+	while(key_idx > 0 && this->tab[parent] < key){
+		std::swap(this->tab[parent], this->tab[key_idx]);
+		key_idx = parent;
+		parent =  this->parent(key_idx);
 	}
 
 	return true;
