@@ -1,0 +1,5 @@
+sdizo.exe
+obj/*
+*.csv
+*.xlsx
+*.txt
