@@ -1,16 +1,20 @@
 #ifndef SDIZO_HEAP
 #define SDIZO_HEAP
 
-#include "container_base.h"
 #include <initializer_list>
 #include <algorithm>
 #include <new>
+// default implementation of the heap is maximum
+#define HEAP_MIN
 
-class binary_heap : public container_base 
+template <typename T>
+class binary_heap
 {
-	static constexpr int32_t REDUNDANT_SIZE = 20000; 
 
-	int32_t *tab = nullptr; // pointer to data structure 
+	static constexpr int32_t REDUNDANT_SIZE = 100; 
+protected:
+
+	T *tab = nullptr; // pointer to data structure 
 	
 	int32_t size = 0;      // current heap size
 
@@ -26,34 +30,25 @@ class binary_heap : public container_base
 
 public:
 	binary_heap();
-	binary_heap(std::initializer_list<int32_t> args_vector);
+	binary_heap(std::initializer_list<T> args_vector);
 	~binary_heap();
 
-	void clear()override;
+	void clear();
 
-	bool find(int32_t key) override;
+	bool find(T key);
 
 	// push key to heap
-	void push_back(int32_t key);
+	void push_back(T key);
 
-	void display() override;
+	void display();
 
 	void display(std::string sp, std::string sn, int v);
-
-	// the key is the only value we need to create new node
-	// based on key we will know where to put new item 
-	bool insert(int32_t key, [[maybe_unused]]int32_t index = -1) {
-		this->push_back(key);
-		return this->is_ok;
-	};
 	
 	// the key is the only value we need to delete node
 	// based on the key we will know where desired item lies
-	bool remove(int32_t key)override;
+	bool remove(T key);
 
-  void perform_test(int32_t value,[[maybe_unused]]int32_t index ) override;
-
-private:
+protected:
 	inline int32_t left_child(int32_t idx){
 		return idx*2 + 1;
 	}
@@ -65,12 +60,12 @@ private:
 	}
 
 	// get index by given key
-	int32_t find_index(int32_t key);
+	int32_t find_index(T key);
 
 	// automaticly expand or shrink size
 	// depends on size
 	bool realloc(MEMORY_OP operation){
-		int32_t* temp;
+		T* temp;
 		int32_t new_size;
 		if(operation == MEMORY_OP::RESIZE_DOWN){
 			// heap size shouldn't be zero
@@ -81,10 +76,11 @@ private:
 			// create new table  
 			new_size = this->size - binary_heap::REDUNDANT_SIZE;
 			try{
-				temp = new int32_t[new_size];
+				temp = new T[new_size];
 			}catch(std::bad_alloc& e){
 				return false;
 			}
+
 			// copy old values
 			std::copy(this->tab, this->tab + new_size, temp);
 			// remove old table
@@ -97,7 +93,7 @@ private:
 			// description for this part is same as for previous 
 			new_size = this->size + binary_heap::REDUNDANT_SIZE;
 			try{
-				temp = new int32_t[new_size];
+				temp = new T[new_size];
 			}catch(std::bad_alloc& e){
 				return false;
 			}
@@ -109,5 +105,7 @@ private:
 		return true;		 
 	}
 };
+
+#include "../src/heap_template.cpp"
 
 #endif

@@ -6,11 +6,13 @@
 #include <algorithm>
 #include <new>
 // default implementation of the heap is maximum
-// #define HEAP_MIN
+#define HEAP_MIN
 
 class binary_heap : public container_base 
 {
+
 	static constexpr int32_t REDUNDANT_SIZE = 20000; 
+protected:
 
 	int32_t *tab = nullptr; // pointer to data structure 
 	
@@ -55,7 +57,7 @@ public:
 
   void perform_test(int32_t value,[[maybe_unused]]int32_t index ) override;
 
-private:
+protected:
 	inline int32_t left_child(int32_t idx){
 		return idx*2 + 1;
 	}

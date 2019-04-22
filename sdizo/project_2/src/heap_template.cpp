@@ -1,10 +1,9 @@
-#include "binary_heap.h"
 #include <iostream>
-#include <random>
-#include <chrono>
-binary_heap::binary_heap(){
+
+template<typename T>
+binary_heap<T>::binary_heap(){
 	this->size = binary_heap::REDUNDANT_SIZE;
-	this->tab = new int32_t[this->size];
+	this->tab = new T[this->size];
 	// variables used in printing
 	cr = cl = cp = "  ";
 	cr[0] = 218; cr[1] = 196;
@@ -12,8 +11,8 @@ binary_heap::binary_heap(){
 	cp[0] = 179;
 
 }
-
-binary_heap::binary_heap(std::initializer_list<int32_t> args_vector){
+template<typename T>
+binary_heap<T>::binary_heap(std::initializer_list<T> args_vector){
 	
 	for (auto&& val : args_vector){
 		this->push_back(val);
@@ -25,24 +24,28 @@ binary_heap::binary_heap(std::initializer_list<int32_t> args_vector){
 	cp[0] = 179;
 }
 
-binary_heap::~binary_heap(){
+template<typename T>
+binary_heap<T>::~binary_heap(){
 	delete [] this->tab;
 }
 
-void binary_heap::clear(){
+template<typename T>
+void binary_heap<T>::clear(){
 	this->elements = 0;
 	this->size = binary_heap::REDUNDANT_SIZE;
 	delete [] this->tab;
-	this->tab = new int32_t[this->size];	
+	this->tab = new T[this->size];	
 }
 
-bool binary_heap::find(int32_t value){
+template<typename T>
+bool binary_heap<T>::find(T value){
 	if(this->find_index(value) == -1)
 		return false;
 	return true;
-}	
+}
 
-int32_t binary_heap::find_index(int32_t key){
+template<typename T>
+int32_t binary_heap<T>::find_index(T key){
 	// loop whole table and search for item
 	for(int i =0; i < this->elements; i++)
 		if(this->tab[i] == key)
@@ -51,8 +54,8 @@ int32_t binary_heap::find_index(int32_t key){
 }
 
 
-
-void binary_heap::push_back(int32_t key){
+template<typename T>
+void binary_heap<T>::push_back(T key){
 	if(this->elements >= this->size){
 		if( !this->realloc(MEMORY_OP::RESIZE_UP)){
 			this->is_ok =false;
@@ -66,7 +69,11 @@ void binary_heap::push_back(int32_t key){
 	// copy last index
 	int32_t element_idx = this->elements;
 	// do heapify
+#ifdef HEAP_MIN
+	while(element_idx > 0 && this->tab[parent] > key){
+#else
 	while(element_idx > 0 && this->tab[parent] < key){
+#endif	
 		std::swap(this->tab[parent], this->tab[element_idx]);
 		element_idx = parent;
 		parent =  this->parent(element_idx);
@@ -77,9 +84,9 @@ void binary_heap::push_back(int32_t key){
 	this->is_ok = true;
 }
 
-
-// remove element from heap by given value 
-bool binary_heap::remove(int32_t key){
+//move element from heap by given value 
+template<typename T>
+bool binary_heap<T>::remove(T key){
 	if(this->elements < this->size - binary_heap::REDUNDANT_SIZE ){
 		if( !this->realloc(MEMORY_OP::RESIZE_DOWN))
 			return false;
@@ -89,8 +96,8 @@ bool binary_heap::remove(int32_t key){
 	if(key_idx == -1) 
 		return false;
 
-	int32_t l_child_idx, r_child_idx, parent;
-	int32_t max_element, max_index;
+	int32_t l_child_idx, r_child_idx, parent, max_index;
+	T max_element;
 
 	this->elements--;
 	// swap found item with last element
@@ -103,18 +110,29 @@ bool binary_heap::remove(int32_t key){
 
 	// while index of currently handled child is bigger than last element index 
 	while(l_child_idx < this->elements-1){
+		
 		// find smallest child
+	#ifdef HEAP_MIN
+		if(this->tab[l_child_idx] < this->tab[r_child_idx] || r_child_idx >= this->elements){
+	#else
 		if(this->tab[l_child_idx] > this->tab[r_child_idx] || r_child_idx >= this->elements){
+	#endif
 			max_element  = this->tab[l_child_idx];
-			max_index =l_child_idx;
+			max_index = l_child_idx;
 		}else{
-			max_element  = this->tab[r_child_idx];
-			max_index =r_child_idx;			
+			max_element = this->tab[r_child_idx];
+			max_index = r_child_idx;			
 		}
 		// if child is smaller than currently handled element
 		// stop heapifing
- 		if(max_element < this->tab[key_idx])
+	#ifdef HEAP_MIN
+		if(max_element > this->tab[key_idx])
 			break;
+	#else
+		if(max_element < this->tab[key_idx])
+			break;
+	#endif
+ 		
 		// otherwise swap elements
 		std::swap(this->tab[ key_idx ], this->tab[ max_index ]);
 		// get new children
@@ -126,16 +144,20 @@ bool binary_heap::remove(int32_t key){
 	parent =  this->parent(key_idx);
  
 	// do heapify when elemets should move to upper layers
+#ifdef HEAP_MIN
+	while(key_idx > 0 && this->tab[parent] > key){
+#else
 	while(key_idx > 0 && this->tab[parent] < key){
+#endif
 		std::swap(this->tab[parent], this->tab[key_idx]);
 		key_idx = parent;
 		parent =  this->parent(key_idx);
 	}
-
 	return true;
 }
 
-void binary_heap::display(std::string sp, std::string sn, int v){
+template<typename T>
+void binary_heap<T>::display(std::string sp, std::string sn, int v){
   std::string s;
 
   if(v < this->elements)
@@ -154,61 +176,7 @@ void binary_heap::display(std::string sp, std::string sn, int v){
   }
 }
 
-void binary_heap::display(){
+template<typename T>
+void binary_heap<T>::display(){
 	this->display("","", 0);
-}
-
-void binary_heap::perform_test(int32_t value, [[maybe_unused]]int32_t index ){
-	using namespace std;
-	using namespace std::chrono;
-	// chrono measure variables
-	std::chrono::nanoseconds time_span;
-	high_resolution_clock::time_point t1;
-	high_resolution_clock::time_point t2;
-			
-
-	
-  // random insert test   
-  std::cout << "HEAP::Wstawianie wartosci"<<endl;
-    
-  t1 = high_resolution_clock::now(); 
-  this->push_back(value); 
-  t2 = high_resolution_clock::now();
-
-  time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
-
-  std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
-  std::cout << std::endl;
-  // udpate results
-  this->update_average(time_span.count(), OPERATION_TYPE::INSERT);
-
-
-  // search test;
-  std::cout << "HEAP::Wyszukiwanie sposrod " << this->elements <<" egzemplarzy"<<endl;
-  t1 = high_resolution_clock::now();
-  this->find(value); 
-  t2 = high_resolution_clock::now();
-
-  time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
-
-  std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
-  std::cout << std::endl;
-  
-  // udpate results
-  this->update_average(time_span.count(), OPERATION_TYPE::SEARCH);  
-
-  
-  // random delete test;
-  std::cout << "HEAP::Usuwanie wartosci"<<endl;
-  t1 = high_resolution_clock::now();
-  this->remove(value); 
-  t2 = high_resolution_clock::now();
-
-  time_span = chrono::duration_cast<chrono::nanoseconds>(t2 - t1);
-
-  std::cout << "Zajelo :" << time_span.count() << " nanosekund.";
-  std::cout << std::endl;
-  // udpate results
-  this->update_average(time_span.count(), OPERATION_TYPE::REMOVE);
-
 }

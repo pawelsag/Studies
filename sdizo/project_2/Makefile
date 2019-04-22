@@ -3,10 +3,14 @@ CFLAGS= -std=c++17 -Wall -Wextra
 OUTDIR=.
 SRCDIR= src
 OBJDIR= obj
+
 INCLUDE_PATHS := -I"./include"
 
 CPP_SOURCES := $(wildcard $(SRCDIR)/*.cpp)
+CPP_SOURCES := $(filter-out $(SRCDIR)/list_template.cpp, $(CPP_SOURCES))
+CPP_SOURCES := $(filter-out $(SRCDIR)/heap_template.cpp, $(CPP_SOURCES))
 OBJECTS := $(CPP_SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
+
 
 TARGET = sdizo
 
@@ -14,8 +18,9 @@ ${TARGET} : ${OBJECTS}
 	${CC} ${CFLAGS}  ${OBJECTS} -o ${TARGET}
 
 ${OBJDIR}/%.o : ${SRCDIR}/%.cpp
-	${CC} ${INCLUDE_PATHS} ${CFLAGS} -c $? -o $@
+	${CC} ${INCLUDE_PATHS} ${CFLAGS} -c $< -o $@
+
 
 clean:
-	rm -rf ${OBJDIR}/*
-	rm ./${TARGET}.exe
+	del /F /S /Q ${OBJDIR}\*
+	del ${TARGET}.exe

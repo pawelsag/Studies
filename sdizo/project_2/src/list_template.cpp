@@ -1,25 +1,26 @@
-#include "list.h"
 #include <iostream>
-#include <random>
-#include <chrono>
 
-list_sdizo::list_sdizo(std::initializer_list<int32_t> args_vector){
+template<typename T>
+list<T>::list(std::initializer_list<T> args_vector){
 	for (auto&& val : args_vector){
 		this->push_back(val);
 	}
 }
 
-list_sdizo::~list_sdizo(){
+template<typename T>
+list<T>::~list(){
 	this->clear();
 }
 
-bool list_sdizo::find(int32_t value){
+template<typename T>
+bool list<T>::find(T value){
 	if(this->find_node(value) == nullptr)
 		return false;
 	return true;
-}	
+}
 
-bool list_sdizo::insert(int32_t index, int32_t value){
+template<typename T>
+bool list<T>::insert(int32_t index, T value){
 	if(index < 0 || index > this->count )
 		return false;
 	// if we want prepend item
@@ -33,13 +34,13 @@ bool list_sdizo::insert(int32_t index, int32_t value){
 		return true;
 	}
 	// create new node
-	node* tmp = new node;  
+	node<T>* tmp = new node<T>;  
     // add value to created node 
     tmp->value = value;  
 
 	// we want to insert item before an element
 	// which is indicated by index
-	node* searched_item;
+	node<T>* searched_item;
 	int32_t i = 0;
 	for(searched_item = this->head; i < index; searched_item = searched_item->next )++i;
 
@@ -58,10 +59,11 @@ bool list_sdizo::insert(int32_t index, int32_t value){
 	return true;
 }
 
-bool list_sdizo::remove(int32_t value){
+template<typename T>
+bool list<T>::remove(T value){
 
 	// find desired element
-	node* item_to_remove = this->find_node(value);
+	node<T>* item_to_remove = this->find_node(value);
 	if( item_to_remove == nullptr)
 		return false;
 	
@@ -80,42 +82,33 @@ bool list_sdizo::remove(int32_t value){
 	return true;
 }
 
-node* list_sdizo::find_node(int32_t value){
-	node* item;
+template<typename T>
+node<T>* list<T>::find_node(T value){
+	node<T>* item;
 	for(item = this->head; item; item = item->next)
 		if(item->value == value)
 			break;
 	return item;
 }
 
-void list_sdizo::display(){
+template<typename T>
+void list<T>::display(){
 	using std::cout;
 	using std::endl;
 
-	cout<< "Lista HEAD ---> TAIL"<<endl;
-	
-	for (node* item = this->head; item; item = item->next){
+	for (node<T>* item = this->head; item; item = item->next){
 		if(item->next != nullptr)
-			cout << item->value <<" --> ";
-		else
-			cout << item->value;
-	}
-	cout<<endl;
-
-	cout<< "Lista TAIL ---> HEAD"<<endl;
-	
-	for (node* item = this->tail; item; item = item->prev){
-		if(item->prev != nullptr)
-			cout << item->value <<" --> ";
+			cout << item->value <<", ";
 		else
 			cout << item->value;
 	}
 	cout<<endl;
 }
 
-void list_sdizo::push_back(int32_t value){
+template<typename T>
+void list<T>::push_back(T value){
 	// create new node
-	node* tmp = new node;  
+	node<T>* tmp = new node<T>;  
     // add value to created node 
     tmp->value = value;  
   	// set pointer 
@@ -132,9 +125,10 @@ void list_sdizo::push_back(int32_t value){
     this->count++;  	
 }
 
-void list_sdizo::push_front(int32_t value){
-	// create new node
-	node* tmp = new node;  
+template<typename T>
+void list<T>::push_front(T value){
+  	// create new node
+	  node<T>* tmp = new node<T>;  
     // add value to created node 
     tmp->value = value;  
   	// set pointer 
@@ -151,27 +145,30 @@ void list_sdizo::push_front(int32_t value){
 	this->count++;	
 }
 
-void list_sdizo::pop_back(){
+template<typename T>
+void list<T>::pop_back(){
 	if(this->count == 0)
 		return;
   if(this->count == 1)
     this->head = nullptr;
   
-  node *node_to_remove = this->tail;
+  node<T> *node_to_remove = this->tail;
   if(node_to_remove->prev)
     node_to_remove->prev->next = nullptr;
   this->tail = node_to_remove->prev;
+  
   delete node_to_remove;
   this->count--;
 }
 
-void list_sdizo::pop_front(){
+template<typename T>
+void list<T>::pop_front(){
   if(this->count == 0)
     return;
   if(this->count == 1)
     this->tail = nullptr;
   
-  node *node_to_remove = this->head;
+  node<T> *node_to_remove = this->head;
   if(node_to_remove->next)
     node_to_remove->next->prev = nullptr;
   this->head = node_to_remove->next;
@@ -179,7 +176,8 @@ void list_sdizo::pop_front(){
   this->count--;
 }
 
-void list_sdizo::clear(){
+template<typename T>
+void list<T>::clear(){
 	int copy_count =  this->count;
 	for (int i = 0; i < copy_count; ++i)
 	{
