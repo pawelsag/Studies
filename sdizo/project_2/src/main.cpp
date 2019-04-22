@@ -72,7 +72,8 @@ void menu_MST()
       my_mst.display();
       break;
     case '2':
-
+        my_mst.perform_prim();
+        my_mst.display_result();
       break;
     case '3':
         my_mst.perform_kruskal();

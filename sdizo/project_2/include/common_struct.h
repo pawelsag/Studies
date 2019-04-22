@@ -76,6 +76,7 @@ struct Edge
   bool operator==(Edge& rhs){
     return w == rhs.w;
   }
+
   template<typename T,
            typename = typename std::enable_if_t<
                                std::is_same<typename std::decay<T>::type, Edge>::value>::type
@@ -90,7 +91,8 @@ struct Edge
   friend std::ostream& operator<<(std::ostream& os, Edge& rhs){
     os << rhs.v2;
     return os;
-  }               
+  }
+   
 };
 
 #endif

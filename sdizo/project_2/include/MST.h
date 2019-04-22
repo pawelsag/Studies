@@ -16,13 +16,13 @@ class MST
   // create Adjacency matrix
   char **a_matrix = nullptr;
   // create Adjacency list
-  list<int32_t> *a_list = nullptr;
+  list<Edge> *a_list = nullptr;
   // create list for processed data
   list<Edge> *result = nullptr;
 
-  int32_t vertex_count, edge_count;
+  int32_t vertex_count = 0, edge_count =0;
 
-  size_t total_weight;
+  size_t total_weight =0;
 
 public:
   MST()  = default;
@@ -35,15 +35,15 @@ public:
   void display();
   void clear();
   void perform_kruskal();
+  void perform_prim();
 
   void display_result();
 private:
   // this method appends valid edge to internal data structure
-  void append_edge(Edge& e){
+  void append_edge(Edge e){
     this->result[e.v1].push_back(e);
     std::swap(e.v1, e.v2);
     this->result[e.v1].push_back(e);
-    
     this->total_weight += e.w;
   }
 

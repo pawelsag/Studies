@@ -8,11 +8,12 @@
 template<typename T>
 class list
 {
+	friend class iterator;
 
 	node<T> *head = nullptr; // pointer to data structure
 	node<T> *tail = nullptr; // pointer to data structure
 	
-	int32_t count = 0;		// amount of elements in table 
+	int32_t count = 0;		// amount of elements in table
 public:
 	list() = default;
 	list(std::initializer_list<T> args_vector);
@@ -37,14 +38,38 @@ public:
 	void pop_front();
 
 	node<T>* find_node(T value);
+	
+
+	template<typename Payload_t = T>
+	class iterator{
+		list<Payload_t> *master;
+		node<Payload_t> *current_item;
+	public:
+
+		iterator() = delete;
+		iterator(list<Payload_t>* li){
+			master = li;
+			current_item = master->head;
+		}
+		~iterator() = default;
+
+		Payload_t* get_and_next(){
+			if(current_item == nullptr)
+				return nullptr;
+			Payload_t *val = &current_item->value;
+			current_item = current_item->next;
+			return val;
+		}
+
+	};
+
+	iterator<T> get_iter(){
+		return iterator<T>(this);
+	}
 
 };
 
-
 #include "../src/list_template.cpp"
-
-
-
 
 
 #endif
