@@ -4,6 +4,8 @@
 #include <initializer_list>
 #include <algorithm>
 #include <new>
+#include <stdint.h>
+#include <string>
 // default implementation of the heap is maximum
 #define HEAP_MIN
 
@@ -47,6 +49,18 @@ public:
 	// the key is the only value we need to delete node
 	// based on the key we will know where desired item lies
 	bool remove(T key);
+	
+	int32_t update_node(int32_t key_idx, T data){
+
+		this->tab[key_idx] = data;
+		key_idx = this->heap_up(key_idx);
+		key_idx = this->heap_down(key_idx);
+
+		return key_idx;
+	}
+	
+	// get index by given key
+	int32_t find_index(T key);
 
 protected:
 	inline int32_t left_child(int32_t idx){
@@ -57,11 +71,11 @@ protected:
 	}
 	inline int32_t parent(int32_t idx){
 		return (idx-1)/2; // int cast should floor it
-	}
+	}	
 
-	// get index by given key
-	int32_t find_index(T key);
-
+	int32_t heap_up(int32_t key_idx);
+	int32_t heap_down(int32_t key_idx);
+	
 	// automaticly expand or shrink size
 	// depends on size
 	bool realloc(MEMORY_OP operation){

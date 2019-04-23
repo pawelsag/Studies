@@ -92,7 +92,45 @@ struct Edge
     os << rhs.v2;
     return os;
   }
-   
+};
+
+struct Vertex
+{
+  int v, w;
+  bool operator<(Vertex& rhs){
+    return w < rhs.w;
+  }
+
+  bool operator<=(Vertex& rhs){
+    return w < rhs.w;
+  }
+
+  bool operator>(Vertex& rhs){
+    return w > rhs.w;
+  }
+
+  bool operator>=(Vertex& rhs){
+    return w >= rhs.w;
+  }
+
+  bool operator==(Vertex& rhs){
+    return w == rhs.w;
+  }
+
+  template<typename T,
+           typename = typename std::enable_if_t<
+                               std::is_same<typename std::decay<T>::type, Edge>::value>::type
+          >
+  Vertex& operator=(T&& rhs){
+      v = rhs.v;
+      w = rhs.w;
+      return *this;
+  }
+
+  friend std::ostream& operator<<(std::ostream& os, Vertex& rhs){
+    os << rhs.v;
+    return os;
+  }
 };
 
 #endif

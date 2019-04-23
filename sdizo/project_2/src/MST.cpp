@@ -56,6 +56,7 @@ void MST::push_back(Edge& e){
   // we should perform simmetric append
   this->a_matrix[e.v1][e.v2] = 1; 
   this->a_list[e.v1].push_back(e);
+
 }
 
 

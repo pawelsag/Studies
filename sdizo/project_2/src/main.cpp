@@ -8,7 +8,7 @@
 #include "mst.h"
 #include "list_template.h"
 #include "common_struct.h"
-
+#include "path_finding.h"
 using namespace std;
 
 void displayMST(string info)
@@ -95,50 +95,45 @@ void menu_MST()
 
 void menu_heap()
 {
+  
   char opt;
   string fileName;
-  N_list value;
-  priority_queue<N_list> my_heap;
+  int vertex_count, edge_count, begin_vertex;
+  
+  path_finding my_pf;
 
   do{
-    displayMenu("--- HEAP ---");
+    displayShortestPathMenu("--- PATH FINDING PROBLEM ---");
     opt = getche();
     cout << endl;
     switch (opt){
-
-    case '2': 
-      cout << " podaj wartosc:";
-      cin >> value.v;
-      my_heap.remove(value);
-      my_heap.display();
+    case '1': 
+      cout << " Podaj nazwe zbioru:";
+      cin >> fileName;
+      my_pf.load_from_file(fileName);
+      my_pf.display();
       break;
-
-    case '3': 
-      cout << " podaj vertex i waga:";
-      cin >> value.v >> value.w ;
-      my_heap.push_back(value);
-      my_heap.display();      
+    case '2':
+        my_pf.perform_dijkstry();
+        my_pf.display_result();
       break;
-
-    case '4': 
-      cout << " podaj wartosc:";
-      cin >> value.v;
-      if (my_heap.find(value) == true)
-        cout << "poadana wartosc jest w tablicy";
-      else
-        cout << "poadanej wartosci NIE ma w tablicy";
+    case '3':
+        my_pf.perform_ford_belman();
+        my_pf.display_result();
       break;
-
-    case '6':  //tutaj wyœwietlanie tablicy
-      my_heap.display();
+    case '4':  //tutaj generowanie  elementow do grafu
+      cout << "Podaj ilosc wierzcholkow, a nastepnie ilosc krawedzi oraz wierzcholek poczatkowy:";
+      cin >> vertex_count >> edge_count >> begin_vertex;
+      my_pf.generate_data(vertex_count, edge_count, begin_vertex);
+      my_pf.display();
       break;
-    case '7':
-      my_heap.clear();
-      my_heap.display();
-      break;    
+    case '5':  //tutaj wyœwietlanie danych
+      my_pf.display();
+      break;   
     }
+  }while (opt != '0');
 
-  } while (opt != '0');}
+}
 
 int main([[maybe_unused]]int argc,[[maybe_unused]] char* argv[])
 {
