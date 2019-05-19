@@ -13,8 +13,8 @@ template <typename T>
 class binary_heap
 {
 
-	static constexpr int32_t REDUNDANT_SIZE = 100; 
 protected:
+	static constexpr int32_t REDUNDANT_SIZE = 100; 
 
 	T *tab = nullptr; // pointer to data structure 
 	
@@ -42,20 +42,19 @@ public:
 	// push key to heap
 	void push_back(T key);
 
-	void display();
+	virtual void display();
 
 	void display(std::string sp, std::string sn, int v);
 	
 	// the key is the only value we need to delete node
 	// based on the key we will know where desired item lies
-	bool remove(T key);
+	virtual bool remove(T key);
 	
 	int32_t update_node(int32_t key_idx, T data){
 
 		this->tab[key_idx] = data;
 		key_idx = this->heap_up(key_idx);
 		key_idx = this->heap_down(key_idx);
-
 		return key_idx;
 	}
 	
@@ -73,8 +72,8 @@ protected:
 		return (idx-1)/2; // int cast should floor it
 	}	
 
-	int32_t heap_up(int32_t key_idx);
-	int32_t heap_down(int32_t key_idx);
+	virtual int32_t heap_up(int32_t key_idx);
+	virtual int32_t heap_down(int32_t key_idx);
 	
 	// automaticly expand or shrink size
 	// depends on size

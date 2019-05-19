@@ -24,6 +24,8 @@ class MST
 
   size_t total_weight =0;
 
+  std::string last_opened_file;
+
 public:
   MST()  = default;
   ~MST();
@@ -46,7 +48,13 @@ private:
     this->result[e.v1].push_back(e);
     this->total_weight += e.w;
   }
+  void kruskal_append_result();
+  void prime_append_result();
 
+  void kruskal_list();
+  void kruskal_matrix();
+  void prime_list();
+  void prime_matrix();
 };
 
 #endif

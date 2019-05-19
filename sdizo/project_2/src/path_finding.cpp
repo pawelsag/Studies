@@ -61,7 +61,7 @@ void path_finding::prepare_containers(size_t vertex_count, size_t edge_count){
 
   this->vertex_count = vertex_count;
   this->edge_count = edge_count;
-
+  
   //create new adjacency matrix
   this->a_matrix = new char*[this->vertex_count];
   for (int i = 0; i < this->vertex_count; ++i)
@@ -70,7 +70,87 @@ void path_finding::prepare_containers(size_t vertex_count, size_t edge_count){
   // create new adjacency list
   this->a_list = new list<Edge>[vertex_count];
   // create list for result
-  this->result = new list<Vertex>[vertex_count];
+  v_parents = new int32_t [this->vertex_count];
+  v_weights = new int32_t [this->vertex_count];
+}
+
+
+void path_finding::clear(){
+  // release memory when necessary
+  if(this->a_matrix != nullptr){
+    for (int i = 0; i < this->vertex_count; ++i)
+      delete [] this->a_matrix[i];
+    delete [] this->a_matrix;
+  }
+
+  if( this->a_list != nullptr)
+    delete [] this->a_list;
+
+  if(this->v_parents != nullptr){
+    delete [] this->v_parents;
+    delete [] this->v_weights;
+  }
+
+  this->vertex_count =0;
+  this->edge_count   =0;
+  this->total_weight =0;
+}
+
+void path_finding::perform_dijkstry(){
+  using namespace std;
+  // prepare priority queue
+  Edge *item;
+  // heap structure to efectivly extract smallest wieghts of elements
+  shortest_path_heap<Vertex> vertexes(this->vertex_count);
+  
+  bool *visited_vertexs = new bool[this->vertex_count]{};
+  
+  int32_t i;
+  
+  Vertex v;
+  // init all structers
+  for(i = 0; i < this->vertex_count; i++)
+  {
+    v_parents[i] = -1;
+    v_weights[i] = INT_MAX;
+    visited_vertexs[i] = false;
+    v.v = i;
+    v.w = INT_MAX;
+    vertexes.push_back(v);
+  }
+  // set begin vertex and update all structures
+  v_weights[this->begin_vertex] = 0;
+  v.v = this->begin_vertex;
+  v.w = 0;
+
+  vertexes.update_node(this->begin_vertex, v);
+  visited_vertexs[this->begin_vertex] = true;
+
+  // calculate all paths
+  for(i = 0; i < this->vertex_count; i++)
+  {
+    auto min_vertex = vertexes.extract_top();
+
+    visited_vertexs[min_vertex.v] = true;
+
+    auto list_iterator = this->a_list[min_vertex.v].get_iter();
+    while(true){
+      item = list_iterator.get_and_next(); 
+      if(!item)
+        break;
+      if(!visited_vertexs[item->v2] && (v_weights[item->v2] > v_weights[min_vertex.v] + item->w)){
+          v_weights[item->v2] = v_weights[min_vertex.v] + item->w;
+          v_parents[item->v2] = min_vertex.v;
+          v.v = item->v2;
+          v.w = v_weights[item->v2];
+          vertexes.update_node(vertexes.vertex_lookup[item->v2], v);
+      }
+    }
+  }
+}
+
+void path_finding::perform_ford_belman(){
+
 }
 
 void path_finding::display(){
@@ -97,110 +177,20 @@ void path_finding::display(){
 
 }
 
-void path_finding::clear(){
-  // release memory when necessary
-  if(this->a_matrix != nullptr){
-    for (int i = 0; i < this->vertex_count; ++i)
-      delete [] this->a_matrix[i];
-    delete [] this->a_matrix;
-  }
-
-  if( this->a_list != nullptr)
-    delete [] this->a_list;
-
-  if(this->result != nullptr)
-    delete [] this->result;
-
-  this->vertex_count =0;
-  this->edge_count =0;
-  this->total_weight =0;
-  this->vertexes.clear();
-}
-
-void path_finding::perform_dijkstry(){
-  using namespace std;
-  // prepare priority queue
-  Edge *item;
-  // table for travel cost
-  int32_t *v_weights       = new int32_t [this->vertex_count];
-  // table for travel path     
-  int32_t *v_parents       = new int32_t [this->vertex_count];
-  int32_t *S       = new int32_t [this->vertex_count];
-  bool    *visited_vertexs = new bool[this->vertex_count]{};
-  
-  int32_t i, u, j, sptr = 0;
-  // cout << endl;
-  for(int32_t i = 0; i < this->vertex_count; i++)
-  {
-    v_weights[i] = INT_MAX;
-    v_parents[i] = -1;
-    visited_vertexs[i] = false;
-  }
-
-  v_weights[this->begin_vertex] = 0;                       // Koszt dojścia v jest zerowy
-
-  // Wyznaczamy ścieżki
-
-  for(i = 0; i < this->vertex_count; i++)
-  {
-    // Szukamy wierzchołka w Q o najmniejszym koszcie d
-    for(j = 0; visited_vertexs[j]; j++);
-    for(u = j++; j < this->vertex_count; j++)
-      if(!visited_vertexs[j] && (v_weights[j] < v_weights[u])) u = j;
-
-    // Znaleziony wierzchołek przenosimy do S
-
-    visited_vertexs[u] = true;
-
-    // Modyfikujemy odpowiednio wszystkich sąsiadów u, którzy są w Q
-    auto list_iterator = this->a_list[u].get_iter();
-    while(true){
-      item = list_iterator.get_and_next(); 
-      if(!item)
-        break;
-       if(!visited_vertexs[item->v2] && (v_weights[item->v2] > v_weights[u] + item->w))
-        {
-          v_weights[item->v2] = v_weights[u] + item->w;
-          v_parents[item->v2] = u;
-        }
-    }
-  }
-
-  // Gotowe, wyświetlamy wyniki
-  for(i = 0; i < this->vertex_count; i++)
-  {
-    cout << i << ": ";
-
-    // Ścieżkę przechodzimy od końca ku początkowi,
-    // Zapisując na stosie kolejne wierzchołki
-
-    for(j = i; j > -1; j = v_parents[j]) S[sptr++] = j;
-
-    // Wyświetlamy ścieżkę, pobierając wierzchołki ze stosu
-
-    while(sptr) cout << S[--sptr] << " ";
-
-    // Na końcu ścieżki wypisujemy jej koszt
-
-    cout << "$" << v_weights[i] << endl;
-  }
-
-
-}
-
-void path_finding::perform_ford_belman(){
-
-}
-
 void path_finding::display_result(){
-  using namespace std;
-  // for(int32_t i = 0; i < this->vertex_count; i++)
-  // {
-  //   cout << "V[" << i << "] = ";
-  //   this->result[i].display();
-  //   cout << endl;
-  // }
-  // cout << endl << "MST Waga = " << this->total_weight << endl;
+  int32_t *S = new int32_t [this->vertex_count];
+  int32_t sptr = 0;
+  // show result
+  for(int i = 0; i < this->vertex_count; i++)
+  {
+    std::cout << i << ": ";
+    // reverse path to put vertexes in correct order
+    for(int j = i; j > -1; j = v_parents[j]) S[sptr++] = j;
+    // pop from stack and show
+    while(sptr) std::cout << S[--sptr] << " ";
+    // show total cost of path
+    std::cout << "$" << v_weights[i] << "\n";
+  }
 }
 
 path_finding::~path_finding(){

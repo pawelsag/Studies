@@ -9,8 +9,10 @@
 void MST::load_from_file(std::string file_name){
   
 
-  std::fstream fs (file_name, std::fstream::in | std::fstream::out);
-  
+  last_opened_file = std::move(file_name);
+
+  std::fstream fs (last_opened_file, std::fstream::in | std::fstream::out);
+
   if (!fs.is_open())
     return;
 
@@ -48,17 +50,15 @@ void MST::generate_data(size_t vertex_count, size_t edge_count){
 
 void MST::push_back(Edge& e){
   // set new data in adjacency matrix
-  this->a_matrix[e.v1][e.v2] = 1; 
+  this->a_matrix[e.v1][e.v2] = e.w; 
   // prepand new vertex to list 
   this->a_list[e.v1].push_back(e);
   std::swap(e.v1, e.v2);
   // cause our graph is undirected
   // we should perform simmetric append
-  this->a_matrix[e.v1][e.v2] = 1; 
+  this->a_matrix[e.v1][e.v2] = e.w;
   this->a_list[e.v1].push_back(e);
-
 }
-
 
 void MST::prepare_containers(size_t vertex_count, size_t edge_count){
   
@@ -126,6 +126,29 @@ void MST::clear(){
 }
 
 void MST::perform_kruskal(){
+  
+  std::cout << "Adjustancy list :\n";
+  this->kruskal_list();
+  
+  //reload data
+  this->load_from_file(this->last_opened_file);
+  
+  std::cout << "Adjustancy matrix :\n";
+  this->kruskal_matrix(); 
+}
+
+void MST::perform_prim(){
+    std::cout << "Adjustancy list :\n";
+    this->prime_list();
+    
+    this->load_from_file(this->last_opened_file);
+
+    std::cout << "Adjustancy matrix :\n";
+    this->prime_matrix();
+}
+
+
+void MST::kruskal_list(){
   // prepare priority queue
   Edge *item;
   for(int32_t i = 0; i < this->vertex_count; i++){
@@ -137,8 +160,90 @@ void MST::perform_kruskal(){
         this->edges.push_back(*item);
     }
   }
+  this->kruskal_append_result();
+  this->display_result();
+}
+void MST::kruskal_matrix(){
 
-  // perform algorithm
+  Edge e;
+  for(int row =0 ; row < this->vertex_count; row++){
+    for(int col = 0; col <= row; col++){
+      if(this->a_matrix[row][col] !=0){
+        e.v1 = row;
+        e.v2 = col;
+        e.w = this->a_matrix[row][col]; 
+        this->edges.push_back(e);
+      }
+    }
+  }
+
+  this->kruskal_append_result();
+  this->display_result();
+}
+void MST::prime_list(){
+  bool *visited_vertexs = new bool[this->vertex_count]{false};
+  Edge *item, e;
+  
+  auto list_iterator = this->a_list[0].get_iter();
+  visited_vertexs[0] = true;
+  // append all edges which connect with given vertex
+  for(int32_t i = 1; i < this->vertex_count; i++)          
+  {
+    while(true){
+      item = list_iterator.get_and_next();
+      if(!item)
+        break;
+      if(visited_vertexs[item->v2])
+        continue;
+      this->edges.push_back(*item);
+    }
+    do{
+      e = this->edges.extract_top();
+    }while(this->unions.find_set(e.v1) == this->unions.find_set(e.v2));
+    this->append_edge(e);
+    this->unions.union_sets(e);
+
+    list_iterator = this->a_list[e.v2].get_iter();                      
+    visited_vertexs[e.v2] = true;       
+  }
+  this->display_result();
+ delete [] visited_vertexs; 
+
+
+}
+void MST::prime_matrix(){
+  bool *visited_vertexs = new bool[this->vertex_count]{false};
+  Edge e;
+
+  int row_id = 0;
+  char *row_ptr = this->a_matrix[row_id];
+  for(int32_t i = 1; i < this->vertex_count; i++)          
+  {
+    for(int j = 0; j < this->vertex_count; j++){ 
+      if(visited_vertexs[j] || row_ptr[j] == 0 )
+        continue;
+      e.v1 = row_id;
+      e.v2 = j;
+      e.w = row_ptr[j];
+      this->edges.push_back(e);
+    }
+
+    do{
+      e = this->edges.extract_top();
+    }while(this->unions.find_set(e.v1) == this->unions.find_set(e.v2));
+    this->append_edge(e);
+    this->unions.union_sets(e);
+    row_id = e.v2;
+    row_ptr = this->a_matrix[row_id];
+    visited_vertexs[e.v2] = true;       
+  }
+  this->display_result();
+  delete [] visited_vertexs;
+}
+
+
+void MST::kruskal_append_result(){
+// perform algorithm
   Edge e;
   for(int32_t i = 1; i < this->vertex_count; i++)          
   {
@@ -150,39 +255,10 @@ void MST::perform_kruskal(){
   }
 }
 
-void MST::perform_prim(){
-    bool *visited_vertexs = new bool[this->vertex_count]{false};
-    Edge *item, e;
+void MST::prime_append_result(){
 
-    auto list_iterator = this->a_list[0].get_iter();
-    visited_vertexs[0] = true;
-    // append all edges which connect with given vertex
-    
-    for(int32_t i = 1; i < this->vertex_count; i++)          
-    {
-
-      while(true){
-        item = list_iterator.get_and_next();
-        if(!item)
-          break;
-        if(visited_vertexs[item->v2])
-          continue;
-        this->edges.push_back(*item);
-      }
-
-      do{
-        e = this->edges.extract_top();
-      }while(this->unions.find_set(e.v1) == this->unions.find_set(e.v2));
-      this->append_edge(e);
-      this->unions.union_sets(e);
-
-      list_iterator = this->a_list[e.v2].get_iter();                      
-      visited_vertexs[e.v2] = true;
-           
-    }
-
-    delete [] visited_vertexs;
 }
+
 
 void MST::display_result(){
   using namespace std;

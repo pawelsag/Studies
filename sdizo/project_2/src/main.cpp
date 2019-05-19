@@ -73,11 +73,9 @@ void menu_MST()
       break;
     case '2':
         my_mst.perform_prim();
-        my_mst.display_result();
       break;
     case '3':
         my_mst.perform_kruskal();
-        my_mst.display_result();
       break;
     case '4':  //tutaj generowanie  elementow do grafu
       cout << "Podaj ilosc wierzcholkow, a nastepnie ilosc krawedzi:";
@@ -93,7 +91,7 @@ void menu_MST()
 
 }
 
-void menu_heap()
+void menu_PATH()
 {
   
   char opt;
@@ -153,7 +151,7 @@ int main([[maybe_unused]]int argc,[[maybe_unused]] char* argv[])
       menu_MST();
       break;
     case '2':
-      menu_heap();
+      menu_PATH();
       break;
 
     }

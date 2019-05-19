@@ -1,7 +1,7 @@
 #ifndef PATH_FINDING_PROBLEMS
 #define PATH_FINDING_PROBLEMS
 
-#include "priority_queue.h"
+#include "shortest_path_heap.h"
 #include "list_template.h"
 #include "common_struct.h"
 #include <fstream>
@@ -10,19 +10,16 @@
 
 class path_finding
 {
-  priority_queue<Vertex> vertexes;
-
-  // create Adjacency matrix
   char **a_matrix = nullptr;
   // create Adjacency list
   list<Edge> *a_list = nullptr;
-  // create list for processed data
-  list<Vertex> *result = nullptr;
+
+  int32_t *v_parents = nullptr;
+  int32_t *v_weights = nullptr;
 
   int32_t vertex_count = 0, edge_count =0, begin_vertex =0;
 
   size_t total_weight =0;
-
 public:
   path_finding()  = default;
   ~path_finding();

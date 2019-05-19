@@ -60,7 +60,6 @@ public:
 			current_item = current_item->next;
 			return val;
 		}
-
 	};
 
 	iterator<T> get_iter(){
