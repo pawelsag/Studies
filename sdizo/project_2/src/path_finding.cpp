@@ -8,8 +8,8 @@
 
 void path_finding::load_from_file(std::string file_name){
   
-
-  std::fstream fs (file_name, std::fstream::in | std::fstream::out);
+  this->last_opened_file = std::move(file_name);
+  std::fstream fs (this->last_opened_file, std::fstream::in | std::fstream::out);
   
   if (!fs.is_open())
     return;
@@ -48,7 +48,7 @@ void path_finding::generate_data(size_t vertex_count, size_t edge_count, int32_t
 
 void path_finding::push_back(Edge& e){
   // set new data in adjacency matrix
-  this->a_matrix[e.v1][e.v2] = 1; 
+  this->a_matrix[e.v1][e.v2] = e.w; 
   // prepand new vertex to list 
   this->a_list[e.v1].push_back(e);
 }
@@ -97,16 +97,73 @@ void path_finding::clear(){
 }
 
 void path_finding::perform_dijkstry(){
-  using namespace std;
-  // prepare priority queue
-  Edge *item;
+  std::cout << "\nAdjacency matrix:\n"; 
+  this->dijkstry_matrix();
+  this->display_result();
+
+  this->load_from_file(this->last_opened_file);
+
+  std::cout << "\nAdjacency list:\n"; 
+  this->dijkstry_list();
+  this->display_result();
+}
+void path_finding::dijkstry_matrix(){
   // heap structure to efectivly extract smallest wieghts of elements
   shortest_path_heap<Vertex> vertexes(this->vertex_count);
   
   bool *visited_vertexs = new bool[this->vertex_count]{};
   
   int32_t i;
+  char * matrix_row;
+  Vertex v;
+  // init all structers
+  for(i = 0; i < this->vertex_count; i++)
+  {
+    this->v_parents[i] = -1;
+    this->v_weights[i] = INT_MAX;
+    visited_vertexs[i] = false;
+    v.v = i;
+    v.w = INT_MAX;
+    vertexes.push_back(v);
+  }
+  // set begin vertex and update all structures
+  this->v_weights[this->begin_vertex] = 0;
+  v.v = this->begin_vertex;
+  v.w = 0;
+
+  vertexes.update_node(this->begin_vertex, v);
+  visited_vertexs[this->begin_vertex] = true;
+
+  // calculate all paths
+  for(i = 0; i < this->vertex_count; i++)
+  {
+    auto min_vertex = vertexes.extract_top();
+
+    visited_vertexs[min_vertex.v] = true;
+
+    matrix_row = this->a_matrix[min_vertex.v];
+    for(int j =0; j < this->vertex_count; j++){ 
+      if(matrix_row[j] == 0)
+        continue;
+      if(!visited_vertexs[j] && (this->v_weights[j] > this->v_weights[min_vertex.v] + static_cast<int>(matrix_row[j]) )){
+          this->v_weights[j] = v_weights[min_vertex.v] + static_cast<int>(matrix_row[j]);
+          this->v_parents[j] = min_vertex.v;
+          v.v = j;
+          v.w = v_weights[j];
+          vertexes.update_node(vertexes.vertex_lookup[j], v);
+      }
+    }
+  }
+}
+
+void path_finding::dijkstry_list(){
+  // heap structure to efectivly extract smallest wieghts of elements
+  shortest_path_heap<Vertex> vertexes(this->vertex_count);
   
+  bool *visited_vertexs = new bool[this->vertex_count]{};
+  
+  int32_t i;
+  Edge *item;
   Vertex v;
   // init all structers
   for(i = 0; i < this->vertex_count; i++)
@@ -148,6 +205,7 @@ void path_finding::perform_dijkstry(){
     }
   }
 }
+
 
 void path_finding::perform_ford_belman(){
 

@@ -113,7 +113,6 @@ void menu_PATH()
       break;
     case '2':
         my_pf.perform_dijkstry();
-        my_pf.display_result();
       break;
     case '3':
         my_pf.perform_ford_belman();

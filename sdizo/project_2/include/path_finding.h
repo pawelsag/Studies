@@ -20,6 +20,7 @@ class path_finding
   int32_t vertex_count = 0, edge_count =0, begin_vertex =0;
 
   size_t total_weight =0;
+  std::string last_opened_file;
 public:
   path_finding()  = default;
   ~path_finding();
@@ -35,11 +36,9 @@ public:
 
   void display_result();
 private:
-  // this method appends valid edge to internal data structure
-  void append_edge([[maybe_unused]]Edge e){
   
-  }
-
+  void dijkstry_matrix();
+  void dijkstry_list();
 };
 
 #endif
