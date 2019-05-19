@@ -208,6 +208,19 @@ void path_finding::dijkstry_list(){
 
 
 void path_finding::perform_ford_belman(){
+  
+  int32_t i;
+  Edge *item;
+  bool path_changed = false;
+  // init all structers
+  for(i = 0; i < this->vertex_count; i++)
+  {
+    v_parents[i] = -1;
+    v_weights[i] = INT_MAX;
+  }
+
+  v_weights[this->begin_vertex] = 0;
+  
 
 }
 
@@ -247,7 +260,7 @@ void path_finding::display_result(){
     // pop from stack and show
     while(sptr) std::cout << S[--sptr] << " ";
     // show total cost of path
-    std::cout << "$" << v_weights[i] << "\n";
+    std::cout << " Koszt: " << v_weights[i] << "\n";
   }
 }
 
