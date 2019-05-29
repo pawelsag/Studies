@@ -9,6 +9,8 @@
 #include "list_template.h"
 #include "common_struct.h"
 #include "path_finding.h"
+#include "test_module.h"
+
 using namespace std;
 
 void displayMST(string info)
@@ -56,7 +58,8 @@ void menu_MST()
 {
   char opt;
   string fileName;
-  int vertex_count, edge_count;
+  int vertex_count;
+  double edge_fill;
   
   MST my_mst;
 
@@ -78,9 +81,9 @@ void menu_MST()
         my_mst.perform_kruskal();
       break;
     case '4':  //tutaj generowanie  elementow do grafu
-      cout << "Podaj ilosc wierzcholkow, a nastepnie ilosc krawedzi:";
-      cin >> vertex_count >> edge_count;
-      my_mst.generate_data(vertex_count, edge_count);
+      cout << "Podaj ilosc wierzcholkow, a nastepnie ilosc krawedzi w %:";
+      cin >> vertex_count >> edge_fill;
+      my_mst.generate_data(vertex_count, edge_fill);
       my_mst.display();
       break;
     case '5':  //tutaj wyœwietlanie danych
@@ -96,7 +99,8 @@ void menu_PATH()
   
   char opt;
   string fileName;
-  int vertex_count, edge_count, begin_vertex;
+  int vertex_count, begin_vertex;
+  double edge_fill;
   
   path_finding my_pf;
 
@@ -116,12 +120,11 @@ void menu_PATH()
       break;
     case '3':
         my_pf.perform_ford_belman();
-        my_pf.display_result();
       break;
     case '4':  //tutaj generowanie  elementow do grafu
-      cout << "Podaj ilosc wierzcholkow, a nastepnie ilosc krawedzi oraz wierzcholek poczatkowy:";
-      cin >> vertex_count >> edge_count >> begin_vertex;
-      my_pf.generate_data(vertex_count, edge_count, begin_vertex);
+      cout << "Podaj ilosc wierzcholkow, a nastepnie ilosc krawedzi w [%] oraz wierzcholek poczatkowy:";
+      cin >> vertex_count >> edge_fill >> begin_vertex;
+      my_pf.generate_data(vertex_count, edge_fill, begin_vertex);
       my_pf.display();
       break;
     case '5':  //tutaj wyœwietlanie danych
@@ -134,13 +137,14 @@ void menu_PATH()
 
 int main([[maybe_unused]]int argc,[[maybe_unused]] char* argv[])
 {
-
+  graph_tester test;
   char option;
   do{
     cout << endl;
     cout << "==== MENU GLOWNE ===" << endl;
     cout << "1.Wyznaczanie minimalnego drzewa rozpinajacego" << endl;
     cout << "2.Wyznaczanie najkrotszej sciezki w grafie" << endl;
+    cout << "3.Przeprowadz testy:"<<endl;
     cout << "Podaj opcje:";   
     option = getche();
     cout << endl;
@@ -152,7 +156,9 @@ int main([[maybe_unused]]int argc,[[maybe_unused]] char* argv[])
     case '2':
       menu_PATH();
       break;
-
+    case '3':
+      test.run_test();
+      break;
     }
     
   } while (option != '0');

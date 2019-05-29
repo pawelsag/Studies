@@ -1,6 +1,4 @@
 #include "MST.h"
-#include <random>
-#include <time.h>
 #include <iostream>
 #include <iomanip>
 
@@ -32,19 +30,31 @@ void MST::load_from_file(std::string file_name){
   fs.close();
 }
 
-void MST::generate_data(size_t vertex_count, size_t edge_count){
+void MST::generate_data(size_t vertex_count, double edge_fullfilment){
+  // choose 2 of vertex_count
+  // we need to fill our graph with edge_count edges 
+  int64_t edge_count = (vertex_count*(vertex_count -1)/2) * edge_fullfilment;
   this->prepare_containers(vertex_count,edge_count);
+
   Edge edge_tmp;
-  // read data from file until eof
-  srand(time(0));
-  while( (edge_count--) ){
-    // read vertwx begin, vertex end and weight
-    do{
-      edge_tmp.v1 = rand() % vertex_count;
-      edge_tmp.v2 = rand() % vertex_count; 
-    }while(edge_tmp.v1 == edge_tmp.v2);
-    edge_tmp.w = rand() % 0xabcd;    
+  // generate tree
+  for(int i = 0; i < this->vertex_count-1; ++i, edge_count--)
+  {
+    edge_tmp.v1 = i;
+    edge_tmp.v2 = i+1;
+    edge_tmp.w = rand() % 50 + 1;
     this->push_back(edge_tmp);
+  }
+
+  // create left edges
+  while(edge_count > 0){
+    edge_tmp.v1 = rand() % this->vertex_count;
+    edge_tmp.v2 = rand() % this->vertex_count;
+    edge_tmp.w = rand() % 50 + 1;
+    if( this->is_empty(edge_tmp)== false )
+      continue;
+    this->push_back(edge_tmp);
+    edge_count--;
   }
 }
 
@@ -60,7 +70,7 @@ void MST::push_back(Edge& e){
   this->a_list[e.v1].push_back(e);
 }
 
-void MST::prepare_containers(size_t vertex_count, size_t edge_count){
+void MST::prepare_containers(size_t vertex_count,  size_t edge_count){
   
   // release memory when necessary
   this->clear();
@@ -70,11 +80,14 @@ void MST::prepare_containers(size_t vertex_count, size_t edge_count){
 
   //create new adjacency matrix
   this->a_matrix = new char*[this->vertex_count];
-  for (int i = 0; i < this->vertex_count; ++i)
+  this->a_matrix_backup = new char*[this->vertex_count];
+  for (int i = 0; i < this->vertex_count; ++i){
     this->a_matrix[i] = new char [this->vertex_count]{0};
-
+    this->a_matrix_backup[i] = new char [this->vertex_count]{0};
+  }
   // create new adjacency list
   this->a_list = new list<Edge>[vertex_count];
+  this->a_list_backup = new list<Edge>[vertex_count];
   // create list for result
   this->result = new list<Edge>[vertex_count];
   // create new set
@@ -108,13 +121,18 @@ void MST::display(){
 void MST::clear(){
   // release memory when necessary
   if(this->a_matrix != nullptr){
-    for (int i = 0; i < this->vertex_count; ++i)
+    for (int i = 0; i < this->vertex_count; ++i){
       delete [] this->a_matrix[i];
+      delete [] this->a_matrix_backup[i];
+    }
     delete [] this->a_matrix;
+    delete [] this->a_matrix_backup;
   }
 
-  if( this->a_list != nullptr)
+  if( this->a_list != nullptr){
     delete [] this->a_list;
+    delete [] this->a_list_backup;
+  }
 
   if(this->result != nullptr)
     delete [] this->result;
@@ -129,22 +147,24 @@ void MST::perform_kruskal(){
   
   std::cout << "Adjustancy list :\n";
   this->kruskal_list();
-  
+  this->display_result();
   //reload data
   this->load_from_file(this->last_opened_file);
   
   std::cout << "Adjustancy matrix :\n";
-  this->kruskal_matrix(); 
+  this->kruskal_matrix();
+  this->display_result(); 
 }
 
 void MST::perform_prim(){
     std::cout << "Adjustancy list :\n";
     this->prime_list();
-    
+    this->display_result();
     this->load_from_file(this->last_opened_file);
 
     std::cout << "Adjustancy matrix :\n";
     this->prime_matrix();
+    this->display_result();
 }
 
 
@@ -161,7 +181,7 @@ void MST::kruskal_list(){
     }
   }
   this->kruskal_append_result();
-  this->display_result();
+  
 }
 void MST::kruskal_matrix(){
 
@@ -176,9 +196,8 @@ void MST::kruskal_matrix(){
       }
     }
   }
-
   this->kruskal_append_result();
-  this->display_result();
+
 }
 void MST::prime_list(){
   bool *visited_vertexs = new bool[this->vertex_count]{false};
@@ -206,7 +225,6 @@ void MST::prime_list(){
     list_iterator = this->a_list[e.v2].get_iter();                      
     visited_vertexs[e.v2] = true;       
   }
-  this->display_result();
  delete [] visited_vertexs; 
 
 
@@ -237,7 +255,6 @@ void MST::prime_matrix(){
     row_ptr = this->a_matrix[row_id];
     visited_vertexs[e.v2] = true;       
   }
-  this->display_result();
   delete [] visited_vertexs;
 }
 

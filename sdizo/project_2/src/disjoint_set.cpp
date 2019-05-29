@@ -20,6 +20,7 @@ void disjoint_set::operator=(const disjoint_set& l_value){
     this->nodes[i].vertex = l_value.nodes[i].vertex;
   } 
 }
+
 void disjoint_set::display(){
   using namespace std;
   for(uint32_t i =0; i < this->size; i++){
@@ -52,7 +53,7 @@ D_node* disjoint_set::find_set(int32_t vertex){
 }
 
 D_node* disjoint_set::find_set(D_node *vertex){
-  if( vertex->parent != vertex) vertex->parent = this->find_set(vertex->parent);
+  if( vertex->parent != vertex ) vertex->parent = this->find_set(vertex->parent);
   return vertex->parent;
 }
 

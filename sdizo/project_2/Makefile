@@ -1,8 +1,10 @@
 CC=g++
-CFLAGS= -std=c++17 -Wall -Wextra
+CFLAGS= -std=c++17 -Wall -Wextra -ggdb -g3
 OUTDIR=.
 SRCDIR= src
 OBJDIR= obj
+
+SHELL=CMD
 
 INCLUDE_PATHS := -I"./include"
 
@@ -22,5 +24,5 @@ ${OBJDIR}/%.o : ${SRCDIR}/%.cpp
 
 
 clean:
-	del /F /S /Q ${OBJDIR}\*
+	del /F /S /Q .\${OBJDIR}\*
 	del ${TARGET}.exe

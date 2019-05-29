@@ -32,6 +32,10 @@ public:
 	void union_sets(D_node *val_1, D_node *val_2);
 
 	void display();
+  
+  void clear(){
+    this->make_set();
+  }
 };
 
 #endif

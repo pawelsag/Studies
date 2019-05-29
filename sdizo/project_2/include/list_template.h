@@ -38,7 +38,13 @@ public:
 	void pop_front();
 
 	node<T>* find_node(T value);
-	
+
+	const list<T>& operator=(const list<T>& rhs){
+    for(auto n = rhs.head; n != nullptr; n = n->next){
+      this->push_back(n->value);
+    }
+    return rhs;
+  }
 
 	template<typename Payload_t = T>
 	class iterator{
