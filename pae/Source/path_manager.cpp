@@ -1,4 +1,4 @@
-#include <misc.hpp>
+#include <path_manager.hpp>
 #include <permutation.hpp>
 #include <fmt/format.h>
 
@@ -7,7 +7,7 @@ series_t
 path_manager::generate_rand_series(uint32_t city_count)
 {
   auto series = generate_natural_series(city_count);
-  make_permutation(series, city_count);
+  make_rand_permutation(&series.front(), &series.back());
 
   return series;
 }
