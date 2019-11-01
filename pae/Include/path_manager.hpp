@@ -27,11 +27,10 @@ public:
     // code should check if largset number inside series
     // isn't greater than largest vertex in matrix
     tsp64_t cost = 0;
-    const auto& path = create_path(series);
-    for (auto [p1, p2] : path) {
-      cost += m.get_value(p1, p2);
+    for (auto it_begin = series.begin(); it_begin != series.end()-1; it_begin++) {
+      cost += m.get_value(*it_begin, *(it_begin+1) );
     }
-    cost += m.get_value(path.front().p1, path.back().p2);
+    cost += m.get_value(series.front(), series.back());
     return cost;
   }
 

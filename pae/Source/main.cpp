@@ -1,5 +1,6 @@
 #include <internals.hpp>
 #include <path_manager.hpp>
+#include <precise_algorithms.hpp>
 
 int
 main(int argc, char const* argv[])
@@ -26,6 +27,7 @@ main(int argc, char const* argv[])
   cost = TSP::path_manager::calculate_cost(series, m);
   fmt::print("COST : {}\n", cost);
 
+  fmt::print("MIN COST : {}\n", TSP::PRECISE::brutforce(m));
 
   return 0;
 }
