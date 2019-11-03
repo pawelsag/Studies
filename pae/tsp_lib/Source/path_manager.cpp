@@ -27,7 +27,7 @@ path_manager::create_path(series_t &s)
   path_t path;
   auto last_point = s[0];
 
-  for (int i = 1; i < s.size(); i++) {
+  for (uint i = 1; i < s.size(); i++) {
     path.push_back({ last_point, s[i] });
     last_point = s[i];
   }

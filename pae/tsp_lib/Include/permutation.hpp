@@ -35,7 +35,7 @@ template<typename T>
 bool
 next_permutation(T* begin, T* end)
 {
-  T *i, *j, *k;
+  T *i, *j;
   if (begin + 1 >= end)
     return false;
 

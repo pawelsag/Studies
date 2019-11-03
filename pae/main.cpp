@@ -6,7 +6,7 @@ int
 main(int argc, char const* argv[])
 {
   TSP::loader obj;
-  auto m = obj.load_store("../dane/SMALL/data10.txt");
+  auto m = obj.load_store("../dane/SMALL/data11.txt");
   m.show();
   fmt::print("Gnerating natural series...\n");
   auto series = TSP::path_manager::generate_natural_series(m.n);
@@ -26,8 +26,12 @@ main(int argc, char const* argv[])
   TSP::path_manager::show(series);
   cost = TSP::path_manager::calculate_cost(series, m);
   fmt::print("COST : {}\n", cost);
+  // fmt::print("RUNNING BRUTFORCE...\n");
+  // fmt::print("MIN COST : {}\n", TSP::PRECISE::brutforce(m));
 
-  fmt::print("MIN COST : {}\n", TSP::PRECISE::brutforce(m));
+  fmt::print("RUNNING BRANCH&BAOUND...\n");
+  TSP::PRECISE::branch_and_bound bb(m);
+  bb.show_results();
 
   return 0;
 }

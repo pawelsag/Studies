@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.13)
 project("pae_project_2019")
 
-include_directories("Include")
-set (CMAKE_CXX_STANDARD 17)
+include_directories("tsp_lib/Include")
 
-file(GLOB SRC_FILES "Source/*.cpp")
-add_executable(tsp "${SRC_FILES}")
+add_subdirectory(tsp_lib)
 
-target_link_libraries(tsp fmt)
+add_executable(tsp main.cpp)
+
+target_link_libraries(tsp PUBLIC tsp_core fmt)

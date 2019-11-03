@@ -30,7 +30,7 @@ public:
     for (auto it_begin = series.begin(); it_begin != series.end()-1; it_begin++) {
       cost += m.get_value(*it_begin, *(it_begin+1) );
     }
-    cost += m.get_value(series.front(), series.back());
+    cost += m.get_value(series.back(), series.front());
     return cost;
   }
 
