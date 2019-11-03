@@ -4,8 +4,9 @@
 #include <algorithm>
 #include <limits.h>
 
-namespace TSP::PRECISE{
-	tsp64_t brutforce(matrix<tsp64_t>& m){
+namespace TSP::PRECISE
+{
+	tsp64_t brutforce(const matrix<tsp64_t>& m){
 	  	auto series = TSP::path_manager::generate_natural_series(m.n);
 	  	tsp64_t best_cost = std::numeric_limits<tsp64_t>::max(); 
 	  	while(TSP::next_permutation(&series.front(), &series.back())){

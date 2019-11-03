@@ -5,7 +5,7 @@
 
 namespace TSP::PRECISE{
 
-	tsp64_t brutforce(matrix<tsp64_t>& M);
+	tsp64_t brutforce(const matrix<tsp64_t>& M);
 
 	
 	class branch_and_bound{
@@ -31,8 +31,14 @@ namespace TSP::PRECISE{
 			this->solve(1);
 		}
 		
-		void show_results(){
+		void show_results()
+		{
 			fmt::print("MIN COST : {}\n", this->final_cost);
+		}
+
+		tsp64_t get_result()
+		{
+			return final_cost;
 		}
 
 	private:

@@ -6,6 +6,7 @@
 #include <map>
 
 namespace TSP {
+
 using tsp64_t = int64_t;
 using index_t = uint32_t;
 using series_t = std::vector<index_t>;

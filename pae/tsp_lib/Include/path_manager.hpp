@@ -22,7 +22,7 @@ public:
            typename S,
            typename = typename std::is_same<typename std::decay<S>::type,
                                             series_t>::type>
-  static tsp64_t calculate_cost(S&& series, matrix<M>& m)
+  static tsp64_t calculate_cost(const S& series, const matrix<M>& m)
   {
     // code should check if largset number inside series
     // isn't greater than largest vertex in matrix

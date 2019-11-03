@@ -52,6 +52,8 @@ loader::load_results(const char* file)
   while( !fs.eof() ){
     fs >> trash;
     fs >> key;
+    auto pos = key.find(':');
+    key = key.substr(0, pos);
     fs >> value;
     r[key] = value;
   }
@@ -65,6 +67,19 @@ loader::load_directory_files(const char* dir_path)
   for(auto& p: fs::directory_iterator(dir_path))
       info.emplace_back(p.path());
   return info;
+}
+
+std::string loader::filter_out_results(directory_info_t& d)
+{
+  for(auto it = d.begin() ;it != d.end(); it++)
+  {
+    if(it->find("opt") != -1 || it->find("best") != -1){
+      auto f_result_path = *it; 
+      d.erase(it);
+      return f_result_path;
+    }
+  }
+  return "";
 }
 
 };
