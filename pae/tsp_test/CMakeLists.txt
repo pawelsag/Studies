@@ -12,4 +12,4 @@ add_compile_definitions(THREAD_COUNT=${RETURN_THREAD_COUNT})
 file(GLOB SRC_FILES "Source/*.cpp")
 add_library(tsp_tester "${SRC_FILES}")
 
-target_link_libraries(tsp_tester tsp_core fmt)
+target_link_libraries(tsp_tester tsp_core fmt pthread)
