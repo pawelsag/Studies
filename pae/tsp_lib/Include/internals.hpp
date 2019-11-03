@@ -94,6 +94,8 @@ public:
   inline matrix<tsp64_t> get_data() const noexcept { return this->cache; }
 
   static matrix<tsp64_t> load(const char*);
+  static tsp_results_t load_results(const char*);
+  static directory_info_t load_directory_files(const char* dir_path);
 };
 
 };
