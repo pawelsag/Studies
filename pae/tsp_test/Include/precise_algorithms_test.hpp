@@ -5,7 +5,7 @@
 #include <atomic>
 #include <mutex>
 
-#define TEST_BF
+//#define TEST_BF
 #define TEST_B_AND_B
 constexpr const char * common_header = "file_name;data_size;time";
 
@@ -22,5 +22,7 @@ namespace TSP::TEST
 
 	public:
 		void run();
+		std::atomic<size_t> brut_realize_count=0;
+		std::atomic<size_t> bb_realize_count =0;
 	};
 };
