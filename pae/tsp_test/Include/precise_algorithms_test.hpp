@@ -11,7 +11,6 @@ constexpr const char * common_header = "file_name;data_size;time";
 
 namespace TSP::TEST
 {
-
 	class precise_algorithms_tester
 	{
 		std::atomic<size_t> taken_threads = 0;
