@@ -23,12 +23,13 @@ namespace TSP::PRECISE{
 		  visited(std::make_unique<bool[]>(m_ref.n)),
 		  current_path(std::make_unique<index_t[]>(m_ref.n))
 		{
-			std::memset(this->current_path.get(), -1, this->m_ref.n);
-			std::memset(this->visited.get(), false, this->m_ref.n);
-
-			visited[0] = true;
-			this->current_path[0] = 0;
-			this->solve(1);
+			// fmt::print("Solving for {}, {}", this->m_ref.n);
+			for(int i =0 ; i < 1; i++){
+				this->reset();
+				this->visited[i] = true; 
+				this->current_path[0] = i;
+				this->solve(1);
+			}
 		}
 		
 		void show_results()
@@ -46,8 +47,11 @@ namespace TSP::PRECISE{
 		calculate_lower_bound(index_t index)
 		{	
 			tsp64_t	val =0;
-			for(index_t i = index ; i < this->m_ref.n; i++)
+			for(index_t i = 0 ; i < this->m_ref.n; i++){
+				if(this->visited[i] == true)
+					continue;
 				val += this->min(i);
+			}
 			return val;
 		}	
 
@@ -62,6 +66,13 @@ namespace TSP::PRECISE{
 			}
 
 			return min;
+		}
+		void reset(){
+			for(int i =0 ; i < this->m_ref.n; i++){
+				this->visited[i] = false;
+				this->current_path[i] = -1;
+				this->current_cost = 0;
+			}
 		}
 
 		void solve(index_t level);

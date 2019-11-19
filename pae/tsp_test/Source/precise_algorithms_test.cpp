@@ -78,6 +78,8 @@ namespace TSP::TEST
 		TSP::PRECISE::branch_and_bound bb(m_ref);
 		auto end = std::chrono::high_resolution_clock::now();
 
+		bb.show_results();
+		
 		assert(bb.get_result() == r_ref[m_ref.source]);
 
 		std::chrono::duration<double> diff = end-start;

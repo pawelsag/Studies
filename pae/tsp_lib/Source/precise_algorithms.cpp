@@ -18,12 +18,13 @@ namespace TSP::PRECISE
 	}
 
 
-	void branch_and_bound::solve(index_t level){
+	void branch_and_bound::solve(index_t l){
 		
-		if(level == this->m_ref.n)
+		if(l == this->m_ref.n)
 		{
+			// fmt::print("Level {}", l);
 			auto total_cost = this->current_cost + 
-								 this->m_ref.get_value(this->current_path[level-1], 0); 
+								 this->m_ref.get_value(this->current_path[l-1], this->current_path[0]); 
 			if(total_cost < final_cost)
 			{
 				final_cost = total_cost; 	
@@ -34,27 +35,26 @@ namespace TSP::PRECISE
 		for(index_t i =0 ; i < this->m_ref.n; i++)
 		{
 			if(this->visited[i] == true || 
-			   this->m_ref.get_value(this->current_path[level-1], i) == -1 )
+			   this->m_ref.get_value(this->current_path[l-1], i) == -1 )
 				continue;
 			
 			
-			this->current_cost += this->m_ref.get_value(this->current_path[level-1], i);
+			this->current_cost += this->m_ref.get_value(this->current_path[l-1], i);
 
-			// auto cost_estimation = this->calculate_lower_bound(level);
+			auto cost_estimation = this->calculate_lower_bound(l);
 
-			if(this->current_cost < final_cost)
+			if( this->current_cost + cost_estimation < final_cost )
 			{
-				this->current_path[level] = i;
+				this->current_path[l] = i;
 				this->visited[i] = true;
-				this->solve(level+1);
+				this->solve(l+1);
 			}
 
-			this->current_cost -= this->m_ref.get_value(this->current_path[level-1], i);
+			this->current_cost -= this->m_ref.get_value(this->current_path[l-1], i);
 			
 			std::memset(this->visited.get(), false, this->m_ref.n);
-			for (index_t v=0; v < level; v++) 
+			for (index_t v=0; v < l; v++) 
 				this->visited[this->current_path[v]] = true;
 		}
 	}
-
 }
