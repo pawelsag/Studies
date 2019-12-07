@@ -3,8 +3,8 @@
 #include <fmt/format.h>
 #include <string>
 #include <vector>
-
 #include <tsp_types.hpp>
+
 
 namespace TSP {
 
@@ -23,7 +23,7 @@ struct matrix
   matrix(index_t n)
   {
     this->n = n;
-    this->data.resize(this->size);
+    this->data.resize(this->n * this->n);
   }
 
   matrix(const matrix<T>& m)

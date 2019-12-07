@@ -14,7 +14,9 @@ public:
 
   static series_t generate_rand_series(uint32_t city_count);
 
-  static series_t generate_natural_series(uint32_t n);
+  static series_t generate_natural_series(uint32_t city_count);
+
+  static series_t generate_aprox_series(const matrix<tsp64_t> &m);
 
   static void show(series_t n);
 

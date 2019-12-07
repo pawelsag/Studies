@@ -4,8 +4,23 @@
 #include <cstdlib>
 #include <time.h>
 #include <stdio.h>
+#include <random>
 
 namespace TSP {
+
+extern thread_local std::mt19937 gen;
+ 
+template<typename T>
+T random(T min, T max) {
+    using dist = std::conditional_t<
+        std::is_integral<T>::value,
+        std::uniform_int_distribution<T>,
+        std::uniform_real_distribution<T>
+    >;
+    return dist{min, max}(gen);
+}
+
+
 template<typename T>
 void
 make_rand_permutation(T* begin, T* end)

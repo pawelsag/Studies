@@ -1,10 +1,11 @@
 #include <fstream>
 #include <internals.hpp>
 #include <filesystem>
-
+#include <random>
 namespace fs = std::filesystem;
 
 namespace TSP {
+thread_local std::mt19937 gen{std::random_device{}()};
 
 matrix<tsp64_t>
 loader::load_store(const char* file)
