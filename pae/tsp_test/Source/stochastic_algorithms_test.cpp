@@ -36,9 +36,9 @@ namespace TSP::TEST
 
 		std::thread t;
 
-		const size_t max_test_size = dir_info.size(); 
 		
-#ifdef TEST_BF
+#ifdef TEST_SA
+		const size_t max_test_size = dir_info.size(); 
 		for(auto & f : dir_info){
 			const auto &m = loader::load(f.c_str());
 			while(taken_threads >= MAX_THREADS_COUNT){
@@ -51,9 +51,9 @@ namespace TSP::TEST
  			t = std::thread(&stochastic_algorithms_tester::simulated_annealing_test, this, std::ref(bf_stream), m, std::ref(results) ); 
 			t.detach();
 		}
-#endif
 	step_2:;
-#ifdef TEST_B_AND_B
+#endif
+#ifdef TEST_TABU
 		for(auto & f : dir_info){
 			const auto &m = loader::load(f.c_str());
 			while(taken_threads >= MAX_THREADS_COUNT){
@@ -66,8 +66,8 @@ namespace TSP::TEST
  			t = std::thread(&stochastic_algorithms_tester::tabu_test, this, std::ref(bb_stream), m, std::ref(results)); 
 			t.detach();
 		}
-#endif
 	step_exit:;
+#endif
 		// wait for all jobs...
 		while(taken_threads > 0)
 			std::this_thread::sleep_for (std::chrono::seconds(5));
@@ -78,12 +78,12 @@ namespace TSP::TEST
 	{
 		fmt::print("[STARTING THREAD] [FUNCTION: SIMULATED_ANNEALING_TEST] [DATA : {}] \n",m_ref.source);
 		auto start = std::chrono::high_resolution_clock::now();
-		auto res = TSP::STOCHASTICS::tabu_search<START_PATH_TYPE::APROX,
+		STOCHASTICS::tabu_search<START_PATH_TYPE::APROX,
                                 ADJ_ALGORITHM::SWAP > sa(m_ref);
 		auto end = std::chrono::high_resolution_clock::now();
 
 		std::chrono::duration<double> diff = end-start;
-		fmt::print("[{} == {}] FOR [{}] ", res, r_ref[m_ref.source], m_ref.source);
+		fmt::print("[{} == {}] FOR [{}] ", sa.get_result(), r_ref[m_ref.source], m_ref.source);
 		fmt::print("[CORRECT VALUE] [TIME TAKEN : {}]\n", diff.count());
 
 		taken_threads--;

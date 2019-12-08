@@ -31,8 +31,8 @@ namespace TSP::TEST
 
 		std::thread t;
 
-		const size_t max_test_size = dir_info.size(); 
 		
+		const size_t max_test_size = dir_info.size(); 
 #ifdef TEST_BF
 		for(auto & f : dir_info){
 			const auto &m = loader::load(f.c_str());
@@ -46,8 +46,8 @@ namespace TSP::TEST
  			t = std::thread(&precise_algorithms_tester::brutforce_test, this, std::ref(bf_stream), m, std::ref(results) ); 
 			t.detach();
 		}
-#endif
 	step_2:;
+#endif
 #ifdef TEST_B_AND_B
 		for(auto & f : dir_info){
 			const auto &m = loader::load(f.c_str());
@@ -61,8 +61,8 @@ namespace TSP::TEST
  			t = std::thread(&precise_algorithms_tester::branch_baund_test, this, std::ref(bb_stream), m, std::ref(results)); 
 			t.detach();
 		}
-#endif
 	step_exit:;
+#endif
 		// wait for all jobs...
 		while(taken_threads > 0)
 			std::this_thread::sleep_for (std::chrono::seconds(5));

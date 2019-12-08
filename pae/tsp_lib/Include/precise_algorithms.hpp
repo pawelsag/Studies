@@ -68,7 +68,7 @@ namespace TSP::PRECISE{
 			return min;
 		}
 		void reset(){
-			for(int i =0 ; i < this->m_ref.n; i++){
+			for(tsp64_t i =0 ; i < this->m_ref.n; i++){
 				this->visited[i] = false;
 				this->current_path[i] = -1;
 				this->current_cost = 0;

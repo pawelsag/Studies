@@ -16,7 +16,7 @@ main(int argc, char const* argv[])
   // test.run();
   const auto &m = TSP::loader::load("../dane/TSP/TSP/data58.txt");
   // m.show();
-  TSP::STOCHASTICS::tabu_search<START_PATH_TYPE::APROX,
+  TSP::STOCHASTICS::tabu_search<START_PATH_TYPE::NATURAL,
                                 ADJ_ALGORITHM::SWAP > a(m);
   a.show_results();
 

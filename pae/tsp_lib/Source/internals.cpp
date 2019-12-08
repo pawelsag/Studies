@@ -74,7 +74,7 @@ std::string loader::filter_out_results(directory_info_t& d)
 {
   for(auto it = d.begin() ;it != d.end(); it++)
   {
-    if(it->find("opt") != -1 || it->find("best") != -1){
+    if(it->find("opt") != std::string::npos || it->find("best") != std::string::npos){
       auto f_result_path = *it; 
       d.erase(it);
       return f_result_path;

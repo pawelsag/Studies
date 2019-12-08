@@ -18,7 +18,7 @@ public:
 
   static series_t generate_gready_series(const matrix<tsp64_t> &m);
 
-  static void show(series_t n);
+  static void show(series_t &n);
 
   template<typename M,
            typename S,

@@ -40,7 +40,7 @@ path_manager::generate_gready_series(const matrix<tsp64_t> &m)
       if(visited[j] == true)
         continue;
 
-      auto val = m.get_value(i,j);
+      auto val = m.get_value(series[i],j);
       
       if(min > val && i != j ){
         min = val;
@@ -68,7 +68,7 @@ path_manager::create_path(series_t &s)
 }
 
 void
-path_manager::show(series_t s){
+path_manager::show(series_t &s){
   for(const auto & v : s)
     fmt::print("{} ", v);
   fmt::print("\n");
