@@ -58,6 +58,11 @@ struct matrix
     return *this;
   }
 
+  matrix_t & get_ineternal()
+  {
+    return data;
+  }
+
   inline T get_value(index_t r, index_t c) const noexcept
   {
     return this->data[r * n + c];
@@ -66,6 +71,10 @@ struct matrix
   inline void set_value(T val, index_t r, index_t c) const noexcept
   {
     this->data[r * n + c] = val;
+  }
+  inline void fill(T val)
+  {
+    for (auto& v : this->data) v = val;
   }
 
   void show() const

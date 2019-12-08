@@ -1,15 +1,20 @@
-#include <precise_algorithms_test.hpp>
-#include <precise_algorithms.hpp>
+#include <stochastic_algorithms_test.hpp>
+#include <simulated_annealing.hpp>
+#include <tabu_search.hpp>
 #include <chrono>
-#include <thread> 
+#include <thread>
+
+using TSP::STOCHASTICS::START_PATH_TYPE;
+using TSP::STOCHASTICS::COOLING_METHOD;
+using TSP::STOCHASTICS::ADJ_ALGORITHM;
 
 namespace TSP::TEST
 {	// var defined during cmake building process
 	constexpr size_t MAX_THREADS_COUNT = THREAD_COUNT/2-1 <= 0 ? 1 : THREAD_COUNT/2-1;
 
-	void precise_algorithms_tester::run()
+	void stochastic_algorithms_tester::run()
 	{
-		auto dir_info = loader::load_directory_files("../dane/TSP/TSP/data42.txt");
+		auto dir_info = loader::load_directory_files("../dane/TSP/TSP");
 		auto results_path = loader::filter_out_results(dir_info);
 		
 		assert(results_path.length() != 0);
@@ -43,7 +48,7 @@ namespace TSP::TEST
 			}
 
 			taken_threads++;
- 			t = std::thread(&precise_algorithms_tester::brutforce_test, this, std::ref(bf_stream), m, std::ref(results) ); 
+ 			t = std::thread(&stochastic_algorithms_tester::simulated_annealing_test, this, std::ref(bf_stream), m, std::ref(results) ); 
 			t.detach();
 		}
 #endif
@@ -58,7 +63,7 @@ namespace TSP::TEST
 
 			}
 			taken_threads++;
- 			t = std::thread(&precise_algorithms_tester::branch_baund_test, this, std::ref(bb_stream), m, std::ref(results)); 
+ 			t = std::thread(&stochastic_algorithms_tester::tabu_test, this, std::ref(bb_stream), m, std::ref(results)); 
 			t.detach();
 		}
 #endif
@@ -69,17 +74,16 @@ namespace TSP::TEST
 
 	}
 
-	void precise_algorithms_tester::brutforce_test(std::fstream& fs ,matrix<tsp64_t> m_ref,tsp_results_t& r_ref)
+	void stochastic_algorithms_tester::simulated_annealing_test(std::fstream& fs ,matrix<tsp64_t> m_ref,tsp_results_t& r_ref)
 	{
-		fmt::print("[STARTING THREAD] [FUNCTION: BRUTFORCE_TEST] [DATA : {}] \n",m_ref.source);
+		fmt::print("[STARTING THREAD] [FUNCTION: SIMULATED_ANNEALING_TEST] [DATA : {}] \n",m_ref.source);
 		auto start = std::chrono::high_resolution_clock::now();
-		auto res = TSP::PRECISE::brutforce(m_ref);
+		auto res = TSP::STOCHASTICS::tabu_search<START_PATH_TYPE::APROX,
+                                ADJ_ALGORITHM::SWAP > sa(m_ref);
 		auto end = std::chrono::high_resolution_clock::now();
 
-		assert(res == r_ref[m_ref.source]);
-
 		std::chrono::duration<double> diff = end-start;
-		fmt::print("[{} == {}] ", res, r_ref[m_ref.source]);
+		fmt::print("[{} == {}] FOR [{}] ", res, r_ref[m_ref.source], m_ref.source);
 		fmt::print("[CORRECT VALUE] [TIME TAKEN : {}]\n", diff.count());
 
 		taken_threads--;
@@ -89,9 +93,9 @@ namespace TSP::TEST
 		fs << m_ref.source << ";" << m_ref.n << ";" <<  diff.count() << std::endl;
 	}
 		
-	void precise_algorithms_tester::branch_baund_test(std::fstream& fs , matrix<tsp64_t> m_ref,tsp_results_t& r_ref)
+	void stochastic_algorithms_tester::tabu_test(std::fstream& fs , matrix<tsp64_t> m_ref,tsp_results_t& r_ref)
 	{
-		fmt::print("[STARTING THREAD] [FUNCTION: BRANCH_BAUND_TEST] [DATA : {}] \n",m_ref.source);
+		fmt::print("[STARTING THREAD] [FUNCTION: TABU_TEST] [DATA : {}] \n",m_ref.source);
 		auto start = std::chrono::high_resolution_clock::now();
 		TSP::PRECISE::branch_and_bound bb(m_ref);
 		auto end = std::chrono::high_resolution_clock::now();

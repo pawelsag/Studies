@@ -21,7 +21,7 @@ path_manager::generate_natural_series(uint32_t n)
   return series;
 }
 series_t 
-path_manager::generate_aprox_series(const matrix<tsp64_t> &m)
+path_manager::generate_gready_series(const matrix<tsp64_t> &m)
 {
   series_t series;
   tsp64_t min = std::numeric_limits<tsp64_t>::max();

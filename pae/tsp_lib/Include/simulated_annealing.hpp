@@ -11,26 +11,6 @@ namespace TSP::STOCHASTICS
 {	
 	using chrono_time_point = std::chrono::time_point<std::chrono::_V2::system_clock, std::chrono::duration<long int, std::ratio<1, 1000000000>>>;
 	
-	enum class START_PATH_TYPE
-	{
-		NATURAL,
-		RANDOM,
-		APROX
-	};
-	
-	enum class COOLING_METHOD
-	{
-		LINEAR,
-		GEOMETRIC,
-		LOGARITHM
-	};
-
-	enum class ADJ_ALGORITHM
-	{
-		SWAP,
-		INSERT,
-		INVERT
-	};
 	template <START_PATH_TYPE SP, COOLING_METHOD CM, ADJ_ALGORITHM AA>
 	class simmulated_annealing
 	{
@@ -47,7 +27,6 @@ namespace TSP::STOCHASTICS
 		static constexpr double begin_temperature = 10'000.0;
 	    static constexpr double final_temperature = 0.00001;
 	    static constexpr double cooling_rate = 0.95;
-	    static constexpr tsp64_t max_time = 10'000'000;
 
 		double temperature = begin_temperature;
 		double time =0.0;
@@ -68,7 +47,7 @@ namespace TSP::STOCHASTICS
 				current_path = path_manager::generate_rand_series(m_ref.n);
 			}else
 			{
-				current_path = path_manager::generate_aprox_series(m_ref);
+				current_path = path_manager::generate_gready_series(m_ref);
 			}
 
 			if constexpr (CM == COOLING_METHOD::LINEAR)
@@ -99,7 +78,7 @@ namespace TSP::STOCHASTICS
 
 			fmt::print("{} \n", this->best_cost);
 			for(int i =0 ; i < m.n; i++)
-				fmt::print("{}, ", current_path[i]);
+				fmt::print("{}, ", best_path[i]);
 			fmt::print("\n");
 		}
 
@@ -108,6 +87,10 @@ namespace TSP::STOCHASTICS
 		inline double calc_probability(double delta)
 		{
 			return std::exp(-delta / (this->temperature));
+		}
+		tsp64_t get_result()
+		{
+			return this->best_cost;
 		}
 
 		inline void calc_time()
@@ -139,82 +122,83 @@ namespace TSP::STOCHASTICS
 		}
 
 			
-	void solve(std::function<void(void)> cool_down, std::function<void(tsp64_t,tsp64_t)> shuffle)
-	{
-
-	    this->current_cost = TSP::path_manager::calculate_cost(this->current_path, this->m_ref);
-	    this->best_cost = this->current_cost;
-	    this->best_path = this->copy_path = this->current_path;
-	     
-	    while (this->temperature > this->final_temperature && time < max_time )
-	    {
-	        auto p1 = random(0u, m_ref.n-1); 
-			auto p2 = random(0u ,m_ref.n-1);
-	        while(p1 == p2) p2 = random(0u, m_ref.n-1);
-
-	        shuffle(p1,p2);
-			cool_down();
-
-	        double delta_distance = TSP::path_manager::calculate_cost(this->current_path, this->m_ref) - current_cost;
-	        
-	        // fmt::print("{} {} {}\n", this->temperature, time, calc_probability(delta_distance));
-
-	        if ((delta_distance < 0) || (current_cost > 0 && 
-	             calc_probability(delta_distance) > random(0.0, 1.0)))
-	        {
-	            current_cost = delta_distance + current_cost;
-	            copy_path = current_path;
-	        }else
-	        {
-	        	this->current_path = this->copy_path;
-	        	continue;
-	        }
-
-	        if(this->current_cost < this->best_cost)
-	        {
-	        	this->best_cost = this->current_cost;
-	        	this->best_path = this->current_path;
-	        }
-    }
-
-	};
-	void adj_swap(tsp64_t p1, tsp64_t p2)
-	{	
-		std::swap(current_path[p1], current_path[p2]);
-	}
-
-	void adj_insert(tsp64_t p1, tsp64_t p2)
-	{
-		if (p1 < p2){
-			// remeber value which will be inserted
-			auto tmp = current_path[p2];
-			// move all values to the right
-			while(p1 < p2){
-				current_path[p2] = current_path[p2-1];
-				p2--; 
-			} 
-			current_path[p1+1] = tmp;
-		}else
+		void solve(std::function<void(void)> &cool_down, std::function<void(tsp64_t,tsp64_t)> &shuffle)
 		{
-			// remeber value which will be inserted
-			auto tmp = current_path[p2];
-			// move all values to the right
-			while(p1 > p2)
-			{
-				current_path[p2] = current_path[p2+1];
-				p2++; 
-			}
-			current_path[p1] = tmp;
+
+		    this->current_cost = TSP::path_manager::calculate_cost(this->current_path, this->m_ref);
+		    this->best_cost = this->current_cost;
+		    this->best_path = this->copy_path = this->current_path;
+		     
+		    while (this->temperature > this->final_temperature && time < begin_temperature )
+		    {
+		        auto p1 = random(0u, m_ref.n-1); 
+				auto p2 = random(0u ,m_ref.n-1);
+		        while(p1 == p2) p2 = random(0u, m_ref.n-1);
+
+		        shuffle(p1,p2);
+				cool_down();
+
+		        double delta_distance = TSP::path_manager::calculate_cost(this->current_path, this->m_ref) - current_cost;
+		        
+
+		        if ( delta_distance < 0 || (current_cost > 0 && 
+		             calc_probability(delta_distance) > random(0.0, 1.0)))
+		        {
+		            current_cost = delta_distance + current_cost;
+		            copy_path = current_path;
+
+		        }else
+		        {
+		        	this->current_path = this->copy_path;
+		        	continue;
+		        }
+
+		        if(this->current_cost < this->best_cost)
+		        {
+		        	this->best_cost = this->current_cost;
+		        	this->best_path = this->current_path;
+		        }
+		    }
 		}
-	}
+		
+		void adj_swap(tsp64_t p1, tsp64_t p2)
+		{	
+			std::swap(current_path[p1], current_path[p2]);
+		}
 
-	void adj_invert(tsp64_t p1, tsp64_t p2)
-	{
-		// make sure that p2 is allways bigger
-		if (p1 > p2) std::swap(p1,p2);
+		void adj_insert(tsp64_t p1, tsp64_t p2)
+		{
+			if (p1 < p2){
+				// remeber value which will be inserted
+				auto tmp = current_path[p2];
+				// move all values to the right
+				while(p1 < p2){
+					current_path[p2] = current_path[p2-1];
+					p2--; 
+				} 
+				current_path[p1+1] = tmp;
+			}else
+			{
+				// remeber value which will be inserted
+				auto tmp = current_path[p2];
+				// move all values to the right
+				while(p1 > p2)
+				{
+					current_path[p2] = current_path[p2+1];
+					p2++; 
+				}
+				current_path[p1] = tmp;
+			}
+		}
 
-		TSP::reverse(&current_path[p1], &current_path[p2]);
-	}
+		void adj_invert(tsp64_t p1, tsp64_t p2)
+		{
+			// make sure that p2 is allways bigger
+			if (p1 > p2) std::swap(p1,p2);
+
+			TSP::reverse(&current_path[p1], &current_path[p2]);
+		}
 
 	};
+
 }

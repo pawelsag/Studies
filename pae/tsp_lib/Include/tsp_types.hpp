@@ -19,5 +19,29 @@ struct point
 };
 
 using path_t = std::vector<point>;
+	
+	namespace STOCHASTICS{
+
+		enum class START_PATH_TYPE
+		{
+			NATURAL,
+			RANDOM,
+			APROX
+		};
+		
+		enum class COOLING_METHOD
+		{
+			LINEAR,
+			GEOMETRIC,
+			LOGARITHM
+		};
+
+		enum class ADJ_ALGORITHM
+		{
+			SWAP,
+			INSERT,
+			INVERT
+		};
+	}
 
 }
