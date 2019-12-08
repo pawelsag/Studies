@@ -13,14 +13,14 @@ int
 main(int argc, char const* argv[])
 {
 
-  TSP::TEST::stochastic_algorithms_tester test;
-  test.run();
-  // const auto &m = TSP::loader::load("../dane/TSP/TSP/data17.txt");
+  // TSP::TEST::stochastic_algorithms_tester test;
+  // test.run();
+  const auto &m = TSP::loader::load("../dane/SMALL/data18.txt");
   // m.show();
-  // TSP::STOCHASTICS::tabu_search<START_PATH_TYPE::APROX,
-  //                               ADJ_ALGORITHM::INVERT> a(m);
+  TSP::STOCHASTICS::tabu_search<START_PATH_TYPE::APROX,
+                                ADJ_ALGORITHM::INSERT> a(m);
 
-  // a.show_results();
+  a.show_results();
 
   // TSP::STOCHASTICS::simmulated_annealing<START_PATH_TYPE::APROX,
 		// 							  COOLING_METHOD::LINEAR,

@@ -47,7 +47,7 @@ namespace TSP::STOCHASTICS
 				current_path = path_manager::generate_gready_series(m_ref);
 			}
 			tabu_list.resize(m_ref.n * m_ref.n);
-			max_lack_of_solutions = max_loop_count * 0.2;
+			max_lack_of_solutions = max_loop_count * 0.05;
 			this->solve();
 
 		}
@@ -165,7 +165,7 @@ namespace TSP::STOCHASTICS
 
 		    while (loop_i < max_loop_count)
 		    {
-		        tsp64_t lower_cost = std::numeric_limits<tsp64_t>::max();
+		        tsp64_t new_cost = std::numeric_limits<tsp64_t>::max();
 				tsp64_t p1,p2;
 				for(tsp64_t i =0 ; i < this->m_ref.n; i++)
 				{
@@ -182,9 +182,9 @@ namespace TSP::STOCHASTICS
 							cost = this->calculate_invert_cost(i,j);
 						}
 
-						if( lower_cost > cost + tabu_penalty(i,j))
+						if( new_cost > cost + tabu_penalty(i,j))
 						{
-							lower_cost = cost;
+							new_cost = cost;
 							p1 = i;
 							p2 = j;
 						}
@@ -194,7 +194,7 @@ namespace TSP::STOCHASTICS
 
 				without_better_solutions++;
 
-				if(current_cost > lower_cost){
+				if(current_cost > new_cost){
 					without_better_solutions = 0;
 				}
 
@@ -208,7 +208,7 @@ namespace TSP::STOCHASTICS
 					this->tabu_search::adj_invert(p1,p2);
 				}
 
-				current_cost = lower_cost;
+				current_cost = new_cost;
 
 		        if(this->current_cost < this->best_cost)
 		        {							

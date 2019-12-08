@@ -205,7 +205,7 @@ namespace TSP::STOCHASTICS
 		     
 		    while (this->temperature > this->final_temperature && time < begin_temperature )
 		    {
-		    	tsp64_t lower_cost = std::numeric_limits<tsp64_t>::max();
+		    	tsp64_t new_cost = std::numeric_limits<tsp64_t>::max();
 		        tsp64_t p1,p2;
 				for(tsp64_t i =0 ; i < this->m_ref.n; i++)
 				{
@@ -222,9 +222,9 @@ namespace TSP::STOCHASTICS
 							cost = this->calculate_invert_cost(i,j);
 						}
 
-						if( lower_cost > cost )
+						if( new_cost > cost )
 						{
-							lower_cost = cost;
+							new_cost = cost;
 							p1 = i;
 							p2 = j;
 						}
@@ -233,12 +233,12 @@ namespace TSP::STOCHASTICS
 
 				cool_down();
 
-		        double delta_distance = lower_cost - current_cost;
+		        double delta_distance = new_cost - current_cost;
 		        
 		        if ( delta_distance < 0 || (delta_distance > 0 && 
 		             calc_probability(delta_distance) > random(0.0, 1.0)))
 		        {
-		            current_cost = lower_cost;
+		            current_cost = new_cost;
 		            shuffle(p1,p2);
 		        }
 
