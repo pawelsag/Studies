@@ -20,6 +20,7 @@ path_manager::generate_natural_series(uint32_t n)
     series.push_back(i);
   return series;
 }
+
 series_t 
 path_manager::generate_gready_series(const matrix<tsp64_t> &m)
 {
@@ -32,7 +33,7 @@ path_manager::generate_gready_series(const matrix<tsp64_t> &m)
   series.push_back(0);
   visited[0] = true;
 
-  for (tsp64_t i = 0; i < m.n; i++)
+  for (tsp64_t i = 1; i < m.n; i++)
   {  
     tsp64_t min_idx = 0;
     for(tsp64_t j = 0; j < m.n; j++)
@@ -40,9 +41,9 @@ path_manager::generate_gready_series(const matrix<tsp64_t> &m)
       if(visited[j] == true)
         continue;
 
-      auto val = m.get_value(series[i],j);
+      auto val = m.get_value(series[i-1],j);
       
-      if(min > val && i != j ){
+      if(min > val && series[i] != j){
         min = val;
         min_idx = j;
       }

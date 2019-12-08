@@ -23,10 +23,9 @@ namespace TSP::STOCHASTICS
 		tsp64_t current_cost = 0;
 		tsp64_t best_cost = 0;
 		series_t current_path;
-		series_t copy_path;
 		series_t best_path;
 
-		tsp64_t without_better_solutions =0;
+		tsp64_t without_better_solutions ;
 		tsp64_t max_lack_of_solutions;
 
 		static constexpr tsp64_t penalty = 5;
@@ -35,6 +34,7 @@ namespace TSP::STOCHASTICS
 	public:
 		tabu_search(const matrix<tsp64_t> &m)
 		: m_ref(m)
+
 		{
 			if constexpr (SP == START_PATH_TYPE::NATURAL)
 			{
@@ -46,8 +46,8 @@ namespace TSP::STOCHASTICS
 			{
 				current_path = path_manager::generate_gready_series(m_ref);
 			}
-
-			max_lack_of_solutions = max_loop_count * 0.4;
+			tabu_list.resize(m_ref.n * m_ref.n);
+			max_lack_of_solutions = max_loop_count * 0.2;
 			this->solve();
 
 		}
@@ -110,19 +110,10 @@ namespace TSP::STOCHASTICS
 
 			tsp64_t vertex = p1*this->m_ref.n + p2;
 
-			std::vector<tabu_t>::iterator val = std::find_if(this->tabu_list.begin(), 
-								  this->tabu_list.end(), 
-								  [vertex](tabu_t &a){
-								  	return a.v == vertex; 
-								  });
+			auto val = this->tabu_list.begin() + vertex;
+			val->penalty += penalty;
+			return (penalty/val->penalty) *this->current_cost;
 
-			if( val != this->tabu_list.end() ){
-				val->penalty += penalty;	
-				return (penalty/val->penalty) *this->current_cost;
-			}
-
-			this->tabu_list.push_back({vertex, penalty});
-			return 0;
 		}
 		
 		tsp64_t calculate_swap_cost(tsp64_t p1,
@@ -162,7 +153,6 @@ namespace TSP::STOCHASTICS
 		void reset()
 		{
 			this->current_cost = TSP::path_manager::calculate_cost(this->current_path, this->m_ref);
-		    this->copy_path = this->current_path;
 		}
 		
 		void solve()
@@ -200,24 +190,25 @@ namespace TSP::STOCHASTICS
 						}
 					}
 				}
-				
 				this->decrement_tabu();
 
 				without_better_solutions++;
 
 				if(current_cost > lower_cost){
 					without_better_solutions = 0;
-					if constexpr (AA == ADJ_ALGORITHM::SWAP)
-					{
-						this->tabu_search::adj_swap(p1,p2);
-					}else if constexpr (AA == ADJ_ALGORITHM::INSERT)
-					{
-						this->tabu_search::adj_insert(p1,p2);
-					}else{
-						this->tabu_search::adj_invert(p1,p2);
-					}
-					current_cost = lower_cost;
 				}
+
+				if constexpr (AA == ADJ_ALGORITHM::SWAP)
+				{
+					this->tabu_search::adj_swap(p1,p2);
+				}else if constexpr (AA == ADJ_ALGORITHM::INSERT)
+				{
+					this->tabu_search::adj_insert(p1,p2);
+				}else{
+					this->tabu_search::adj_invert(p1,p2);
+				}
+
+				current_cost = lower_cost;
 
 		        if(this->current_cost < this->best_cost)
 		        {							
@@ -226,8 +217,10 @@ namespace TSP::STOCHASTICS
 		        }
 
 		        // critical event
-				if( without_better_solutions > max_lack_of_solutions){
+				if( without_better_solutions > max_lack_of_solutions)
+				{
 					current_path = path_manager::generate_rand_series(m_ref.n);
+					this->reset();
 				}
 				loop_i++;
 		    }

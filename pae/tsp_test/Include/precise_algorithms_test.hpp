@@ -7,7 +7,6 @@
 
 //#define TEST_BF
 #define TEST_B_AND_B
-constexpr const char * common_header = "file_name;data_size;time";
 
 namespace TSP::TEST
 {

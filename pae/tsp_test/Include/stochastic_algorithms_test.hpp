@@ -7,7 +7,6 @@
 
 #define TEST_SA
 #define TEST_TABU
-constexpr const char * common_header = "file_name;data_size;time";
 
 namespace TSP::TEST
 {

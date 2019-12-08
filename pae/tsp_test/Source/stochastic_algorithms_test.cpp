@@ -79,7 +79,7 @@ namespace TSP::TEST
 		fmt::print("[STARTING THREAD] [FUNCTION: SIMULATED_ANNEALING_TEST] [DATA : {}] \n",m_ref.source);
 		auto start = std::chrono::high_resolution_clock::now();
 		STOCHASTICS::tabu_search<START_PATH_TYPE::APROX,
-                                ADJ_ALGORITHM::SWAP > sa(m_ref);
+                                ADJ_ALGORITHM::INVERT> sa(m_ref);
 		auto end = std::chrono::high_resolution_clock::now();
 
 		std::chrono::duration<double> diff = end-start;
@@ -97,15 +97,13 @@ namespace TSP::TEST
 	{
 		fmt::print("[STARTING THREAD] [FUNCTION: TABU_TEST] [DATA : {}] \n",m_ref.source);
 		auto start = std::chrono::high_resolution_clock::now();
-		TSP::PRECISE::branch_and_bound bb(m_ref);
+		TSP::STOCHASTICS::simmulated_annealing<START_PATH_TYPE::APROX,
+									  COOLING_METHOD::LINEAR,
+                                	  ADJ_ALGORITHM::INVERT> ts(m_ref);
 		auto end = std::chrono::high_resolution_clock::now();
 
-		bb.show_results();
-		
-		assert(bb.get_result() == r_ref[m_ref.source]);
-
 		std::chrono::duration<double> diff = end-start;
-		fmt::print("[{} == {}] ", bb.get_result(), r_ref[m_ref.source]);
+		fmt::print("[{} == {} FOR {}] ", ts.get_result(), r_ref[m_ref.source],m_ref.source);
 		fmt::print("[CORRECT VALUE] [TIME TAKEN : {}]\n",diff.count());
 		
 		taken_threads--;

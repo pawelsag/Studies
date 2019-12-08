@@ -1,15 +1,16 @@
 #include <precise_algorithms_test.hpp>
 #include <precise_algorithms.hpp>
 #include <chrono>
-#include <thread> 
-
+#include <thread>
+ 
+constexpr const char * common_header = "file_name;data_size;time";
 namespace TSP::TEST
 {	// var defined during cmake building process
 	constexpr size_t MAX_THREADS_COUNT = THREAD_COUNT/2-1 <= 0 ? 1 : THREAD_COUNT/2-1;
 
 	void precise_algorithms_tester::run()
 	{
-		auto dir_info = loader::load_directory_files("../dane/TSP/TSP/data42.txt");
+		auto dir_info = loader::load_directory_files("../dane/TSP/TSP");
 		auto results_path = loader::filter_out_results(dir_info);
 		
 		assert(results_path.length() != 0);
