@@ -15,16 +15,16 @@ main(int argc, char const* argv[])
 
   // TSP::TEST::stochastic_algorithms_tester test;
   // test.run();
-  const auto &m = TSP::loader::load("../dane/SMALL/data18.txt");
+  const auto &m = TSP::loader::load("../dane/TSP/TSP/data29.txt");
   // m.show();
-  TSP::STOCHASTICS::tabu_search<START_PATH_TYPE::APROX,
-                                ADJ_ALGORITHM::INSERT> a(m);
+  // TSP::STOCHASTICS::tabu_search<START_PATH_TYPE::APROX,
+  //                               ADJ_ALGORITHM::INVERT> a(m);
 
-  a.show_results();
+  // a.show_results();
 
-  // TSP::STOCHASTICS::simmulated_annealing<START_PATH_TYPE::APROX,
-		// 							  COOLING_METHOD::LINEAR,
-  //                               	  ADJ_ALGORITHM::INVERT> ts(m);
-  // ts.show_results();
+  TSP::STOCHASTICS::simmulated_annealing<START_PATH_TYPE::APROX,
+									                       COOLING_METHOD::LINEAR,
+                                	       ADJ_ALGORITHM::INVERT> ts(m);
+  ts.show_results();
   return 0;
 }

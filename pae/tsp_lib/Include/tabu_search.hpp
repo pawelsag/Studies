@@ -49,8 +49,8 @@ namespace TSP::STOCHASTICS
 			tabu_list.resize(m_ref.n * m_ref.n);
 			max_lack_of_solutions = max_loop_count * 0.05;
 			this->solve();
-
 		}
+
 		void show_results()
 		{
 			fmt::print( "{} \n", this->best_cost );
@@ -190,6 +190,7 @@ namespace TSP::STOCHASTICS
 						}
 					}
 				}
+				
 				this->decrement_tabu();
 
 				without_better_solutions++;

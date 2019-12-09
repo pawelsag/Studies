@@ -5,6 +5,7 @@
 #include "utils.hpp"
 #include "precise_algorithms.hpp"
 #include "path_manager.hpp"
+
 constexpr const char * common_header = "file_name;data_size;time";
 
 namespace TSP::STOCHASTICS
@@ -23,7 +24,7 @@ namespace TSP::STOCHASTICS
 		chrono_time_point current_time;
 		std::chrono::duration<double> diff;
 
-		static constexpr double begin_temperature = 100'00.0;
+		static constexpr double begin_temperature = 10'000.0;
 	    static constexpr double final_temperature = 0.00001;
 	    static constexpr double cooling_rate = 0.95;
 
@@ -91,7 +92,7 @@ namespace TSP::STOCHASTICS
 
 		inline double calc_probability(double delta)
 		{
-			return std::exp(-delta / (this->temperature));
+			return std::exp(delta / (this->temperature));
 		}
 		
 		inline void calc_time()
@@ -142,7 +143,7 @@ namespace TSP::STOCHASTICS
 		inline void logarithm_cooling()
 		{
 			calc_time2();
-			this->temperature = begin_temperature/std::log(time +1.01);
+			this->temperature = begin_temperature/std::log(time +1);
 		}
 		
 		inline void geometric_cooling()
@@ -207,36 +208,25 @@ namespace TSP::STOCHASTICS
 		    {
 		    	tsp64_t new_cost = std::numeric_limits<tsp64_t>::max();
 		        tsp64_t p1,p2;
-				for(tsp64_t i =0 ; i < this->m_ref.n; i++)
+				
+				p1 = random(0u,m_ref.n);
+				p2 = random(0u,m_ref.n);
+				while(p1 == p2) p2 = random(0u,m_ref.n);
+				
+				if constexpr (AA == ADJ_ALGORITHM::SWAP)
 				{
-					for(tsp64_t j = i+1 ; j < this->m_ref.n; j++)
-					{
-						tsp64_t cost;
-						if constexpr (AA == ADJ_ALGORITHM::SWAP)
-						{
-							cost = this->calculate_swap_cost(i,j);
-						}else if constexpr (AA == ADJ_ALGORITHM::INSERT)
-						{
-							cost = this->calculate_insert_cost(i,j);
-						}else{
-							cost = this->calculate_invert_cost(i,j);
-						}
-
-						if( new_cost > cost )
-						{
-							new_cost = cost;
-							p1 = i;
-							p2 = j;
-						}
-					}
+					new_cost = this->calculate_swap_cost(p1,p2);
+				}else if constexpr (AA == ADJ_ALGORITHM::INSERT)
+				{
+					new_cost = this->calculate_insert_cost(p1,p2);
+				}else{
+					new_cost = this->calculate_invert_cost(p1,p2);
 				}
 
 				cool_down();
-
 		        double delta_distance = new_cost - current_cost;
 		        
-		        if ( delta_distance < 0 || (delta_distance > 0 && 
-		             calc_probability(delta_distance) > random(0.0, 1.0)))
+		        if ( delta_distance < 0 || (calc_probability(delta_distance) > random(0.0, 1.0)))
 		        {
 		            current_cost = new_cost;
 		            shuffle(p1,p2);
