@@ -203,9 +203,10 @@ namespace TSP::STOCHASTICS
 		    this->current_cost = TSP::path_manager::calculate_cost(this->current_path, this->m_ref);
 		    this->best_cost = this->current_cost;
 		    this->best_path = this->current_path;
-		     
-		    while (this->temperature > this->final_temperature && time < begin_temperature )
+		    double last_temperature = -1;
+		    while (this->temperature > this->final_temperature  && last_temperature != this->temperature)
 		    {
+
 		    	tsp64_t new_cost = std::numeric_limits<tsp64_t>::max();
 		        tsp64_t p1,p2;
 				
@@ -222,7 +223,8 @@ namespace TSP::STOCHASTICS
 				}else{
 					new_cost = this->calculate_invert_cost(p1,p2);
 				}
-
+				
+				last_temperature = this->temperature;
 				cool_down();
 		        double delta_distance = new_cost - current_cost;
 		        

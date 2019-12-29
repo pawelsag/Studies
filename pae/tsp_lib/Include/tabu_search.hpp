@@ -102,7 +102,7 @@ namespace TSP::STOCHASTICS
 		void decrement_tabu()
 		{
 			for(auto beg = this->tabu_list.begin(); beg != this->tabu_list.end(); beg++)
-				if(beg->penalty > 0) beg->penalty--;
+				if(beg->penalty > 0) beg->penalty-=3;
 		}
 
 		tsp64_t tabu_penalty(tsp64_t p1, tsp64_t p2)
@@ -112,7 +112,7 @@ namespace TSP::STOCHASTICS
 
 			auto val = this->tabu_list.begin() + vertex;
 			val->penalty += penalty;
-			return (penalty/val->penalty) *this->current_cost;
+			return (val->penalty/penalty) *this->current_cost;
 
 		}
 		
@@ -190,7 +190,7 @@ namespace TSP::STOCHASTICS
 						}
 					}
 				}
-				
+
 				this->decrement_tabu();
 
 				without_better_solutions++;

@@ -4,10 +4,9 @@
 #include <precise_algorithms_test.hpp>
 #include <tabu_search.hpp>
 #include <simulated_annealing.hpp>
+#include <genetic_algorithm.hpp>
 
-using TSP::STOCHASTICS::START_PATH_TYPE;
-using TSP::STOCHASTICS::COOLING_METHOD;
-using TSP::STOCHASTICS::ADJ_ALGORITHM;
+using TSP::GENETIC::SELECTION_METHOD;
 
 int
 main(int argc, char const* argv[])
@@ -17,14 +16,16 @@ main(int argc, char const* argv[])
   // test.run();
   const auto &m = TSP::loader::load("../dane/TSP/TSP/data29.txt");
   // m.show();
-  // TSP::STOCHASTICS::tabu_search<START_PATH_TYPE::APROX,
+  // TSP::STOCHASTICS::tabu_search<START_PATH_TYPE::RANDOM,
   //                               ADJ_ALGORITHM::INVERT> a(m);
 
   // a.show_results();
 
-  TSP::STOCHASTICS::simmulated_annealing<START_PATH_TYPE::APROX,
-									                       COOLING_METHOD::LINEAR,
-                                	       ADJ_ALGORITHM::INVERT> ts(m);
-  ts.show_results();
+  // TSP::STOCHASTICS::simmulated_annealing<START_PATH_TYPE::APROX,
+		// 							                       COOLING_METHOD::LINEAR,
+  //                               	       ADJ_ALGORITHM::INVERT> ts(m);
+  // ts.show_results();
+
+  // TSP::GENETIC::genetic_algorithm<SELECTION_METHOD::TOURNAMENT> ga(m);
   return 0;
 }
