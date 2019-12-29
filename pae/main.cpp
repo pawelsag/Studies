@@ -26,6 +26,6 @@ main(int argc, char const* argv[])
   //                               	       ADJ_ALGORITHM::INVERT> ts(m);
   // ts.show_results();
 
-  // TSP::GENETIC::genetic_algorithm<SELECTION_METHOD::TOURNAMENT> ga(m);
+  TSP::GENETIC::genetic_algorithm<SELECTION_METHOD::TOURNAMENT> ga(m);
   return 0;
 }
