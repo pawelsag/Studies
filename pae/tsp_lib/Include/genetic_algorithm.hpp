@@ -46,8 +46,10 @@ namespace TSP::GENETIC
 		using population_t = std::vector<individual>;
 		
 		const matrix<tsp64_t>& m_ref;
-		population_t population;	
+		population_t population;
+
 		series_t city_link_p1, city_link_p2;
+		std::vector<bool> is_visted_p1, is_visted_p2;
 
 	public:
 		genetic_algorithm(const matrix<tsp64_t> &m)
@@ -58,8 +60,14 @@ namespace TSP::GENETIC
 
 			tournament_selection();
 			city_link_p1.resize(9);
-			city_link_p2.resize(9);
+			city_link_p2.resize(9);			
+			is_visted_p1.resize(9);
+			is_visted_p2.resize(9);
 			rank_selection();
+			series_t p1 = {10,9,5,6,7,8,2,4,3,1};
+			series_t p2 = {9,8,2,3,4,1,10,6,5,7};
+
+			OX_cross(p1,p2);
 			this->solve();
 		}
 
@@ -130,12 +138,47 @@ namespace TSP::GENETIC
 
 		void OX_cross(series_t & p1, series_t & p2)
 		{
+			auto k1 =3;//random(0u, this->m_ref.n);
+			auto k2 =6;//random(0u, this->m_ref.n);
+			series_t p1_tmp = p1, p2_tmp =p2;
+			std::fill(is_visted_p1.begin(),is_visted_p1.end(), false);
+			std::fill(is_visted_p1.begin(),is_visted_p1.end(), false);
 
-		}
+			if(k1 > k2) std::swap(k1,k2);
 
-		void EX_cross(series_t & p1, series_t & p2)
-		{
+			for(tsp64_t i = k1; i < k2; i++)
+			{
+				is_visted_p1[p1[i]-1] = true;
+				is_visted_p2[p2[i]-1] = true;
+				std::swap(p1[i], p2[i]);
+			}
 
+			for(tsp64_t i = 0; i < k2-k1; i++)
+			{
+				p1[i] = p1_tmp[k1 + i];
+				p2[i] = p2_tmp[k1 + i];
+			}
+
+			tsp64_t p1_k =k2, p2_k =k2;
+			for(tsp64_t i = 0; i < 10 - k2; i++)
+			{
+				if( is_visted_p2[p1_tmp[k2 + i]-1] != true){
+					p1[p1_k++] = p1_tmp[k2 + i];
+				}
+				if( is_visted_p1[p2_tmp[k2 + i]-1] != true){
+					p2[p2_k++] = p2_tmp[k2 + i];
+				}
+			}
+	
+			for(tsp64_t i = 0; i < k1; i++)
+			{
+				if( is_visted_p2[p1_tmp[i]-1] != true){
+					p1[p1_k++] = p1_tmp[i];
+				}
+				if( is_visted_p1[p2_tmp[i]-1] != true){
+					p2[p2_k++] = p2_tmp[i];
+				}
+			}
 		}
 
 		void mutate(series_t & p1)
