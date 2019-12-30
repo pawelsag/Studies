@@ -6,76 +6,62 @@
 
 namespace TSP::GENETIC
 {
-	enum class SELECTION_METHOD{
-		TOURNAMENT,
-		RANK,
-	};
-	struct individual
-	{
-		series_t path;
-		tsp64_t cost;
-		double fitness;
-		void show()
-		{
-			fmt::print("cost :{}  fitness :{}\n", cost,fitness);
-		}
-
-		bool operator<(const individual &a)
-		{
-			return this->cost < a.cost;
-		}
-
-		friend bool operator<(const individual &a, const individual &b);
-	};
-
 	bool operator<(const individual &a, const individual &b)
 	{
 		return a.cost < b.cost;
 	}
 
-	template<SELECTION_METHOD sm>
+	template<SELECTION_METHOD sm, CROSS_METHOD cm, MUTATION_METHOD mm>
 	class genetic_algorithm
 	{
-		static constexpr tsp64_t MAX_GENRATION_COUNT = 100;
-		static constexpr tsp64_t MAX_POPULATION_SIZE = 50;
+		static constexpr uint32_t MAX_GENRATION_COUNT = 10000;
+		static constexpr uint32_t MAX_POPULATION_SIZE = 300;
+		static constexpr uint32_t MAX_CHILDREN_SIZE = MAX_POPULATION_SIZE;
 
 		// only when tournament selection is selected
-		static constexpr tsp64_t MAX_TOURNAMENT_GROUP_SIZE = MAX_POPULATION_SIZE * 0.2;
+		static constexpr uint32_t MAX_TOURNAMENT_GROUP_SIZE = MAX_POPULATION_SIZE * 0.2;
 		static constexpr uint32_t RANK_TRESHOLD = MAX_POPULATION_SIZE * 0.90;
+		static constexpr float MUTATION_PROBABILITY = 0.05;
+		static constexpr float CROSS_PROBABILITY = 0.6;
 		
 		using population_t = std::vector<individual>;
 		
 		const matrix<tsp64_t>& m_ref;
 		population_t population;
 
+		// for pmx cross
 		series_t city_link_p1, city_link_p2;
+		// for ox cross 
 		std::vector<bool> is_visted_p1, is_visted_p2;
+
+		tsp64_t best_cost = std::numeric_limits<index_t>::max();
 
 	public:
 		genetic_algorithm(const matrix<tsp64_t> &m)
 		: m_ref(m)
 		{
+			if constexpr(cm == CROSS_METHOD::PMX){
+				city_link_p1.resize(this->m_ref.n);
+				city_link_p2.resize(this->m_ref.n);
+			}else{
+				is_visted_p1.resize(this->m_ref.n);
+				is_visted_p2.resize(this->m_ref.n);
+			}
+
 			population.resize(MAX_POPULATION_SIZE);
 			generate_population();
-
-			tournament_selection();
-			city_link_p1.resize(9);
-			city_link_p2.resize(9);			
-			is_visted_p1.resize(9);
-			is_visted_p2.resize(9);
-			rank_selection();
-			series_t p1 = {10,9,5,6,7,8,2,4,3,1};
-			series_t p2 = {9,8,2,3,4,1,10,6,5,7};
-
-			OX_cross(p1,p2);
 			this->solve();
+		}
+		void show_results()
+		{
+			fmt::print("Best path :{}", this->best_cost);
 		}
 
 		void PMX_cross(series_t &p1, series_t &p2)
 		{
 			constexpr index_t max_val = std::numeric_limits<index_t>::max();
-			auto k1 =random(0u, this->m_ref.n);
-			auto k2 =random(0u, this->m_ref.n);
+			auto k1 =random(0u, this->m_ref.n-1);
+			auto k2 =random(0u, this->m_ref.n-1);
 			
 			if(k1 > k2) std::swap(k1,k2);
 			
@@ -85,28 +71,28 @@ namespace TSP::GENETIC
 
 			for(tsp64_t i = k1; i < k2; i++){
 				std::swap(p1[i], p2[i]);
-				city_link_p1[p1[i]-1] = p2[i];
-				city_link_p2[p2[i]-1] = p1[i];
+				city_link_p1[p1[i]] = p2[i];
+				city_link_p2[p2[i]] = p1[i];
 			}
 
 			for(tsp64_t i = 0; i < k1; i++)
 			{ 
-				tsp64_t v = city_link_p1[p1[i]-1];
+				tsp64_t v = city_link_p1[p1[i]];
 				if( v != max_val){
 					// max 2 jumps
-					if(city_link_p1[v-1] != max_val)
+					if(city_link_p1[v] != max_val)
 					{
-						v = city_link_p1[v-1];
+						v = city_link_p1[v];
 					}
 					p1[i]= v;		
 				}
 
-				v = city_link_p2[p2[i]-1];
+				v = city_link_p2[p2[i]];
 				if( v != max_val){
 					// max 2 jumps
-					if(city_link_p2[v-1] != max_val)
+					if(city_link_p2[v] != max_val)
 					{
-						v = city_link_p2[v-1];
+						v = city_link_p2[v];
 					}
 					p2[i]= v;		
 				}
@@ -114,22 +100,22 @@ namespace TSP::GENETIC
 
 			for(tsp64_t i = k2; i < this->m_ref.n; i++)
 			{ 
-				tsp64_t v = city_link_p1[p1[i]-1];
+				tsp64_t v = city_link_p1[p1[i]];
 				if( v != max_val){
 					// max 2 jumps
-					if(city_link_p1[v-1] != max_val)
+					if(city_link_p1[v] != max_val)
 					{
 						v = city_link_p1[v];
 					}
 					p1[i]=  v;		
 				}
 				
-				v = city_link_p2[p2[i]-1];
+				v = city_link_p2[p2[i]];
 				if( v != max_val){
 					// max 2 jumps
-					if(city_link_p2[v-1] != max_val)
+					if(city_link_p2[v] != max_val)
 					{
-						v = city_link_p2[v-1];
+						v = city_link_p2[v];
 					}
 					p2[i]= v;
 				}
@@ -138,8 +124,8 @@ namespace TSP::GENETIC
 
 		void OX_cross(series_t & p1, series_t & p2)
 		{
-			auto k1 =3;//random(0u, this->m_ref.n);
-			auto k2 =6;//random(0u, this->m_ref.n);
+			auto k1 =random(0u, this->m_ref.n-1);
+			auto k2 =random(0u, this->m_ref.n-1);
 			series_t p1_tmp = p1, p2_tmp =p2;
 			std::fill(is_visted_p1.begin(),is_visted_p1.end(), false);
 			std::fill(is_visted_p1.begin(),is_visted_p1.end(), false);
@@ -148,8 +134,8 @@ namespace TSP::GENETIC
 
 			for(tsp64_t i = k1; i < k2; i++)
 			{
-				is_visted_p1[p1[i]-1] = true;
-				is_visted_p2[p2[i]-1] = true;
+				is_visted_p1[p1[i]] = true;
+				is_visted_p2[p2[i]] = true;
 				std::swap(p1[i], p2[i]);
 			}
 
@@ -160,30 +146,67 @@ namespace TSP::GENETIC
 			}
 
 			tsp64_t p1_k =k2, p2_k =k2;
-			for(tsp64_t i = 0; i < 10 - k2; i++)
+			for(tsp64_t i = 0; i < this->m_ref.n - k2; i++)
 			{
-				if( is_visted_p2[p1_tmp[k2 + i]-1] != true){
+				if( is_visted_p2[p1_tmp[k2 + i]] == false){
 					p1[p1_k++] = p1_tmp[k2 + i];
 				}
-				if( is_visted_p1[p2_tmp[k2 + i]-1] != true){
+				if( is_visted_p1[p2_tmp[k2 + i]] == false){
 					p2[p2_k++] = p2_tmp[k2 + i];
 				}
 			}
 	
 			for(tsp64_t i = 0; i < k1; i++)
 			{
-				if( is_visted_p2[p1_tmp[i]-1] != true){
+				if( is_visted_p2[p1_tmp[i]] == false){
+					if(p1_k == this->m_ref.n)
+						p1_k =0;
 					p1[p1_k++] = p1_tmp[i];
 				}
-				if( is_visted_p1[p2_tmp[i]-1] != true){
+				
+				if( is_visted_p1[p2_tmp[i]] == false){
+					if(p2_k >= this->m_ref.n)
+						p2_k=0;
+
 					p2[p2_k++] = p2_tmp[i];
 				}
 			}
 		}
 
-		void mutate(series_t & p1)
+		void insertion(series_t & path, index_t v1, index_t v2)
 		{
+			if (v1 < v2){
+				// remeber value which will be inserted
+				auto tmp = path[v2];
+				// move all values to the right
+				while(v1 < v2){
+					path[v2] = path[v2-1];
+					v2--; 
+				} 
+				path[v1+1] = tmp;
+			}else
+			{
+				// remeber value which will be inserted
+				auto tmp = path[v2];
+				// move all values to the right
+				while(v1 > v2)
+				{
+					path[v2] = path[v2+1];
+					v2++; 
+				}
+				path[v1] = tmp;
+			}
+		}
 
+		void invertion(series_t & path, index_t v1, index_t v2)
+		{
+			if (v1 > v2) std::swap(v1,v2);
+			TSP::reverse(&path[v1], &path[v2]);
+		}
+
+		void displacement(series_t & path, index_t v1, index_t v2)
+		{
+			std::swap(path[v1], path[v2]);
 		}
 
 		population_t tournament_selection()
@@ -199,11 +222,13 @@ namespace TSP::GENETIC
 				//select tournament group
 				for(tsp64_t j =0 ; j < MAX_TOURNAMENT_GROUP_SIZE; j++)
 				{
-					tournament_group.push_back(population[random(0u, this->m_ref.n)]);
+					tournament_group.push_back(population[random(0u, MAX_POPULATION_SIZE-1)]);
 				}
 
 				// get smallest elelment
-				selection_res.push_back(*(std::min_element(tournament_group.begin(),tournament_group.begin() +MAX_TOURNAMENT_GROUP_SIZE )));
+				selection_res.push_back(*(std::min_element(tournament_group.begin(),tournament_group.end())));
+				tournament_group.clear();
+
 			}
 			return selection_res;
 		}
@@ -215,7 +240,7 @@ namespace TSP::GENETIC
 			// fill redundant population with paths from correct scope
 			for(tsp64_t g = RANK_TRESHOLD; g < MAX_POPULATION_SIZE; g++)
 			{	
-				selection_res[g] = selection_res[random(0u,RANK_TRESHOLD)];
+				selection_res[g] = selection_res[random(0u,RANK_TRESHOLD-1)];
 			}
 			return selection_res;
 		}
@@ -226,23 +251,64 @@ namespace TSP::GENETIC
 			{
 				population[i].path = path_manager::generate_rand_series(this->m_ref.n);
 				population[i].cost = path_manager::calculate_cost(population[i].path, this->m_ref);
-				population[i].fitness = 1.0/population[i].cost;
 			}
 		}
 
 		void solve()
 		{
 			tsp64_t generation = 0;
+			tsp64_t tmp_cost;
+
 			while(generation < MAX_GENRATION_COUNT)
 			{
+				for(uint32_t i =0 ; i < MAX_CHILDREN_SIZE; i++)
+				{
+					if(random(0.0, 1.0) < CROSS_PROBABILITY)
+					{
+						auto k1 =random(0u, MAX_POPULATION_SIZE-1);
+						auto k2 =random(0u, MAX_POPULATION_SIZE-1);
+						if constexpr(cm == CROSS_METHOD::PMX){
+							PMX_cross(this->population[k1].path,this->population[k2].path);
+						}else{
+							OX_cross(this->population[k1].path,this->population[k2].path);
+						}
+
+						population[k1].cost = path_manager::calculate_cost(population[k1].path, this->m_ref);
+						population[k2].cost = path_manager::calculate_cost(population[k2].path, this->m_ref);
+					}
+
+					if(random(0.0, 1.0) < MUTATION_PROBABILITY)
+					{
+						auto k1 =random(0u, MAX_POPULATION_SIZE-1);
+						auto v1 =random(0u, this->m_ref.n-1);
+						auto v2 =random(0u, this->m_ref.n-1);
+						if constexpr(mm == MUTATION_METHOD::INSERTION){
+							insertion(this->population[k1].path,v1,v2);
+						}else if constexpr(mm == MUTATION_METHOD::INVERTION){
+							invertion(this->population[k1].path,v1,v2);
+						}else{
+							displacement(this->population[k1].path,v1,v2);
+						}
+
+						population[k1].cost = path_manager::calculate_cost(population[k1].path, this->m_ref);
+					}
+				}	
+				tmp_cost = std::min_element(population.begin(),population.end())->cost;
+				if(best_cost > tmp_cost)
+				{
+					best_cost = tmp_cost;	
+				}
+				
+				if constexpr(sm == SELECTION_METHOD::TOURNAMENT){
+					tournament_selection();
+				}else{
+					rank_selection();
+				}
 				generation++;
 			}
-
 		}
-
-		~genetic_algorithm() = default;
-
-	private:
-		
+		~genetic_algorithm() = default;		
 	};
+
+
 }

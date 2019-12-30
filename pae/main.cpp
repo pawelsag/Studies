@@ -7,6 +7,8 @@
 #include <genetic_algorithm.hpp>
 
 using TSP::GENETIC::SELECTION_METHOD;
+using TSP::GENETIC::CROSS_METHOD;
+using TSP::GENETIC::MUTATION_METHOD;
 
 int
 main(int argc, char const* argv[])
@@ -14,7 +16,7 @@ main(int argc, char const* argv[])
 
   // TSP::TEST::stochastic_algorithms_tester test;
   // test.run();
-  const auto &m = TSP::loader::load("../dane/TSP/TSP/data29.txt");
+  const auto &m = TSP::loader::load("../dane/TSP/TSP/data120.txt");
   // m.show();
   // TSP::STOCHASTICS::tabu_search<START_PATH_TYPE::RANDOM,
   //                               ADJ_ALGORITHM::INVERT> a(m);
@@ -26,6 +28,9 @@ main(int argc, char const* argv[])
   //                               	       ADJ_ALGORITHM::INVERT> ts(m);
   // ts.show_results();
 
-  TSP::GENETIC::genetic_algorithm<SELECTION_METHOD::TOURNAMENT> ga(m);
+  TSP::GENETIC::genetic_algorithm<SELECTION_METHOD::RANK,
+                                  CROSS_METHOD::PMX,
+                                  MUTATION_METHOD::INSERTION> ga(m);
+  ga.show_results();
   return 0;
 }

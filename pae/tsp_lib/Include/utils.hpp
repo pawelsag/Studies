@@ -26,7 +26,6 @@ void
 make_rand_permutation(T* begin, T* end)
 {
   T permutation_scope = std::distance(begin, end);
-
   for (auto b = begin; b != end; b++) {
     std::swap(*b, *(b + random(0u,permutation_scope)) );
     permutation_scope--;

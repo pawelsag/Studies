@@ -43,5 +43,42 @@ using path_t = std::vector<point>;
 			INVERT
 		};
 	}
+	namespace GENETIC
+	{
+		enum class SELECTION_METHOD{
+			TOURNAMENT,
+			RANK,
+		};
+
+		enum class CROSS_METHOD{
+			PMX,
+			OX
+		};
+
+		enum class MUTATION_METHOD{
+			INSERTION,
+			INVERTION,
+			DISPLACEMENT
+		};
+
+		struct individual
+		{
+			series_t path;
+			tsp64_t cost;
+
+			void show()
+			{
+				fmt::print("cost :{}\n", cost);
+			}
+
+			bool operator<(const individual &a)
+			{
+				return this->cost < a.cost;
+			}
+
+			friend bool operator<(const individual &a, const individual &b);
+		};
+
+	}
 
 }
