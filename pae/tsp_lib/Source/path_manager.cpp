@@ -70,8 +70,10 @@ path_manager::create_path(series_t &s)
 
 void
 path_manager::show(series_t &s){
+  fmt::print("[");
   for(const auto & v : s)
-    fmt::print("{} ", v);
+    fmt::print("{}, ", v);
+  fmt::print("]");
   fmt::print("\n");
 }
 
