@@ -6,18 +6,20 @@
 #include <tabu_search.hpp>
 #include <simulated_annealing.hpp>
 #include <genetic_algorithm.hpp>
+#include <ant_colony.hpp>
 
 using TSP::GENETIC::SELECTION_METHOD;
 using TSP::GENETIC::CROSS_METHOD;
 using TSP::GENETIC::MUTATION_METHOD;
+using TSP::GENETIC::ANT_COLONY_ALG;
 
 int
 main(int argc, char const* argv[])
 {
 
-  TSP::TEST::genetic_algorithms_tester test;
-  test.run();
-  // const auto &m = TSP::loader::load("../dane/ATSP/ATSP/data17.txt");
+  // TSP::TEST::genetic_algorithms_tester test;
+  // test.run();
+  const auto &m = TSP::loader::load("../dane/TSP/TSP/data17.txt");
   // m.show();
   // TSP::STOCHASTICS::tabu_search<START_PATH_TYPE::RANDOM,
   //                               ADJ_ALGORITHM::INVERT> a(m);
@@ -35,6 +37,8 @@ main(int argc, char const* argv[])
   // ga.show_results();
   // }
 
+    TSP::GENETIC::ant_colony<ANT_COLONY_ALG::QAS> ac(m);
+    ac.show_results();
 
   return 0;
 }

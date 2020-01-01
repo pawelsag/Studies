@@ -82,6 +82,18 @@ using path_t = std::vector<point>;
 			}
 		};
 
+		enum city_state
+		{
+			unvisited =0,
+			visited =1,
+		};
+
+		enum class ANT_COLONY_ALG
+		{
+			DAS,
+			QAS,
+			CAS
+		};
 	}
 
 }

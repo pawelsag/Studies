@@ -68,13 +68,14 @@ struct matrix
     return this->data[r * n + c];
   }
 
-  inline void set_value(T val, index_t r, index_t c) const noexcept
+  inline void set_value(T val, index_t r, index_t c) noexcept
   {
     this->data[r * n + c] = val;
   }
   inline void fill(T val)
   {
-    for (auto& v : this->data) v = val;
+    for (auto v = this->data.begin(); v !=this->data.end(); v++ ) 
+      *v = val;
   }
 
   void show() const
