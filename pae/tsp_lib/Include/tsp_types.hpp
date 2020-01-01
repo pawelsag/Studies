@@ -76,7 +76,10 @@ using path_t = std::vector<point>;
 				return this->cost < a.cost;
 			}
 
-			friend bool operator<(const individual &a, const individual &b);
+			friend bool operator<(const individual &a, const individual &b)
+			{
+				return a.cost < b.cost;
+			}
 		};
 
 	}

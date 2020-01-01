@@ -6,11 +6,6 @@
 
 namespace TSP::GENETIC
 {
-	bool operator<(const individual &a, const individual &b)
-	{
-		return a.cost < b.cost;
-	}
-
 	template<SELECTION_METHOD sm, CROSS_METHOD cm, MUTATION_METHOD mm>
 	class genetic_algorithm
 	{
@@ -61,6 +56,10 @@ namespace TSP::GENETIC
 		void show_results()
 		{
 			fmt::print("Best path :{}\n", this->best_cost);
+		}
+		tsp64_t get_result()
+		{
+			return this->best_cost;
 		}
 
 		void PMX_cross(series_t &p1_tmp, series_t &p2_tmp)
@@ -335,7 +334,6 @@ namespace TSP::GENETIC
 				}
 
 				tmp_cost = std::min_element(population.begin(),population.end())->cost;
-				auto tmp_path = std::min_element(population.begin(),population.end())->path;
 
 				if(best_cost > tmp_cost)
 				{

@@ -1,7 +1,8 @@
 #include <internals.hpp>
 #include <path_manager.hpp>
-#include <stochastic_algorithms_test.hpp>
-#include <precise_algorithms_test.hpp>
+// #include <stochastic_algorithms_test.hpp>
+// #include <precise_algorithms_test.hpp>
+#include <genetic_algorithms_test.hpp>
 #include <tabu_search.hpp>
 #include <simulated_annealing.hpp>
 #include <genetic_algorithm.hpp>
@@ -14,9 +15,9 @@ int
 main(int argc, char const* argv[])
 {
 
-  // TSP::TEST::stochastic_algorithms_tester test;
-  // test.run();
-  const auto &m = TSP::loader::load("../dane/TSP/TSP/data24.txt");
+  TSP::TEST::genetic_algorithms_tester test;
+  test.run();
+  // const auto &m = TSP::loader::load("../dane/ATSP/ATSP/data17.txt");
   // m.show();
   // TSP::STOCHASTICS::tabu_search<START_PATH_TYPE::RANDOM,
   //                               ADJ_ALGORITHM::INVERT> a(m);
@@ -27,12 +28,12 @@ main(int argc, char const* argv[])
 		// 							                       COOLING_METHOD::LINEAR,
   //                               	       ADJ_ALGORITHM::INVERT> ts(m);
   // ts.show_results();
-
-  TSP::GENETIC::genetic_algorithm<SELECTION_METHOD::RANK,
-                                  CROSS_METHOD::OX,
-                                  MUTATION_METHOD::INSERTION> ga(m);
-  ga.show_results();
-
+  // for(int i =0 ; i< 10; i++){
+  // TSP::GENETIC::genetic_algorithm<SELECTION_METHOD::RANK,
+  //                                 CROSS_METHOD::OX,
+  //                                 MUTATION_METHOD::INSERTION> ga(m);
+  // ga.show_results();
+  // }
 
 
   return 0;
