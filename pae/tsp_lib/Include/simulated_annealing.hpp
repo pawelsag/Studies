@@ -202,41 +202,43 @@ namespace TSP::STOCHASTICS
 		    this->current_cost = TSP::path_manager::calculate_cost(this->current_path, this->m_ref);
 		    this->best_cost = this->current_cost;
 		    this->best_path = this->current_path;
+
 			double old_temperatuer = this->temperature + 1;		     
 		    while (old_temperatuer - this->temperature  > 0.0000001 and  this->temperature > 0)
 		    {
 
 		    	old_temperatuer = this->temperature; 
 		    	tsp64_t new_cost;
-		        tsp64_t p1,p2;
-				
-				p1 = random(0u,m_ref.n-1);
-				p2 = random(0u,m_ref.n-1);
-				while(p1 == p2) p2 = random(0u,m_ref.n-1);
+	        tsp64_t p1,p2;
+			
+  				p1 = random(0u,m_ref.n-1);
+  				p2 = random(0u,m_ref.n-1);
+  				while(p1 == p2) p2 = random(0u,m_ref.n-1);
 
-				if constexpr (AA == ADJ_ALGORITHM::SWAP)
-				{
-					new_cost = this->calculate_swap_cost(p1,p2);
-				}else if constexpr (AA == ADJ_ALGORITHM::INSERT)
-				{
-					new_cost = this->calculate_insert_cost(p1,p2);
-				}else{
-					new_cost = this->calculate_invert_cost(p1,p2);
-				}
+  				if constexpr (AA == ADJ_ALGORITHM::SWAP)
+  				{
+  					new_cost = this->calculate_swap_cost(p1,p2);
+  				}else if constexpr (AA == ADJ_ALGORITHM::INSERT)
+  				{
+  					new_cost = this->calculate_insert_cost(p1,p2);
+  				}else{
+  					new_cost = this->calculate_invert_cost(p1,p2);
+  				}
+  	 			
+ 			   old_temperatuer = this->temperature;
+				  cool_down();
+	        double delta_distance = new_cost - current_cost;
+	        if ( delta_distance < 0 || (calc_exponent(-delta_distance) > random(0.0, 1.0)))
+	        {
+	            current_cost = new_cost;
+	            shuffle(p1,p2);
+	        }
 
-				cool_down();
-		        double delta_distance = new_cost - current_cost;
-		        if ( delta_distance < 0 || (calc_exponent(-delta_distance) > random(0.0, 1.0)))
-		        {
-		            current_cost = new_cost;
-		            shuffle(p1,p2);
-		        }
-
-		        if(this->current_cost < this->best_cost)
-		        {
-		        	this->best_cost = this->current_cost;
-		        	this->best_path = this->current_path;
-		        }
+	        if(this->current_cost < this->best_cost)
+	        {
+	        	this->best_cost = this->current_cost;
+	        	this->best_path = this->current_path;
+	        }
 		    }
 		}
 
