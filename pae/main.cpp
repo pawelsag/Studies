@@ -13,18 +13,18 @@ int
 main(int argc, char const* argv[])
 {
 
-  // TSP::TEST::stochastic_algorithms_tester test;
-  // test.run();
-  const auto &m = TSP::loader::load("../dane/TSP/TSP/data29.txt");
+  TSP::TEST::stochastic_algorithms_tester test;
+  test.run();
+  // const auto &m = TSP::loader::load("../dane/TSP/TSP/data58.txt");
   // m.show();
   // TSP::STOCHASTICS::tabu_search<START_PATH_TYPE::APROX,
   //                               ADJ_ALGORITHM::INVERT> a(m);
 
   // a.show_results();
 
-  TSP::STOCHASTICS::simmulated_annealing<START_PATH_TYPE::APROX,
-									                       COOLING_METHOD::LINEAR,
-                                	       ADJ_ALGORITHM::INVERT> ts(m);
-  ts.show_results();
+  // TSP::STOCHASTICS::simmulated_annealing<START_PATH_TYPE::RANDOM,
+		// 							                       COOLING_METHOD::LOGARITHM,
+  //                               	       ADJ_ALGORITHM::INSERT> ts(m);
+  // ts.show_results();
   return 0;
 }

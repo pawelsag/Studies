@@ -28,8 +28,9 @@ namespace TSP::STOCHASTICS
 		tsp64_t without_better_solutions ;
 		tsp64_t max_lack_of_solutions;
 
-		static constexpr tsp64_t penalty = 5;
-		static constexpr tsp64_t max_loop_count = 10'000;
+		static constexpr tsp64_t penalty = 6;
+		static constexpr tsp64_t panlty_dec = penalty/2;
+		static constexpr tsp64_t max_loop_count = 60'000;
 		
 	public:
 		tabu_search(const matrix<tsp64_t> &m)
@@ -102,7 +103,7 @@ namespace TSP::STOCHASTICS
 		void decrement_tabu()
 		{
 			for(auto beg = this->tabu_list.begin(); beg != this->tabu_list.end(); beg++)
-				if(beg->penalty > 0) beg->penalty--;
+				if(beg->penalty > 0) beg->penalty-=panlty_dec;
 		}
 
 		tsp64_t tabu_penalty(tsp64_t p1, tsp64_t p2)
@@ -131,10 +132,11 @@ namespace TSP::STOCHASTICS
 									 tsp64_t p2)
 		{
 			tsp64_t current_cost_copy;
+	     	auto curent_copy = this->current_path;
 	     	this->adj_insert(p1, p2);
 	     	current_cost_copy = TSP::path_manager::calculate_cost(this->current_path, this->m_ref);
-	     	this->adj_insert(p2, p1+1);
-
+	     	this->current_path = curent_copy;
+	     	
 	        return current_cost_copy;
 		}
 

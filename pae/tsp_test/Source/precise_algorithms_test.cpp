@@ -3,7 +3,7 @@
 #include <chrono>
 #include <thread>
  
-constexpr const char * common_header = "file_name;data_size;time";
+constexpr const char * common_header = "file_name;data_size;Result;time";
 namespace TSP::TEST
 {	// var defined during cmake building process
 	constexpr size_t MAX_THREADS_COUNT = THREAD_COUNT/2-1 <= 0 ? 1 : THREAD_COUNT/2-1;

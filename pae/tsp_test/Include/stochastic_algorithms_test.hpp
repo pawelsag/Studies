@@ -6,7 +6,7 @@
 #include <mutex>
 
 #define TEST_SA
-#define TEST_TABU
+// #define TEST_TABU
 
 namespace TSP::TEST
 {
