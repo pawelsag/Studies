@@ -13,7 +13,7 @@ namespace TSP::GENETIC
 		const matrix<tsp64_t>& m_ref;
 		static constexpr int first_city_idx = 0;
 		tsp64_t best_cost = std::numeric_limits<index_t>::max();
-		static constexpr uint32_t MAX_ROUNDS_COUNT = 500;
+		static constexpr uint32_t MAX_ROUNDS_COUNT = 50;
 		static constexpr double p = 0.5;
 		static constexpr int alpha = 1;
 		static constexpr int beta = 3; // 2 ... 5
@@ -111,11 +111,11 @@ namespace TSP::GENETIC
 			{
 				if(is_ready_to_calc_pheromon == pehronom_n)
 				{
-					pheromone_lookup.set_value(calc_pheromone_density(from_city,to_city,ant), from_city, to_city);
+					pheromone_lookup.set_value(calc_pheromone_density(from_city,to_city), from_city, to_city);
 					is_ready_to_calc_pheromon =0;
 				}
 			}else{
-			pheromone_lookup.set_value(calc_pheromone_density(from_city,to_city,ant), from_city, to_city);
+				pheromone_lookup.set_value(calc_pheromone_density(from_city,to_city), from_city, to_city);
 			}
 			
 			paths[ant][next_city_idx] = to_city;
@@ -144,7 +144,7 @@ namespace TSP::GENETIC
 			}
 		}
 
-		double calc_pheromone_density(uint32_t from_city, uint32_t to_city, uint32_t ant)
+		double calc_pheromone_density(uint32_t from_city, uint32_t to_city)
 		{
 			double accumulated_phermone =0.0;
 			for(uint32_t ant = 0; ant < m_ref.n; ant++)

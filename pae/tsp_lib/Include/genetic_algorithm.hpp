@@ -297,6 +297,7 @@ namespace TSP::GENETIC
 					{
 						auto k1 =random(0u, MAX_POPULATION_SIZE-1);
 						auto k2 =random(0u, MAX_POPULATION_SIZE-1);
+						while(k1 == k2) k2 =random(0u, MAX_POPULATION_SIZE-1);
 						if constexpr(cm == CROSS_METHOD::PMX){
 							PMX_cross(this->population[k1].path,this->population[k2].path);
 						}else{

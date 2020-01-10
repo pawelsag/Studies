@@ -5,8 +5,8 @@
 #include <atomic>
 #include <mutex>
 
-#define GENETIC_BASE
-// #define ANT_COLONY
+// #define GENETIC_BASE
+#define ANT_COLONY
 
 namespace TSP::TEST
 {

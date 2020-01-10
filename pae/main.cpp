@@ -19,7 +19,7 @@ main(int argc, char const* argv[])
 
   // TSP::TEST::genetic_algorithms_tester test;
   // test.run();
-  const auto &m = TSP::loader::load("../dane/TSP/TSP/data17.txt");
+  const auto &m = TSP::loader::load("../dane/ATSP/ATSP/data443.txt");
   // m.show();
   // TSP::STOCHASTICS::tabu_search<START_PATH_TYPE::RANDOM,
   //                               ADJ_ALGORITHM::INVERT> a(m);
@@ -31,14 +31,13 @@ main(int argc, char const* argv[])
   //                               	       ADJ_ALGORITHM::INVERT> ts(m);
   // ts.show_results();
   // for(int i =0 ; i< 10; i++){
-  // TSP::GENETIC::genetic_algorithm<SELECTION_METHOD::RANK,
-  //                                 CROSS_METHOD::OX,
-  //                                 MUTATION_METHOD::INSERTION> ga(m);
-  // ga.show_results();
-  // }
-
-    TSP::GENETIC::ant_colony<ANT_COLONY_ALG::QAS> ac(m);
-    ac.show_results();
+  TSP::GENETIC::genetic_algorithm<SELECTION_METHOD::RANK,
+                                  CROSS_METHOD::OX,
+                                  MUTATION_METHOD::INSERTION> ga(m);
+  ga.show_results();
+  
+    // TSP::GENETIC::ant_colony<ANT_COLONY_ALG::QAS> ac(m);
+    // ac.show_results();
 
   return 0;
 }
