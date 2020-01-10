@@ -18,9 +18,10 @@ void RenderScene(void);
 void MyInit(void);
 void keys(unsigned char key, int x, int y)
 {
-    if(key == 'p') model = 1;
-    if(key == 'w') model = 2;
-    if(key == 's') model = 3;
+    if(key == 'w') model = 1;
+    if(key == 's') model = 2;
+    if(key == 'a') model = 3;
+    if(key == 'd') model = 4;
    
     RenderScene(); 
 }
@@ -153,7 +154,7 @@ void drawEgg()
             }
         }
       glEnd();
-    }else{
+    }else if(model == 3){
         glBegin(GL_TRIANGLES);
             for(int u=0; u < N -1; u++){
                 for(int v=0; v < N -1; v++){
@@ -172,6 +173,33 @@ void drawEgg()
                    glVertex3fv(space[u+1][v+1]);
                 }
             }
+        glEnd();
+    }else{
+        glBegin(GL_TRIANGLE_STRIP);
+        for(int u=0; u < N -1; u++){
+                for(int v=0; v < N -1; v++){
+                   glColor3f(colors[u][v][0], colors[u][v][1], colors[u][v][2]);
+                   glVertex3fv(space[u][v]);
+                   
+                   glColor3f(colors[u][v+1][0], colors[u][v+1][1], colors[u][v+1][2]);
+                   glVertex3fv(space[u][v+1]);
+                   
+                   glColor3f(colors[u+1][v+1][0], colors[u+1][v+1][1], colors[u+1][v+1][2]);
+                   glVertex3fv(space[u+1][v+1]);
+                   
+                   glColor3f(colors[u][v][0], colors[u][v][1], colors[u][v][2]);
+                   glVertex3fv(space[u][v]);
+
+                   glColor3f(colors[u+1][v][0], colors[u+1][v][1], colors[u+1][v][2]);
+                   glVertex3fv(space[u+1][v]);
+                   
+                   glColor3f(colors[u+1][v+1][0], colors[u+1][v+1][1], colors[u+1][v+1][2]);
+                   glVertex3fv(space[u+1][v+1]);
+                   
+                   glColor3f(colors[u][v][0], colors[u][v][1], colors[u][v][2]);
+                   glVertex3fv(space[u][v]);
+               }
+           }
         glEnd();
     }
 }

@@ -13,7 +13,7 @@ void draw_2colors_triangle(float x, float y, float a);
 void draw_3colors_triangle(float x, float y, float a);
 void sierpinski_carper(float x, float y, float a);
 
-constexpr float init_color[] = {1.0, 1.0, 0.0};
+float init_color[] = {1.0, 1.0, 0.0};
 constexpr float white[] = {1.0, 1.0, 1.0};
 constexpr float black[] = {0, 0, 0};
 
@@ -38,6 +38,33 @@ void set_random_color(){
 	glColor3f(rand()*1.0f/ RAND_MAX, rand()*1.0f/ RAND_MAX, rand()*1.0f/ RAND_MAX);
 }
 
+void set_random_color(float color[3]){
+	color[0] = rand()*1.0f/ RAND_MAX; 
+	color[1] = rand()*1.0f/ RAND_MAX; 
+	color[2] = rand()*1.0f/ RAND_MAX; 
+}
+
+void draw_deformed_square(float x, float y, float a, const float*colors){
+
+	double deformation_coefficient_v1 = (rand() % 5) / (80.0/a);
+	double deformation_coefficient_v2 = (rand() % 5) / (80.0/a);
+	double deformation_coefficient_v3 = (rand() % 5) / (80.0/a);
+	double deformation_coefficient_v4 = (rand() % 5) / (80.0/a);
+
+	glColor3f(colors[0], colors[1], colors[2]);
+	glBegin(GL_TRIANGLES);
+		glVertex2f(x+deformation_coefficient_v1,y+deformation_coefficient_v1);
+		glVertex2f(x+a+deformation_coefficient_v2,y+deformation_coefficient_v2);
+		glVertex2f(x+deformation_coefficient_v3,y+a+deformation_coefficient_v3);
+	glEnd();
+
+	glBegin(GL_TRIANGLES);
+		glVertex2f(x+a+deformation_coefficient_v2,y+deformation_coefficient_v2);
+		glVertex2f(x+deformation_coefficient_v3,y+a+deformation_coefficient_v3);
+		glVertex2f(x+a+deformation_coefficient_v4,y+a+deformation_coefficient_v4);
+	glEnd();
+}
+
 void draw_square(float x, float y, float a, const float*colors){
 
 	glColor3f(colors[0], colors[1], colors[2]);
@@ -53,6 +80,7 @@ void draw_square(float x, float y, float a, const float*colors){
 		glVertex2f(x+a,y+a);
 	glEnd();
 }
+
 
 void random_color_draw_square(float x, float y, float a){
 
@@ -102,17 +130,18 @@ void sierpinski_carper(float x, float y, float a){
 	draw_square(x, y, a, init_color);
 	
 	a /= 3;
-	draw_square(x + a, y + a, a, white);
+	draw_square(x + a, y + a, a, black);
 
-	for(int frac =0 ; frac < 3; frac++){
+	for(int frac =0 ; frac < 3; frac++)
+	{
 		float a_copy = a;
 		a /= 3;
 		for(int j =0 ; j < pow(3, frac+1); j++){
-	      for(int i =0 ; i < pow(3, frac+1); i++)
+	      for(int i =0 ; i < pow(3, frac+1); i++){
 	      	draw_square(x + a +i*a_copy, y+ a +j*a_copy, a, black);
+	      }
 		}
 	}
-
 }
 
 

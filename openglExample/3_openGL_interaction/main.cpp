@@ -1,10 +1,3 @@
-/*************************************************************************************/
-
-
-
-
-/*************************************************************************************/
-
 #include <GL/gl.h>
 #include <GL/glut.h>
 #include <time.h>
@@ -23,6 +16,7 @@ static GLfloat pix2anglex;
 static GLfloat pix2angley;     
 static GLfloat last_diff=0.0;     
 static GLfloat last_view_y=0.0;     
+static GLfloat cam_zoom=0.0;     
 
 static GLint status = 0;       
 static GLint zoom_status = 0;       
@@ -53,28 +47,26 @@ GLfloat calcR()
 
 GLfloat calc_x(GLfloat a, GLfloat b)
 {
-    return R*cos(a)*cos(b);
+    return (R+cam_zoom)*cos(a)*cos(b);
 }
 
 GLfloat calc_y(GLfloat a, GLfloat b)
 {
-    return R*sin(b);    
+    return (R+cam_zoom)*sin(b);    
 }
 
 GLfloat calc_z(GLfloat a, GLfloat b)
 {
-    return R*sin(a)*cos(b);     
+    return (R+cam_zoom)*sin(a)*cos(b);     
 }
 
 void Mouse(int btn, int state, int x, int y)
 {
-
     if(btn==GLUT_LEFT_BUTTON && state == GLUT_DOWN)       
     {
-        x_pos_old=x;        
-                             
+        x_pos_old=x;
         y_pos_old=y;
-        status = 1;          
+        status = 1;
     }
     else
         status = 0;          
@@ -90,13 +82,14 @@ void keys(unsigned char key, int x, int y)
     if(key == 's') elevation -= 0.1;
     if(key == 'a') azimuth += 0.1;
     if(key == 'd') azimuth -= 0.1;
+    if(key == 'b') cam_zoom += 0.1;
+    if(key == 'n') cam_zoom -= 0.1;
 
     glutPostRedisplay(); 
 }
 
 void Motion( GLsizei x, GLsizei y )
 {
-   
     delta_x=x-x_pos_old;     
     delta_y=y-y_pos_old;
     x_pos_old=x;            
@@ -142,25 +135,27 @@ void Axes(void)
         glVertex3fv(z_max);
 
     glEnd();
-
 }
 
 void RenderScene(void)
 {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
 
     glLoadIdentity();
-    
+    if(cam_zoom >=5.0)
+        cam_zoom = 5.0;
+    else if(cam_zoom <=-5.0)
+        cam_zoom = -5.0;
+
     viewer[0] = calc_x(azimuth,elevation);
     viewer[1] = calc_y(azimuth,elevation);
     viewer[2] = calc_z(azimuth,elevation);
+
     if(abs(elevation) > M_PI/2 && abs(elevation) < M_PI*1.5)
-    {
-        direction =-1;
-    }else
-        direction =1;
+        direction = -1;
+    else
+        direction =  1;
 
     if(abs(elevation) >= 2*M_PI )
         elevation=0.0;
@@ -210,7 +205,6 @@ void ChangeSize(GLsizei horizontal, GLsizei vertical)
     
     if(horizontal <= vertical)
         glViewport(0, (vertical-horizontal)/2, horizontal, horizontal);
-
     else
         glViewport((horizontal-vertical)/2, 0, vertical, vertical);
     
