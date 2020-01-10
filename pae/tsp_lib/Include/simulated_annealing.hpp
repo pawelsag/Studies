@@ -24,12 +24,11 @@ namespace TSP::STOCHASTICS
 		chrono_time_point current_time;
 		std::chrono::duration<double> diff;
 
-		static constexpr double begin_temperature = 10'000.0;
-	    static constexpr double final_temperature = 0.00001;
+		static constexpr double begin_temperature = 200.0;
 	    static constexpr double cooling_rate = 0.95;
 
 		double temperature = begin_temperature;
-		double time =0.0;
+		double time =1.0;
 
 	public:
 		
@@ -90,7 +89,7 @@ namespace TSP::STOCHASTICS
 
 	private:
 
-		inline double calc_probability(double delta)
+		inline double calc_exponent(double delta)
 		{
 			return std::exp(delta / (this->temperature));
 		}
@@ -120,10 +119,11 @@ namespace TSP::STOCHASTICS
 									 tsp64_t p2)
 		{
 			tsp64_t current_cost_copy;
+	     	auto curent_copy = this->current_path;
 	     	this->adj_insert(p1, p2);
 	     	current_cost_copy = TSP::path_manager::calculate_cost(this->current_path, this->m_ref);
-	     	this->adj_insert(p2, p1+1);
-
+	     	this->current_path = curent_copy;
+	     	
 	        return current_cost_copy;
 		}
 
@@ -131,11 +131,10 @@ namespace TSP::STOCHASTICS
 							 		  tsp64_t p2)
 		{
 			tsp64_t current_cost_copy;
-
 	     	this->adj_invert(p1, p2);
 	     	current_cost_copy = TSP::path_manager::calculate_cost(this->current_path, this->m_ref);
 			this->adj_invert(p1, p2);
-			   
+
 	        return current_cost_copy;
 		}
 
@@ -203,42 +202,43 @@ namespace TSP::STOCHASTICS
 		    this->current_cost = TSP::path_manager::calculate_cost(this->current_path, this->m_ref);
 		    this->best_cost = this->current_cost;
 		    this->best_path = this->current_path;
-		    double last_temperature = -1;
-		    while (this->temperature > this->final_temperature  && last_temperature != this->temperature)
+
+			double old_temperatuer = this->temperature + 1;		     
+		    while (old_temperatuer - this->temperature  > 0.0000001 and  this->temperature > 0)
 		    {
 
-		    	tsp64_t new_cost = std::numeric_limits<tsp64_t>::max();
-		        tsp64_t p1,p2;
-				
-				p1 = random(0u,m_ref.n);
-				p2 = random(0u,m_ref.n);
-				while(p1 == p2) p2 = random(0u,m_ref.n);
-				
-				if constexpr (AA == ADJ_ALGORITHM::SWAP)
-				{
-					new_cost = this->calculate_swap_cost(p1,p2);
-				}else if constexpr (AA == ADJ_ALGORITHM::INSERT)
-				{
-					new_cost = this->calculate_insert_cost(p1,p2);
-				}else{
-					new_cost = this->calculate_invert_cost(p1,p2);
-				}
-				
-				last_temperature = this->temperature;
-				cool_down();
-		        double delta_distance = new_cost - current_cost;
-		        
-		        if ( delta_distance < 0 || (calc_probability(delta_distance) > random(0.0, 1.0)))
-		        {
-		            current_cost = new_cost;
-		            shuffle(p1,p2);
-		        }
+		    	old_temperatuer = this->temperature; 
+		    	tsp64_t new_cost;
+	        tsp64_t p1,p2;
+			
+  				p1 = random(0u,m_ref.n-1);
+  				p2 = random(0u,m_ref.n-1);
+  				while(p1 == p2) p2 = random(0u,m_ref.n-1);
 
-		        if(this->current_cost < this->best_cost)
-		        {
-		        	this->best_cost = this->current_cost;
-		        	this->best_path = this->current_path;
-		        }
+  				if constexpr (AA == ADJ_ALGORITHM::SWAP)
+  				{
+  					new_cost = this->calculate_swap_cost(p1,p2);
+  				}else if constexpr (AA == ADJ_ALGORITHM::INSERT)
+  				{
+  					new_cost = this->calculate_insert_cost(p1,p2);
+  				}else{
+  					new_cost = this->calculate_invert_cost(p1,p2);
+  				}
+  	 			
+ 			   old_temperatuer = this->temperature;
+				  cool_down();
+	        double delta_distance = new_cost - current_cost;
+	        if ( delta_distance < 0 || (calc_exponent(-delta_distance) > random(0.0, 1.0)))
+	        {
+	            current_cost = new_cost;
+	            shuffle(p1,p2);
+	        }
+
+	        if(this->current_cost < this->best_cost)
+	        {
+	        	this->best_cost = this->current_cost;
+	        	this->best_path = this->current_path;
+	        }
 		    }
 		}
 

@@ -5,10 +5,10 @@
 #include <math.h>
 
 typedef float point3[3];
-# define M_PI           3.14159265358979323846
+constexpr double pi = 3.14159265358979323846;
 
-static GLfloat viewer[]= {0.0, 1.0, 10.0};
-static GLfloat target_pos[]= {0.0, 0.0, 0.0};
+static GLfloat viewer[]= { 0.0, 1.0, 10.0 };
+static GLfloat target_pos[]= { 0.0, 0.0, 0.0 };
 
 static GLfloat thetay = 0.0;   
 static GLfloat thetax = 0.0;   
@@ -19,10 +19,7 @@ static GLfloat last_view_y=0.0;
 static GLfloat cam_zoom=0.0;     
 
 static GLint status = 0;       
-static GLint zoom_status = 0;       
-
-                               
-                               
+static GLint zoom_status = 0;                                                            
 
 static int x_pos_old=0;       
 static int y_pos_old=0;       
@@ -152,12 +149,13 @@ void RenderScene(void)
     viewer[1] = calc_y(azimuth,elevation);
     viewer[2] = calc_z(azimuth,elevation);
 
-    if(abs(elevation) > M_PI/2 && abs(elevation) < M_PI*1.5)
-        direction = -1;
-    else
-        direction =  1;
+    if(abs(elevation) > pi/2 && abs(elevation) < pi*1.5)
+    {
+        direction =-1;
+    }else
+        direction =1;
 
-    if(abs(elevation) >= 2*M_PI )
+    if(abs(elevation) >= 2*pi )
         elevation=0.0;
 
     gluLookAt(viewer[0],viewer[1],viewer[2], target_pos[0], target_pos[1], target_pos[2], 0.0, direction, 0.0);

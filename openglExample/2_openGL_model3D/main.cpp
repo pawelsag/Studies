@@ -16,6 +16,7 @@ static GLfloat theta[] = {0.0, 0.0, 0.0};
 
 void RenderScene(void);
 void MyInit(void);
+
 void keys(unsigned char key, int x, int y)
 {
     if(key == 'w') model = 1;
@@ -207,14 +208,11 @@ void drawEgg()
 void RenderScene(void)
 {
 
-     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
-    
 
     Axes();
-    
     
     glRotatef(theta[0], 1.0, 0.0, 0.0);
 
@@ -226,10 +224,8 @@ void RenderScene(void)
 
     glFlush();
     
-
     glutSwapBuffers();
     
-
  }
 
 void MyInit(void)
@@ -255,11 +251,9 @@ void ChangeSize(GLsizei horizontal, GLsizei vertical )
     AspectRatio = (GLfloat)horizontal/(GLfloat)vertical;
     
     if(horizontal <= vertical)
-
         glOrtho(-7.5,7.5,-7.5/AspectRatio,7.5/AspectRatio,10.0, -10.0); 
 
     else
-
         glOrtho(-7.5*AspectRatio,7.5*AspectRatio,-7.5,7.5,10.0,-10.0);                     
 
     glMatrixMode(GL_MODELVIEW);
