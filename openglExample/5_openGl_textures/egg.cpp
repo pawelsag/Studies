@@ -7,7 +7,7 @@ typedef float point3[3];
 
 namespace pwrgl::egg
 {
-	constexpr int N =512;
+	constexpr int N =64;
 
 	point3 space[N][N];
 	point3 normal[N][N];
@@ -107,8 +107,6 @@ namespace pwrgl::egg
 	            normal[u][v][0] /= l;
 	            normal[u][v][1] /= l;
 	            normal[u][v][2] /= l;
-	            printf("%i %f %f %f\n", u, normal[u][v][0], normal[u][v][1], normal[u][v][2] );
-  	
 	          	if(u > N/2){
 		            normal[u][v][0] *= -1;
 		            normal[u][v][1] *= -1;
@@ -132,17 +130,27 @@ namespace pwrgl::egg
 	     for(int u=0; u < N -1; u++){
 	        for(int v=0; v < N -1; v++){
 	           glNormal3fv(normal[u][v]);
+	           glTexCoord2f(space[u][v][0], space[u][v][1]);
 	           glVertex3fv(space[u][v]);
+
 	           glNormal3fv(normal[u][v+1]);
+	           glTexCoord2f(space[u][v+1][0], space[u][v+1][1]);
 	           glVertex3fv(space[u][v+1]);
+	           
 	           glNormal3fv(normal[u+1][v+1]);
+	           glTexCoord2f(space[u+1][v+1][0], space[u+1][v+1][1]);
 	           glVertex3fv(space[u+1][v+1]);
 
 	           glNormal3fv(normal[u][v]);
+	           glTexCoord2f(space[u+1][v+1][0], space[u+1][v+1][1]);
 	           glVertex3fv(space[u][v]);
+
 	           glNormal3fv(normal[u+1][v]);
+	           glTexCoord2f(space[u+1][v][0], space[u+1][v][1]);
 	           glVertex3fv(space[u+1][v]);
+
 	           glNormal3fv(normal[u+1][v+1]);
+	           glTexCoord2f(space[u][v][0], space[u][v][1]);
 	           glVertex3fv(space[u+1][v+1]);
 	        }
 	     }

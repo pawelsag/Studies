@@ -1,0 +1,1 @@
+void draw_3colors_triangle(float x, float y, float a);
